@@ -1,0 +1,11 @@
+{
+  "name": "wild/eportail_emploi",
+  "description": "Plateforme de recherche d'emploi en PHP MVC modulaire",
+  "type": "projet",
+  "exiger": {},
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  }
+}

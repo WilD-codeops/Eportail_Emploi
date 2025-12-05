@@ -1,0 +1,13 @@
+/vendor/
+.env
+
+# IDE / système
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs / cache
+*.log
+cache/
+*.tmp
