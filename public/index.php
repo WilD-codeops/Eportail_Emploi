@@ -9,6 +9,6 @@ use App\Core\Router;
 $router = new Router();
 
 // Routes de test
-$router->get('/', 'App\\Modules\\Offres\\OffresController@index');
+$router->get('/', 'App\\Modules\\Home\\HomeController@index');
 
 $router->run();

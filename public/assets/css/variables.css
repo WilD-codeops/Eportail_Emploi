@@ -1,0 +1,25 @@
+:root {
+  --color-primary-purple: #5a1ee0; /* Violet principal */
+  --color-primary-purpledark: #3f0d73;
+  --color-primary-purplelight: #6f42c1;
+
+  --color-primary-white: #ffffff;
+  --color-light: #f8f9fa;
+  --color-primary-black: #1e1e1e;
+  --color-dark: #212529;
+
+  --color-secondary-purple: #582cce;
+  --color-secondary-green: #61d683;
+  --color-secondary-greendark: #13c445;
+  --color-secondary-greenlight: #9cf3b4;
+
+  --color-secondary-red: #f23b3e;
+  --color-secondary-reddark: #e9292ce8;
+  --color-secondary-green: #f74c4f;
+  --color-background-grey: #e2dede;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 6px;
+
+  --transition-fast: 0.2s ease-in-out;
+}

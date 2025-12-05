@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Modules\Offres;
 
+use App\Core\View;
+
 class OffresController
 {
     public function index(): void
     {
-        echo "<h1>EPortailEmploi - Page d'accueil offres</h1>";
-        echo "<p>Le routeur oopérationnel </p>";
+        View::render('offres/index', [
+            'title' => 'Accueil — Offres | EPortailEmploi',
+        ]);
     }
 }
