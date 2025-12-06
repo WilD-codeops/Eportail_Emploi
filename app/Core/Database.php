@@ -17,7 +17,7 @@ class Database
 
             $dsn = 'mysql:host=localhost;dbname=eportail_emploi;charset=utf8mb4';
             $user = 'root';
-            $password = '';
+            $password = 'root';
 
             try {
                 self::$pdo = new PDO($dsn, $user, $password, [
