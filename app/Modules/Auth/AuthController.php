@@ -52,7 +52,8 @@ class AuthController
     {
         $email = trim($_POST['email'] ?? "");
         $password = $_POST['password'] ?? "";
-        
+
+
         if ($this->service->login($email, $password)) {
             // TODO : redirection selon rôle (prochaine étape)
             header("Location: /Eportail_Emploi/public/");
@@ -133,4 +134,10 @@ class AuthController
             "authVariant" => "reset"
         ]);
     }
+    public function logout(): void
+{
+    session_destroy();
+    header("Location: /Eportail_Emploi/public/login");
+    exit;
+}
 }

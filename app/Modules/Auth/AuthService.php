@@ -8,7 +8,7 @@ class AuthService
 {
     public function __construct(private AuthRepository $repository) {}
 
-    public function register(string $email, string $password, string $confirm, string $role = 'candidat'): array
+    public function register(string $email, string $mot_de_passe, string $confirm, string $role = 'candidat'): array
     {
         $errors = [];
 
@@ -16,11 +16,11 @@ class AuthService
             $errors[] = 'Email invalide.';
         }
 
-        if (strlen($password) < 8) {
+        if (strlen($mot_de_passe) < 8) {
             $errors[] = 'Le mot de passe doit contenir au moins 8 caractères.';
         }
 
-        if ($password !== $confirm) {
+        if ($mot_de_passe !== $confirm) {
             $errors[] = 'Les mots de passe ne correspondent pas.';
         }
 
@@ -32,7 +32,7 @@ class AuthService
             return ['success' => false, 'errors' => $errors];
         }
 
-        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $hash = password_hash($mot_de_passe, PASSWORD_DEFAULT);
 
         $inserted = $this->repository->createUser($email, $hash, $role);
 

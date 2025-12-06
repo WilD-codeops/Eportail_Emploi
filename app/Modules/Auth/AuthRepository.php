@@ -34,7 +34,7 @@ class AuthRepository
         $stmt = $this->pdo->prepare($sql);
 
         $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-        $stmt->bindValue(':password_hash', $passwordHash, PDO::PARAM_STR);
+        $stmt->bindValue(':mot_de_passe', $passwordHash, PDO::PARAM_STR);
         $stmt->bindValue(':role', $role, PDO::PARAM_STR);
 
         return $stmt->execute();

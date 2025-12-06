@@ -6,7 +6,7 @@
     <p class="auth-page-subtitle">
         Connectez-vous pour accéder à votre espace professionnel EPortailEmploi.
     </p>
-<?php var_dump($_SESSION);  ?>
+    
     <!-- Toggle Candidat / Recruteur (visuel pour l'instant) -->
     <div class="auth-role-toggle" aria-label="Choix du type de compte">
         <button type="button" class="active">Candidat</button>
@@ -33,7 +33,7 @@
         </div>
 
         <div class="mb-2">
-            <label for="password" class="form-label">Mot de passe</label>
+            <label for="mot_de_passe" class="form-label">Mot de passe</label>
             <div class="input-group">
                 <span class="input-group-text">
                     <i class="bi bi-lock"></i>
@@ -41,7 +41,7 @@
                 <input
                     type="password"
                     class="form-control"
-                    id="password"
+                    id="mot_de_passe"
                     name="password"
                     placeholder="Votre mot de passe"
                     required
