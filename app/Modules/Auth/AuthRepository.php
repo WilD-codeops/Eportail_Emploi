@@ -8,23 +8,37 @@ use PDO;
 
 class AuthRepository
 {
-    public function __construct(private PDO $db) {}
+    public function __construct(private PDO $pdo) {}
 
     public function findUserByEmail(string $email): ?array
     {
-        $sql = "SELECT * FROM users WHERE email = ?";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$email]);
+        $sql = "SELECT id, email, password_hash, role
+                FROM users
+                WHERE email = :email
+                LIMIT 1";
 
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+
+        $stmt->execute();
+
+        $user = $stmt->fetch();
+        return $user ?: null;
     }
 
-    public function createUser(string $email, string $passwordHash, string $role): int
+    public function createUser(string $email, string $passwordHash, string $role): bool
     {
-        $sql = "INSERT INTO users (email, password, role) VALUES (?, ?, ?)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([$email, $passwordHash, $role]);
+        $sql = "INSERT INTO users (email, password_hash, role, created_at)
+                VALUES (:email, :password_hash, :role, NOW())";
 
-        return (int) $this->db->lastInsertId();
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+        $stmt->bindValue(':password_hash', $passwordHash, PDO::PARAM_STR);
+        $stmt->bindValue(':role', $role, PDO::PARAM_STR);
+
+        return $stmt->execute();
     }
 }
+
+
