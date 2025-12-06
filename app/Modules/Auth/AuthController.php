@@ -81,7 +81,7 @@ class AuthController
         $email = trim($_POST['email']);
         $password = $_POST['password'];
 
-        $this->service->register($email, $password, "candidat");
+        $this->service->registerCandidat($email, $password, "candidat");
 
         header("Location: /login");
         exit;
@@ -100,15 +100,51 @@ class AuthController
 
     public function registerEntreprise(): void
     {
-        $email = trim($_POST['email']);
-        $password = $_POST['password'];
+    // --- 1) Données du gestionnaire ---
+    $gestionnaireData = [
+        'prenom'        => htmlspecialchars($_POST['prenom'] ?? ''),
+        'nom'           => htmlspecialchars($_POST['nom'] ?? ''),
+        'email'         => trim($_POST['email'] ?? ''),
+        'mot_de_passe'  => $_POST['password'] ?? '',
+        'role'          => 'gestionnaire',
+        'entreprise_id' => null
+    ];
 
-        // création DU GESTIONNAIRE (rôle par défaut)
-        $this->service->registerCandidat($data);
+    // --- 2) Données de l'entreprise ---
+    $entrepriseData = [
+        'nom'          => htmlspecialchars($_POST['nom_entreprise'] ?? ''),
+        'secteur_id'   => (int)($_POST['secteur_id'] ?? 0),
+        'adresse'      => htmlspecialchars($_POST['adresse'] ?? ''),
+        'code_postal'  => htmlspecialchars($_POST['code_postal'] ?? ''),
+        'ville'        => htmlspecialchars($_POST['ville'] ?? ''),
+        'pays'         => htmlspecialchars($_POST['pays'] ?? ''),
+        'telephone'    => htmlspecialchars($_POST['telephone'] ?? ''),
+        'email'        => trim($_POST['email_entreprise'] ?? ''),
+        'siret'        => trim($_POST['siret'] ?? ''),
+        'site_web'     => htmlspecialchars($_POST['site_web'] ?? ''),
+        'taille'       => htmlspecialchars($_POST['taille'] ?? ''),
+        'description'  => htmlspecialchars($_POST['description'] ?? ''),
+        'logo'         => null
+    ];
 
+    // 3) Appel du service métier
+    $result = $this->entrepriseService->createEntrepriseEtGestionnaire(
+        $entrepriseData,
+        $gestionnaireData
+    );
+
+    if ($result['success']) {
         header("Location: /login");
         exit;
     }
+
+    // En cas d'erreur
+    $this->renderAuth("register_entreprise", [
+        "title" => "Créer un espace entreprise",
+        "authVariant" => "register",
+        "error" => $result['error']
+    ]);
+}
 
     // ---------------------------------------------
     //  MOT DE PASSE OUBLIÉ

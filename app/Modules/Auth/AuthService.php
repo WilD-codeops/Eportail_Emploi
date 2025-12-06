@@ -64,6 +64,6 @@ class AuthService
     public function createUser(array $data): int
     {
         $data['mot_de_passe'] = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
-        return $this->repo->createUser($data);
+        return $this->repo->createUser($data);  
     }
 }
