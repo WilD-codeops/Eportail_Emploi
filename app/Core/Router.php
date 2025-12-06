@@ -52,7 +52,13 @@ class Router
         throw new \RuntimeException("Classe contrôleur introuvable : {$class}");
     }
 
-    $controller = new $class();
+    $app = \App\Core\App::getInstance();
+
+    if (!property_exists($app, lcfirst(basename(str_replace('\\', '/', $class))))) {
+        throw new \RuntimeException("Contrôleur non enregistré dans App : {$class}");
+    }
+
+    $controller = $app->{lcfirst(basename(str_replace('\\', '/', $class)))};
 
     if (!method_exists($controller, $methodName)) {
         throw new \RuntimeException("Méthode {$methodName} introuvable dans {$class}");
