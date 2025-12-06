@@ -21,4 +21,9 @@ $router->post('/register/candidat', 'App\\Modules\\Auth\\AuthController@register
 $router->get('/register/entreprise', 'App\\Modules\\Auth\\AuthController@showRegisterEntreprise');
 $router->post('/register/entreprise', 'App\\Modules\\Auth\\AuthController@registerEntreprise');
 
+// ENTREPRISE — ADMIN
+$router->get('/admin/entreprises', 'App\\Modules\\Entreprise\\EntrepriseController@index');
+$router->get('/admin/entreprises/create', 'App\\Modules\\Entreprise\\EntrepriseController@createForm');
+$router->post('/admin/entreprises/create', 'App\\Modules\\Entreprise\\EntrepriseController@create');
+
 $router->run();
