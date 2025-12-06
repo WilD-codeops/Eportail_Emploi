@@ -27,7 +27,7 @@ class AuthService
             $errors[] = 'Les mots de passe ne correspondent pas.';
         }
 
-        if ($this->repository->findUserByEmail($email)) {
+        if ($this->repository->findByEmail($email)) {
             $errors[] = 'Un compte existe déjà avec cet email.';
         }
 
@@ -37,7 +37,11 @@ class AuthService
 
         $hash = password_hash($mot_de_passe, PASSWORD_DEFAULT);
 
-        $inserted = $this->repository->createUser($email, $hash, $role);
+        $inserted = $this->repository->createUser([
+            'email'       => $email,
+            'mot_de_passe'=> $hash,
+            'role'        => $role
+        ]); 
 
         if (!$inserted) {
             return ['success' => false, 'errors' => ['Erreur interne : impossible de créer le compte.']];
@@ -48,7 +52,7 @@ class AuthService
 
     public function login(string $email, string $password): array
     {
-        $user = $this->repository->findUserByEmail($email);
+        $user = $this->repository->findByEmail($email);
 
         if (!$user || !password_verify($password, $user['mot_de_passe'])) {
             return [
@@ -64,30 +68,6 @@ class AuthService
     }
 
 
-    public function createUser(array $data): int
-    {   // Sécurisation + validation minimale   
-        if (empty($data['email']) || empty($data['mot_de_passe']) || empty($data['role'])) {
-            throw new \InvalidArgumentException("Champs requis manquants pour créer l'utilisateur.");
-        }
-
-        // Hash du mot de passe
-        $hash = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
-
-        $sql = "INSERT INTO users (prenom, nom, email, mot_de_passe, role, entreprise_id)
-                VALUES (:prenom, :nom, :email, :mot_de_passe, :role, :entreprise_id)";
-
-        $stmt = $this->pdo->prepare($sql);
-
-        $stmt->execute([
-            ':prenom'         => $data['prenom'] ?? null,
-            ':nom'            => $data['nom'] ?? null,
-            ':email'          => $data['email'],
-            ':mot_de_passe'   => $hash,
-            ':role'           => $data['role'],
-            ':entreprise_id'  => $data['entreprise_id'] ?? null  // utile pour recruteurs plus tard
-        ]);
-
-        return (int) $this->pdo->lastInsertId();
-    }   
+    
 }
 
