@@ -34,4 +34,13 @@ class App
     {
         return self::$instance ??= new self();
     }
+
+    public function resolve(string $class)
+    {
+     return match ($class) 
+     {
+        \App\Modules\Auth\AuthController::class => $this->authController,
+        default => new $class(), // fallback si pas de dépendances (HomeController par ex)
+        };
+    }
 }
