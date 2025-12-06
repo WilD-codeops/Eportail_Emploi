@@ -1,25 +1,41 @@
 :root {
+  /* PALETTE PRINCIPALE — charte */
   --color-primary-purple: #5a1ee0; /* Violet principal */
-  --color-primary-purpledark: #3f0d73;
-  --color-primary-purplelight: #6f42c1;
+  --color-primary-purple-dark: #3f0d73; /* Violet foncé */
+  --color-primary-purple-light: #6f42c1; /* Violet clair */
 
   --color-primary-white: #ffffff;
-  --color-light: #f8f9fa;
   --color-primary-black: #1e1e1e;
+  --color-light: #f8f9fa;
   --color-dark: #212529;
 
   --color-secondary-purple: #582cce;
-  --color-secondary-green: #61d683;
-  --color-secondary-greendark: #13c445;
-  --color-secondary-greenlight: #9cf3b4;
+
+  --color-secondary-green: #61d683; /* VERT PRINCIPAL */
+  --color-secondary-green-dark: #01a830; /* VERT FONCÉ */
+  --color-secondary-green-light: #9cf3b4; /* VERT CLAIR */
 
   --color-secondary-red: #f23b3e;
-  --color-secondary-reddark: #e9292ce8;
-  --color-secondary-green: #f74c4f;
+  --color-secondary-red-dark: #e9292c;
+  --color-secondary-redlight: #f74c4f;
+
   --color-background-grey: #e2dede;
+
+  /* Radius */
   --radius-lg: 16px;
   --radius-md: 12px;
   --radius-sm: 6px;
 
+  /* Transitions */
   --transition-fast: 0.2s ease-in-out;
+
+  /* 🟣 OVERRIDE BOOTSTRAP AUTOMATIQUE */
+  --bs-primary: var(--color-primary-purple);
+  --bs-primary-rgb: 90, 30, 224;
+
+  --bs-secondary: var(--color-secondary-purple);
+  --bs-secondary-rgb: 88, 44, 206;
+
+  --bs-dark: var(--color-primary-black);
+  --bs-light: var(--color-primary-white);
 }

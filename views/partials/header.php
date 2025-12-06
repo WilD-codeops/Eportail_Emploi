@@ -25,13 +25,12 @@
                     Connexion
                 </a>
                 <a class="btn btn-primary btn-sm" href="/Eportail_Emploi/public/register">
-                    Créer un compte
+                    S'inscrire
                 </a>
             </div>
         </div>
     </div>
 </nav>
 
-<!-- Décalage pour ne pas masquer le contenu par la navbar fixe -->
-<div style="margin-top: 80px;"></div>
+<!-- Spacer removed: hero will be flush under fixed header; CSS compensates for navbar height. -->
 
