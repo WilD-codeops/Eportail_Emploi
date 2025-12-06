@@ -48,24 +48,21 @@ class AuthController
         ]);
     }
 
-    public function login(): void
-    {
-        $email = trim($_POST['email'] ?? "");
-        $password = $_POST['password'] ?? "";
+    public function login(): void{
+    $email = htmlspecialchars($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
 
+    $result = $this->service->login($email, $password);
 
-        if ($this->service->login($email, $password)) {
-            // TODO : redirection selon rôle (prochaine étape)
-            header("Location: /Eportail_Emploi/public/");
-            exit;
+    if ($result['success']) {
+        header("Location: /");
+        exit;
         }
 
-        // si échec → on réaffiche login avec erreur
-        $this->renderAuth("login", [
-            "title"       => "Connexion — EPortailEmploi",
-            "authVariant" => "login",
-            "error"       => "Identifiants incorrects"
-        ]); 
+    $this->renderAuth("login", [
+        "error" => $result['error'],
+        "title" => "Connexion — EPortailEmploi"
+        ]);
     }
 
     // ---------------------------------------------
@@ -107,7 +104,7 @@ class AuthController
         $password = $_POST['password'];
 
         // création DU GESTIONNAIRE (rôle par défaut)
-        $this->service->register($email, $password, "gestionnaire");
+        $this->service->registerCandidat($data);
 
         header("Location: /login");
         exit;
