@@ -8,49 +8,56 @@ class AuthService
 {
     public function __construct(private AuthRepository $repository) {}
 
-    /**
-     * Tente de connecter un utilisateur à partir de son email et mot de passe.
-     *
-     * @return bool true si la connexion réussit, false sinon.
-     */
-    public function login(string $email, string $password): bool
+    public function register(string $email, string $password, string $confirm, string $role = 'candidat'): array
     {
-        
-        $user = $this->repository->findUserByEmail($email);
+        $errors = [];
 
-        if (!$user) {
-            return false;
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'Email invalide.';
         }
 
-        // Vérification du mot de passe hashé
-        if (!password_verify($password, $user['password'])) {
-            return false;
+        if (strlen($password) < 8) {
+            $errors[] = 'Le mot de passe doit contenir au moins 8 caractères.';
         }
 
-        // Si tout est OK, on stocke les infos  en session
-        $_SESSION['user'] = [
-            'id'   => $user['id'],
-            'role' => $user['role']
-        ];
+        if ($password !== $confirm) {
+            $errors[] = 'Les mots de passe ne correspondent pas.';
+        }
 
-        return true;
-    }
+        if ($this->repository->findUserByEmail($email)) {
+            $errors[] = 'Un compte existe déjà avec cet email.';
+        }
 
-    /**
-     * Inscription d'un utilisateur.
-     * Le mot de passe est hashé avant d'être envoyé au repository.
-     */
-    public function register(string $email, string $password, string $role): int
-    {
-        // Hash du mot de passe 
+        if (!empty($errors)) {
+            return ['success' => false, 'errors' => $errors];
+        }
+
         $hash = password_hash($password, PASSWORD_DEFAULT);
 
-        return $this->repository->createUser($email, $hash, $role);
+        $inserted = $this->repository->createUser($email, $hash, $role);
+
+        if (!$inserted) {
+            return ['success' => false, 'errors' => ['Erreur interne : impossible de créer le compte.']];
+        }
+
+        return ['success' => true];
     }
 
-    /*Déconnexion: on détruit la session PHP.*/
-    public function logout(): void
+    public function login(string $email, string $password): array
     {
-        session_destroy();
+        $user = $this->repository->findUserByEmail($email);
+
+        if (!$user || !password_verify($password, $user['password_hash'])) {
+            return [
+                'success' => false,
+                'error' => 'Identifiants incorrects.',
+            ];
+        }
+
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_role'] = $user['role'];
+
+        return ['success' => true];
     }
 }
+
