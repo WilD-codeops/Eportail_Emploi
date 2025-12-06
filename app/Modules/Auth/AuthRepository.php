@@ -26,19 +26,31 @@ class AuthRepository
         return $user ?: null;
     }
 
-    public function createUser(string $email, string $passwordHash, string $role): bool
-    {
-        $sql = "INSERT INTO users (email, mot_de_passe, role, created_at)
-                VALUES (:email, :mot_de_passe, :role, NOW())";
+     public function createUser(array $data): int
+    {   // Sécurisation + validation minimale   
+        if (empty($data['email']) || empty($data['mot_de_passe']) || empty($data['role'])) {
+            throw new \InvalidArgumentException("Champs requis manquants pour créer l'utilisateur.");
+        }
+
+        // Hash du mot de passe
+        $hash = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
+
+        $sql = "INSERT INTO users (prenom, nom, email, mot_de_passe, role, entreprise_id)
+                VALUES (:prenom, :nom, :email, :mot_de_passe, :role, :entreprise_id)";
 
         $stmt = $this->pdo->prepare($sql);
 
-        $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-        $stmt->bindValue(':mot_de_passe', $passwordHash, PDO::PARAM_STR);
-        $stmt->bindValue(':role', $role, PDO::PARAM_STR);
+        $stmt->execute([
+            ':prenom'         => $data['prenom'] ?? null,
+            ':nom'            => $data['nom'] ?? null,
+            ':email'          => $data['email'],
+            ':mot_de_passe'   => $hash,
+            ':role'           => $data['role'],
+            ':entreprise_id'  => $data['entreprise_id'] ?? null  // utile pour recruteurs plus tard
+        ]);
 
-        return $stmt->execute();
-    }
+        return (int) $this->pdo->lastInsertId();
+    }  
 }
 
 
