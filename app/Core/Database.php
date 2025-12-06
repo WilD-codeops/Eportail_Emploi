@@ -15,7 +15,7 @@ class Database
     {
         if (self::$pdo === null) {
 
-            $dsn = 'mysql:host=localhost;dbname=eportail_emploi;charset=utf8mb4';
+            $dsn = 'mysql:host=localhost;dbname=eportailemploi;charset=utf8mb4';
             $user = 'root';
             $password = 'root';
 

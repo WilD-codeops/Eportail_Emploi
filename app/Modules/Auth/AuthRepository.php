@@ -12,7 +12,7 @@ class AuthRepository
 
     public function findUserByEmail(string $email): ?array
     {
-        $sql = "SELECT id, email, password_hash, role
+        $sql = "SELECT id, email, mot_de_passe, role
                 FROM users
                 WHERE email = :email
                 LIMIT 1";
@@ -28,8 +28,8 @@ class AuthRepository
 
     public function createUser(string $email, string $passwordHash, string $role): bool
     {
-        $sql = "INSERT INTO users (email, password_hash, role, created_at)
-                VALUES (:email, :password_hash, :role, NOW())";
+        $sql = "INSERT INTO users (email, mot_de_passe, role, created_at)
+                VALUES (:email, :mot_de_passe, :role, NOW())";
 
         $stmt = $this->pdo->prepare($sql);
 

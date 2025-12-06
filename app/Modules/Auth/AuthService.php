@@ -47,7 +47,7 @@ class AuthService
     {
         $user = $this->repository->findUserByEmail($email);
 
-        if (!$user || !password_verify($password, $user['password_hash'])) {
+        if (!$user || !password_verify($password, $user['mot_de_passe'])) {
             return [
                 'success' => false,
                 'error' => 'Identifiants incorrects.',

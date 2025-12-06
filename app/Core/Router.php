@@ -35,7 +35,7 @@ class Router
     if ($basePath !== '' && str_starts_with($path, $basePath)) {
         $path = substr($path, strlen($basePath)) ?: '/';
     }
-
+   
     // À ce stade, si tu es sur http://localhost/Eportail_Emploi/public/
     // $path vaudra simplement "/"
 
@@ -53,12 +53,7 @@ class Router
     }
 
     $app = \App\Core\App::getInstance();
-
-    if (!property_exists($app, lcfirst(basename(str_replace('\\', '/', $class))))) {
-        throw new \RuntimeException("Contrôleur non enregistré dans App : {$class}");
-    }
-
-    $controller = $app->{lcfirst(basename(str_replace('\\', '/', $class)))};
+    $controller = $app->resolve($class); 
 
     if (!method_exists($controller, $methodName)) {
         throw new \RuntimeException("Méthode {$methodName} introuvable dans {$class}");
