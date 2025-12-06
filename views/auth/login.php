@@ -14,7 +14,7 @@
     </div>
 
     <!-- Formulaire de connexion -->
-    <form method="post" action="Eportail_Emploi/public/login" class="auth-form mt-4">
+    <form method="post" action="/Eportail_Emploi/public/login" class="auth-form mt-4">
         <div class="mb-3">
             <label for="email" class="form-label">Email professionnel</label>
             <div class="input-group">
