@@ -49,6 +49,7 @@ class EntrepriseService
                 ];
             }
 
+            
             /* --- 4. Mise à jour du user avec entreprise_id --- */
             $stmt = $this->pdo->prepare(
                 "UPDATE users SET entreprise_id = :entreprise_id WHERE id = :id"
