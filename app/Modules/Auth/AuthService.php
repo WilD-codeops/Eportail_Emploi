@@ -43,24 +43,11 @@ class AuthService
     // Inscription candidat simple
     public function registerCandidat(array $data): array
     {
-        if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-            return ['success' => false, 'error' => "Email invalide"];
-        }
-
-        if (strlen($data['mot_de_passe']) < 6) {
-            return ['success' => false, 'error' => "Mot de passe trop court"];
-        }
-
-        if ($this->repo->emailExists($data['email'])) {
-            return ['success' => false, 'error' => "Cet email existe déjà"];
-        }
-
         $data['mot_de_passe'] = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
         $data['role'] = 'candidat';
         $data['entreprise_id'] = null;
 
         $id = $this->repo->createUser($data);
-
         return ['success' => true, 'id' => $id];
     }
 

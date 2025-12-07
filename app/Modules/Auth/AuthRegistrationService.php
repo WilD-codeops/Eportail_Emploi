@@ -12,9 +12,9 @@ class AuthRegistrationService
         private EntrepriseService $entrepriseService
     ) {}
 
-    /**
-     * Inscription candidat simple
-     */
+    /* ============================================================
+       INSCRIPTION CANDIDAT
+    ============================================================ */
     public function registerCandidat(array $data): array
     {
         $prenom = Validator::sanitize($data['prenom'] ?? '');
@@ -23,6 +23,7 @@ class AuthRegistrationService
         $password = $data['password'] ?? '';
         $confirm = $data['password_confirm'] ?? '';
 
+        // VALIDATION
         if (!Validator::validateCity($prenom)) {
             return $this->fail("Prénom invalide.");
         }
@@ -40,30 +41,36 @@ class AuthRegistrationService
         }
 
         return $this->authService->registerCandidat([
-            'prenom'        => $prenom,
-            'nom'           => $nom,
-            'email'         => $email,
-            'mot_de_passe'  => $password
+            'prenom' => $prenom,
+            'nom' => $nom,
+            'email' => $email,
+            'mot_de_passe' => $password
         ]);
     }
 
-    /**
-     * Inscription gestionnaire + entreprise
-     */
+
+    /* ============================================================
+       INSCRIPTION ENTREPRISE + GESTIONNAIRE
+    ============================================================ */
+
     public function registerEntreprise(array $data): array
     {
-        // Sanitize
         foreach ($data as $k => $v) {
             $data[$k] = Validator::sanitize($v ?? '');
         }
 
-        // ------- VALIDATION ENTREPRISE -------
+        /* ====== ENTREPRISE ====== */
+
         if (empty($data['nom_entreprise'])) {
             return $this->fail("Le nom de l’entreprise est obligatoire.");
         }
 
         if (!is_numeric($data['secteur_id'])) {
-            return $this->fail("Secteur invalide.");
+            return $this->fail("Le secteur est obligatoire.");
+        }
+
+        if (empty($data['adresse'])) {
+            return $this->fail("L’adresse est obligatoire.");
         }
 
         if (!Validator::validatePostalCode($data['code_postal'])) {
@@ -74,8 +81,17 @@ class AuthRegistrationService
             return $this->fail("Ville invalide.");
         }
 
+        if (empty($data['pays'])) {
+            return $this->fail("Le pays est obligatoire.");
+        }
+
         if (!Validator::validateSiret($data['siret'])) {
             return $this->fail("SIRET invalide (14 chiffres).");
+        }
+
+        if (!empty($data['telephone']) &&
+            !Validator::validatePhone($data['telephone'])) {
+            return $this->fail("Téléphone entreprise invalide.");
         }
 
         if (!empty($data['email_entreprise']) &&
@@ -83,7 +99,8 @@ class AuthRegistrationService
             return $this->fail("Email entreprise invalide.");
         }
 
-        // ------- VALIDATION GESTIONNAIRE -------
+        /* ====== GESTIONNAIRE ====== */
+
         if (!Validator::validateCity($data['prenom'])) {
             return $this->fail("Prénom gestionnaire invalide.");
         }
@@ -100,7 +117,8 @@ class AuthRegistrationService
             return $this->fail("Mot de passe invalide ou non confirmé.");
         }
 
-        // ------- Construction des arrays -------
+        /* ====== Construire les données ====== */
+
         $entrepriseData = [
             'nom'         => $data['nom_entreprise'],
             'secteur_id'  => (int)$data['secteur_id'],
@@ -114,16 +132,15 @@ class AuthRegistrationService
             'site_web'    => $data['site_web'] ?: null,
             'taille'      => $data['taille'] ?: null,
             'description' => $data['description'] ?: null,
-            'logo'        => null,
+            'logo'        => null
         ];
 
         $gestionnaireData = [
             'prenom'        => $data['prenom'],
             'nom'           => $data['nom'],
             'email'         => $data['email'],
-            'mot_de_passe'  => $data['password'], // hashé dans AuthService
+            'mot_de_passe'  => $data['password'], // hashé plus tard
             'role'          => 'gestionnaire',
-            'entreprise_id' => null
         ];
 
         return $this->entrepriseService->createEntrepriseEtGestionnaire(

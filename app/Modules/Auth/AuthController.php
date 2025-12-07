@@ -97,7 +97,7 @@ namespace App\Modules\Auth;
         {
             $this->renderAuth("register_candidat", [
                 "title"       => "Créer un compte candidat",
-                "authVariant" => "register"
+                "authVariant" => "register_candidat"
             ]);
         }
 
@@ -112,7 +112,7 @@ namespace App\Modules\Auth;
             if (!$result['success']) {
                  $this->renderAuth("register_candidat", [
                     "title"       => "Créer un compte candidat",
-                    "authVariant" => "register",
+                    "authVariant" => "register_candidat",
                     "error"       => $result['error']
                 ]);
                 return;
@@ -121,7 +121,7 @@ namespace App\Modules\Auth;
             header("Location: /login");
             exit;   
         }
-        
+
         // --------- REGISTER ENTREPRISE / GESTIONNAIRE ---------
 
         public function showRegisterEntreprise(): void
