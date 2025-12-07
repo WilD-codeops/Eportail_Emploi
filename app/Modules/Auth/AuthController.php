@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Auth;
     use App\Core\Database;
+    use App\Core\Validator;
     use App\Modules\Entreprise\EntrepriseRepository;
     use App\Modules\Entreprise\EntrepriseService;
 
@@ -130,6 +131,15 @@ namespace App\Modules\Auth;
             $this->renderAuth("register_entreprise", [
                 "title"       => "Créer un espace entreprise",
                 "authVariant" => "register_entreprise"
+            ]);
+        }
+
+        public function showEntrepriseError(string $message): void
+        {
+            $this->renderAuth("register_entreprise", [
+                "title"       => "Créer un espace entreprise",
+                "authVariant" => "register_entreprise",
+                "error"       => $message
             ]);
         }
 
