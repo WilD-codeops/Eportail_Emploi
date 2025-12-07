@@ -27,34 +27,37 @@ class EntrepriseService
         array $gestionnaireData
     ): array {
         try {
-            // Début de transaction
-            $this->pdo->beginTransaction();
+                $this->pdo->beginTransaction();
+                // 1) Création du gestionnaire
+                $gestionnaireId = $this->authService->createUser($gestionnaireData);
 
-            // 1) Création du gestionnaire via AuthService
-            $gestionnaireId = $this->authService->createUser($gestionnaireData);
+                // 2) Création de l'entreprise
+                $entrepriseData['gestionnaire_id'] = $gestionnaireId;
+                $entrepriseId = $this->repo->createEntreprise($entrepriseData);
 
-            // 2) Création de l'entreprise en liant le gestionnaire
-            $entrepriseData['gestionnaire_id'] = $gestionnaireId;
-            $entrepriseId = $this->repo->createEntreprise($entrepriseData);
+                // 3) Mise à jour de l'utilisateur (entreprise_id)
+                $stmt = $this->pdo->prepare("UPDATE users SET entreprise_id = :entreprise_id WHERE id = :id");
+                $stmt->execute([
+                    ':entreprise_id' => $entrepriseId,
+                    ':id'            => $gestionnaireId,
+                ]);
 
-            // Commit si tout s'est bien passé
-            $this->pdo->commit();
+                $this->pdo->commit();
 
-            return [
-                'success' => true,
-                'entreprise_id' => $entrepriseId,
-                'error' => null,
-            ];
+                return [
+                    'success'       => true,
+                    'entreprise_id' => $entrepriseId,
+                    'error'         => null,
+                ];
 
-        } catch (\Throwable $e) {
-            // Annule les changements si erreur
-            $this->pdo->rollBack();
+             } catch (\Throwable $e) {
+                    $this->pdo->rollBack();
 
-            return [
-                'success' => false,
-                'entreprise_id' => null,
-                'error' => 'Erreur lors de l\'inscription entreprise : ' . $e->getMessage(),
-            ];
-        }
-    }
+                    return [
+                        'success'       => false,
+                        'entreprise_id' => null,
+                        'error'         => 'Erreur lors de l\'inscription entreprise : ' . $e->getMessage(),
+                    ];
+                }           
+}
 }
