@@ -5,7 +5,7 @@
  * Variables attendues :
  * - string $title        : titre de la page (onglet navigateur)
  * - string $content      : contenu de la colonne gauche (formulaire)
- * - string $authVariant  : type de page ("login", "register", "forgot", "reset"...)
+ * - string $authVariant  : type de page ("login", "register", "forgot", "reset")
  */
 ?>
 <!DOCTYPE html>
@@ -69,11 +69,19 @@
                 </p>
                 <div class="auth-right-illustration auth-right-illustration--login"></div>
 
-            <?php elseif ($variant === 'register'): ?>
+            <?php elseif ($variant === 'register_candidat'): ?>
                 <h2 class="auth-right-title">Créez votre profil</h2>
                 <p class="auth-right-text">
                     Rejoignez EPortailEmploi et mettez en valeur votre parcours,
                     vos compétences et vos aspirations professionnelles.
+                </p>
+                <div class="auth-right-illustration auth-right-illustration--register"></div>
+
+            <?php elseif ($variant === 'register_entreprise'): ?>
+                <h2 class="auth-right-title">Recrutez les meilleurs talents</h2>    
+                <p class="auth-right-text">
+                    Rejoignez EPortailEmploi et présentez votre entreprise,
+                    vos opportunités de carrière et votre culture professionnelle.
                 </p>
                 <div class="auth-right-illustration auth-right-illustration--register"></div>
 
@@ -111,5 +119,6 @@
 
 <!-- JS custom -->
 <script src="/Eportail_Emploi/public/assets/js/app.js"></script>
+<script src="/Eportail_Emploi/public/assets/js/registerEntreprise.js"></script>
 </body>
 </html>

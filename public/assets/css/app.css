@@ -631,6 +631,14 @@ section.bg-light {
   }
 }
 
+.is-invalid {
+  border-color: #dc3545 !important;
+}
+
+.invalid-feedback {
+  display: block;
+}
+
 /*********** RESPONSIVE ***********/
 @media (max-width: 768px) {
   .offer-card-modern {

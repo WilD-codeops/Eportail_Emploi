@@ -24,7 +24,7 @@
                 <a class="btn btn-outline-primary btn-sm" href="/Eportail_Emploi/public/login">
                     Connexion
                 </a>
-                <a class="btn btn-primary btn-sm" href="/Eportail_Emploi/public/register">
+                <a class="btn btn-primary btn-sm" href="/Eportail_Emploi/public/register/candidat">
                     S'inscrire
                 </a>
             </div>
@@ -32,5 +32,5 @@
     </div>
 </nav>
 
-<!-- Spacer removed: hero will be flush under fixed header; CSS compensates for navbar height. -->
+
 
