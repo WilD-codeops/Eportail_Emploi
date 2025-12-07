@@ -3,6 +3,7 @@
 namespace App\Modules\Entreprise;
 
 use App\Core\Database;
+use App\Core\Auth;
 use App\Modules\Auth\AuthRepository;
 use App\Modules\Auth\AuthService;
 use PDO;
@@ -22,6 +23,8 @@ class EntrepriseController
 
     public function index(): void
     {
+        Auth::requireRole(['admin']);  // Accès restreint aux admins
+        
         $service     = $this->makeService();
         $entreprises = $service->repo->getAll();
 
@@ -36,6 +39,8 @@ class EntrepriseController
 
     public function createForm(): void
     {
+        Auth::requireRole(['admin']); // Accès restreint aux admins
+
         $pdo = Database::getConnection();
 
         $stmt = $pdo->query("SELECT id, libelle FROM secteurs_entreprises ORDER BY libelle ASC");
@@ -52,6 +57,8 @@ class EntrepriseController
 
     public function create(): void
     {
+        Auth::requireRole(['admin']); // Accès restreint aux admins
+        
         $service = $this->makeService();
 
         $entrepriseData = [
