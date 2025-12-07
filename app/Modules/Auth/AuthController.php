@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Auth;
     use App\Core\Database;
     use App\Core\Validator;
-    use App\Core\ErrorHandler;
+    use App\Modules\Auth\AuthRegistrationService;
     use App\Modules\Entreprise\EntrepriseRepository;
     use App\Modules\Entreprise\EntrepriseService;
 
@@ -102,29 +102,26 @@ namespace App\Modules\Auth;
         }
 
         public function registerCandidat(): void
-        {
-            $data = [
-                'prenom'       => htmlspecialchars($_POST['prenom'] ?? ''),
-                'nom'          => htmlspecialchars($_POST['nom'] ?? ''),
-                'email'        => trim($_POST['email'] ?? ''),
-                'mot_de_passe' => $_POST['password'] ?? '',
-            ];
-
-            $service = $this->makeAuthService();
-            $result  = $service->registerCandidat($data);
-
-            if ($result['success']) {
-                header("Location: /login");
-                exit;
+        {              $service = new AuthRegistrationService(
+                $this->makeAuthService(),
+                $this->makeEntrepriseService()
+            );
+        
+            $result = $service->registerCandidat($_POST);
+        
+            if (!$result['success']) {
+                 $this->renderAuth("register_candidat", [
+                    "title"       => "Créer un compte candidat",
+                    "authVariant" => "register",
+                    "error"       => $result['error']
+                ]);
+                return;
             }
-
-            $this->renderAuth("register_candidat", [
-                "title"       => "Créer un compte candidat",
-                "authVariant" => "register",
-                "error"       => $result['error'] ?? "Erreur lors de l'inscription"
-            ]);
+        
+            header("Location: /login");
+            exit;   
         }
-
+        
         // --------- REGISTER ENTREPRISE / GESTIONNAIRE ---------
 
         public function showRegisterEntreprise(): void
@@ -147,136 +144,25 @@ namespace App\Modules\Auth;
         
         public function registerEntreprise(): void
         {
-            $data = $_POST;
+            $service = new AuthRegistrationService(
+                $this->makeAuthService(),
+                $this->makeEntrepriseService()
+            );
         
-            // Sanitisation minimale
-            foreach ($data as $key => $value) {
-                $data[$key] = trim($value ?? '');
+            $result = $service->registerEntreprise($_POST);
+        
+            if (!$result['success']) {
+                     $this->renderAuth("register_entreprise", [
+                        "title"       => "Créer un espace entreprise",
+                        "authVariant" => "register_entreprise",
+                        "error"       => $result['error']
+                    ]);
+                    return;
+                }
+            
+                header("Location: /login");
+                exit;
             }
-        
-            /* --- Validation entreprise --- */
-        
-            if (empty($data['nom_entreprise'])) {
-                $this->showEntrepriseError("Le nom de l’entreprise est obligatoire.")    ;
-                return ;
-            }
-        
-            if (empty($data['secteur_id']) || !is_numeric($data['secteur_id'])) {
-                $this->showEntrepriseError("Le secteur d’activité est obligatoire.");
-                return ;
-            }
-        
-            if (empty($data['adresse'])) {
-                $this->showEntrepriseError("L’adresse est obligatoire.");
-                return ;
-            }
-        
-            if (!Validator::validatePostalCode($data['code_postal'])) {
-                $this->showEntrepriseError("Code postal invalide.");
-                return ;    
-            }
-        
-            if (!Validator::validateCity($data['ville'])) {
-                $this->showEntrepriseError("Ville invalide.");
-                return ;
-            }
-        
-            if (empty($data['pays'])) {
-                $this->showEntrepriseError("Le pays est obligatoire.");
-                return ;
-            }
-        
-            if (!Validator::validateSiret($data['siret'])) {
-                $this->showEntrepriseError("Le SIRET doit contenir 14 chiffres.");
-                return ;
-            }
-        
-            if (!empty($data['telephone']) &&
-                !Validator::validatePhone($data['telephone'])) {
-                $this->showEntrepriseError("Numéro de téléphone entreprise invalide.");
-                return ;
-            }
-        
-            if (!empty($data['email_entreprise']) &&
-                !Validator::validateEmail($data['email_entreprise'])) {
-                $this->showEntrepriseError("Email entreprise invalide.");
-                return ;
-            }
-        
-            /* --- Validation gestionnaire --- */
-        
-            if (empty($data['prenom']) || !Validator::validateCity($data['prenom'])) {
-                $this->showEntrepriseError("Prénom du gestionnaire invalide.");
-                return ;
-            }
-        
-            if (empty($data['nom']) || !Validator::validateCity($data['nom'])) {
-                $this->showEntrepriseError("Nom du gestionnaire invalide.");
-                return ;
-            }
-        
-            if (!Validator::validateEmail($data['email'])) {
-                $this->showEntrepriseError("Email du gestionnaire invalide.");
-                return ;
-            }
-        
-            if (!empty($data['telephone_gestionnaire']) &&
-                !Validator::validatePhone($data['telephone_gestionnaire'])) {
-                $this->showEntrepriseError("Téléphone du gestionnaire invalide.");
-                return ;
-            }
-        
-            if (!Validator::validatePassword($data['password'], $data['password_confirm'])) {
-                $this->showEntrepriseError("Mot de passe invalide ou non confirmé.");
-                return ;    
-            }
-        
-    /* --- Préparation des données entreprise --- */
-
-    $entrepriseData = [
-        'nom'         => $data['nom_entreprise'],
-        'secteur_id'  => (int)$data['secteur_id'],
-        'adresse'     => $data['adresse'],
-        'code_postal' => $data['code_postal'],
-        'ville'       => $data['ville'],
-        'pays'        => $data['pays'],
-        'telephone'   => $data['telephone'] ?: null,
-        'email'       => $data['email_entreprise'] ?: null,
-        'siret'       => $data['siret'],
-        'site_web'    => $data['site_web'] ?: null,
-        'taille'      => $data['taille'] ?: null,
-        'description' => $data['description'] ?: null,
-        'logo'        => null,
-    ];
-
-    /* --- Préparation gestionnaire --- */
-
-    $gestionnaireData = [
-        'prenom'        => $data['prenom'],
-        'nom'           => $data['nom'],
-        'email'         => $data['email'],
-        'mot_de_passe'  => $data['password'], // hashé dans AuthService
-        'role'          => 'gestionnaire',
-        'entreprise_id' => null
-    ];
-
-    /* --- Transaction métier --- */
-
-    $entrepriseService = $this->makeEntrepriseService();
-
-    $result = $entrepriseService->createEntrepriseEtGestionnaire(
-        $entrepriseData,
-        $gestionnaireData
-    );
-
-    if (!$result['success']) {
-        $this->showEntrepriseError($result['error']);
-        return ;
-    }
-
-    header("Location: /login");
-    exit;
-}
 
         // --------- MOT DE PASSE OUBLIÉ (vues uniquement pour l’instant) ---------
 

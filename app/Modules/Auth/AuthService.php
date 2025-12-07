@@ -11,6 +11,7 @@ class AuthService
         private PDO $pdo
     ) {}
 
+    // Connexion utilisateur
     public function login(string $email, string $password): array
     {
         $email = trim($email);
@@ -38,6 +39,8 @@ class AuthService
         return ['success' => true, 'user' => $user];
     }
 
+
+    // Inscription candidat simple
     public function registerCandidat(array $data): array
     {
         if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
@@ -61,6 +64,7 @@ class AuthService
         return ['success' => true, 'id' => $id];
     }
 
+    // Création utilisateur (utilisé pour céation gestionnaire pendant création entreprise)
     public function createUser(array $data): int
     {
         $data['mot_de_passe'] = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
