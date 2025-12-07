@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Auth;
 
 use App\Core\ControllerBase; // si tu fais une base, sinon pas grave
+use App\Modules\Entreprise\EntrepriseService;
 
 /**
  * Contrôleur d'authentification.
@@ -17,7 +18,8 @@ use App\Core\ControllerBase; // si tu fais une base, sinon pas grave
 class AuthController
 {
     public function __construct(
-        private AuthService $service
+        private AuthService $service,
+        private EntrepriseService $entrepriseService,
     ) {}
 
     // ---------------------------------------------
@@ -78,13 +80,28 @@ class AuthController
 
     public function registerCandidat(): void
     {
-        $email = trim($_POST['email']);
-        $password = $_POST['password'];
+         // Préparation des données du formulaire
+        $data = [
+            'prenom'        => htmlspecialchars($_POST['prenom'] ?? ''),
+            'nom'           => htmlspecialchars($_POST['nom'] ?? ''),
+            'email'         => trim($_POST['email'] ?? ''),
+            'mot_de_passe'  => $_POST['password'] ?? '',
+            // Le service se chargera d'ajouter le rôle et l'ID d'entreprise
+        ];
 
-        $this->service->registerCandidat($email, $password, "candidat");
+        $result = $this->service->registerCandidat($data);
 
-        header("Location: /login");
-        exit;
+        if ($result['success']) {
+            header('Location: /login');
+            exit;
+        }
+
+        // En cas d'erreur, réafficher le formulaire avec le message
+        $this->renderAuth('register_candidat', [
+            'title'       => 'Créer un compte candidat',
+            'authVariant' => 'register',
+            'error'       => $result['error'] ?? 'Erreur inconnue'
+        ]);
     }
 
     // ---------------------------------------------

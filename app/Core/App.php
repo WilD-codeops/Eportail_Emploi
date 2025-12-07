@@ -35,8 +35,7 @@ class App
         // Module Auth
         $authRepository = new AuthRepository($this->pdo);
         $authService    = new AuthService($authRepository, $this->pdo);
-        $this->authController = new AuthController($authService);
-
+        
         // Module Entreprise
         $entrepriseRepository = new EntrepriseRepository($this->pdo);
         // besoin d'AuthService pour créer un gestionnaire lors de l'inscription
@@ -45,7 +44,8 @@ class App
             $authService,
             $this->pdo
         );
-
+        
+        $this->authController = new AuthController($authService, $entrepriseService);
         $this->entrepriseController = new EntrepriseController($entrepriseService);
     }
 
