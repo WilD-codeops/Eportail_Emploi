@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Auth;
     use App\Core\Database;
     use App\Core\Validator;
+    use App\Core\ErrorHandler;
     use App\Modules\Entreprise\EntrepriseRepository;
     use App\Modules\Entreprise\EntrepriseService;
 
