@@ -7,7 +7,7 @@
                     Vue d’ensemble des entreprises partenaires et de leurs gestionnaires.
                 </p>
             </div>
-            <a href="/Eportail_Emploi/public/admin/entreprises/create" class="btn btn-primary btn-sm">
+            <a href="/admin/entreprises/create" class="btn btn-primary btn-sm">
                 + Créer une entreprise
             </a>
         </div>
@@ -38,12 +38,12 @@
                             <td><?= htmlspecialchars($e['siret'] ?? '') ?></td>
                             <td><?= htmlspecialchars($e['taille'] ?? '') ?></td>
                             <td class="text-end">
-                                <a href="/Eportail_Emploi/public/admin/entreprises/edit?id=<?= (int)$e['id'] ?>"
+                                <a href="/admin/entreprises/edit?id=<?= (int)$e['id'] ?>"
                                    class="btn btn-sm btn-outline-secondary">
                                     Modifier
                                 </a>
                                 <form method="post"
-                                      action="/Eportail_Emploi/public/admin/entreprises/delete"
+                                      action="/admin/entreprises/delete"
                                       class="d-inline"
                                       onsubmit="return confirm('Supprimer cette entreprise ?');">
                                     <input type="hidden" name="id" value="<?= (int)$e['id'] ?>">

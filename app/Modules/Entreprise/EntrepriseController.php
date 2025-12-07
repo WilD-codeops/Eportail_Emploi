@@ -19,8 +19,7 @@ class EntrepriseController
     }
 
     /**
-     * Liste publique des entreprises partenaires
-     * URL : /Eportail_Emploi/public/entreprises
+     * Liste publique des entreprises partenaires URL : /Eportail_Emploi/public/entreprises
      * Layout : main.php
      */
     public function index(): void

@@ -7,14 +7,19 @@
         Connectez-vous pour accéder à votre espace professionnel EPortailEmploi.
     </p>
 
-    <!-- Toggle Candidat / Recruteur (visuel pour l'instant) -->
-    <div class="auth-role-toggle" aria-label="Choix du type de compte">
-        <button type="button" class="active">Candidat</button>
-        <button type="button">Recruteur</button>
-    </div>
+    <?php if (isset($_GET['reason'])): ?>
+        <div class="alert alert-warning">
+            <?php 
+                $reason = $_GET['reason'];
+                if ($reason === 'unauthenticated') echo "Veuillez vous connecter";
+                elseif ($reason === 'forbidden') echo "Accès restreint";
+            ?>
+        </div>
+    <?php endif; ?>
+   
 
     <!-- Formulaire de connexion -->
-    <form method="post" action="/Eportail_Emploi/public/login" class="auth-form mt-4">
+    <form method="post" action="/login" class="auth-form mt-4">
         <div class="mb-3">
             <label for="email" class="form-label">Email professionnel</label>
             <div class="input-group">
@@ -75,7 +80,7 @@
 
         <p class="small text-muted mb-0">
             Nouveau sur EPortailEmploi ?
-            <a href="/Eportail_Emploi/public/register/candidat" class="auth-link">Créer un compte gratuitement</a>
+            <a href="/register/candidat" class="auth-link">Créer un compte gratuitement</a>
         </p>
     </form>
 </div>

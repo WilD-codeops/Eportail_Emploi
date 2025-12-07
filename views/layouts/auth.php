@@ -22,7 +22,7 @@
     >
 
     <!-- CSS custom -->
-    <link rel="stylesheet" href="/Eportail_Emploi/public/assets/css/app.css">
+    <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body class="auth-body">
 
@@ -33,7 +33,7 @@
 
             <!-- Logo + retour home -->
             <div class="auth-header mb-4">
-                <a href="/Eportail_Emploi/public/" class="auth-home-icon">
+                <a href="/" class="auth-home-icon">
                     <i class="bi bi-house-fill"></i>
                 </a>
                 <div class="auth-logo-block">
@@ -118,7 +118,7 @@
 </script>
 
 <!-- JS custom -->
-<script src="/Eportail_Emploi/public/assets/js/app.js"></script>
-<script src="/Eportail_Emploi/public/assets/js/registerEntreprise.js"></script>
+<script src="/assets/js/app.js"></script>
+<script src="/assets/js/registerEntreprise.js"></script>
 </body>
 </html>

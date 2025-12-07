@@ -2,7 +2,7 @@
     <div class="card-body">
         <h2 class="h5 mb-3">Modifier l’entreprise</h2>
 
-        <form method="post" action="/Eportail_Emploi/public/admin/entreprises/edit">
+        <form method="post" action="/admin/entreprises/edit">
             <input type="hidden" name="id" value="<?= (int)$entreprise['id'] ?>">
 
             <h3 class="h6 text-uppercase text-muted mt-3 mb-2">Informations entreprise</h3>
@@ -88,7 +88,7 @@
             </div>
 
             <div class="mt-4 d-flex justify-content-end gap-2">
-                <a href="/Eportail_Emploi/public/admin/entreprises" class="btn btn-outline-secondary">
+                <a href="/admin/entreprises" class="btn btn-outline-secondary">
                     Annuler
                 </a>
                 <button type="submit" class="btn btn-primary">

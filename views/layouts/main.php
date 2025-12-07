@@ -18,7 +18,7 @@
     >
 
     <!-- Mon CSS-->
-    <link rel="stylesheet" href="/Eportail_Emploi/public/assets/css/app.css">
+    <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body>
 
@@ -42,6 +42,6 @@
 ></script>
 
 <!-- JS custom -->
-<script src="/Eportail_Emploi/public/assets/js/app.js"></script>
+<script src="/assets/js/app.js"></script>
 </body>
 </html>

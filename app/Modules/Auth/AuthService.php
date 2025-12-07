@@ -33,7 +33,7 @@ class AuthService
             session_start();
         }
 
-        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_id'] = strtolower($user['id']);
         $_SESSION['user_role'] = $user['role'];
 
         return ['success' => true, 'user' => $user];

@@ -32,7 +32,7 @@
             <div class="col-6 col-md-3">
                 <h6 class="footer-title">Recruteurs</h6>
                 <ul class="footer-links list-unstyled">
-                    <li><a href="/entreprise/register">Publier une offre</a></li>
+                    <li><a href="register">Publier une offre</a></li>
                     <li><a href="/recruteurs">Rechercher des profils</a></li>
                     <li><a href="/solutions-rh">Solutions RH</a></li>
                 </ul>

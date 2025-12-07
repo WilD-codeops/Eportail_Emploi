@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top py-3">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/Eportail_Emploi/public/">
+        <a class="navbar-brand fw-bold" href="/">
             <span class="text-primary">E</span>PortailEmploi
         </a>
 
@@ -13,18 +13,18 @@
         <div class="collapse navbar-collapse" id="mainNavbar">
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
                 <li class="nav-item mx-lg-2">
-                    <a class="nav-link" href="/Eportail_Emploi/public/offres">Offres d’emploi</a>
+                    <a class="nav-link" href="/offres">Offres d’emploi</a>
                 </li>
                 <li class="nav-item mx-lg-2">
-                    <a class="nav-link" href="/Eportail_Emploi/public/entreprises">Entreprises</a>
+                    <a class="nav-link" href="/entreprises">Entreprises</a>
                 </li>
             </ul>
 
             <div class="d-flex flex-wrap gap-2 ms-lg-3 mt-3 mt-lg-0">
-                <a class="btn btn-outline-primary btn-sm" href="/Eportail_Emploi/public/login">
+                <a class="btn btn-outline-primary btn-sm" href="/login">
                     Connexion
                 </a>
-                <a class="btn btn-primary btn-sm" href="/Eportail_Emploi/public/register/candidat">
+                <a class="btn btn-primary btn-sm" href="/register/candidat">
                     S'inscrire
                 </a>
             </div>
