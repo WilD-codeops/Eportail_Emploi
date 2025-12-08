@@ -6,16 +6,6 @@
     <p class="auth-page-subtitle">
         Connectez-vous pour accéder à votre espace professionnel EPortailEmploi.
     </p>
-
-    <?php if (isset($_GET['reason'])): ?>
-        <div class="alert alert-warning">
-            <?php 
-                $reason = $_GET['reason'];
-                if ($reason === 'unauthenticated') echo "Veuillez vous connecter";
-                elseif ($reason === 'forbidden') echo "Accès restreint";
-            ?>
-        </div>
-    <?php endif; ?>
    
 
     <!-- Formulaire de connexion -->

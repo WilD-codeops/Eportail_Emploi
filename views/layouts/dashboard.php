@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body class="dashboard-body">
+    <?php include __DIR__ . '/../partials/alerts.php'; ?> <!-- GESTION DES ALERTES SWEETALERT -->
 
 <div class="d-flex min-vh-100">
     <?php require __DIR__ . '/../partials/sidebar_dashboard.php'; ?>

@@ -25,6 +25,10 @@
     <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body class="auth-body">
+    <?php include __DIR__ . '/../partials/alerts.php'; ?> <!-- GESTION DES ALERTES SWEETALERT -->
+
+</body>
+
 
 <div class="auth-layout">
     <!-- Colonne gauche : logo + formulaire -->

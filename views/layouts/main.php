@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body>
+    <?php include __DIR__ . '/../partials/alerts.php'; ?> <!-- GESTION DES ALERTES SWEETALERT -->
 
 <?php require __DIR__ . '/../partials/header.php'; ?>
 
