@@ -195,7 +195,7 @@ class EntrepriseController
             return;
         }
 
-        header("Location: /Eportail_Emploi/public/admin/entreprises");
+        header("Location:/admin/entreprises");
         exit;
     }
 

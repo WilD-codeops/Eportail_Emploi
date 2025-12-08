@@ -10,10 +10,10 @@
         icon: 'error',
         title: "Accès interdit",
         text: "Droits insuffisants",
-        timer: 3000,  // 3s
+        timer: 2500,  // 2.5s
         timerProgressBar: true
     }).then(() => {
-        window.location.href = '/dashboard';  // Redirection auto
+        window.location.href = '/';  // Redirection auto
     });
     </script>
 </body>

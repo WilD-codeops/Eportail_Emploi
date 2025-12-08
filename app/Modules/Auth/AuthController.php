@@ -187,7 +187,7 @@ namespace App\Modules\Auth;
         public function logout(): void
         {
             session_destroy();
-            header("Location:  /Eportail_Emploi/public/login");
+            header("Location: /");
             exit;
         }
     }
