@@ -119,6 +119,7 @@ class EntrepriseController
      */
     public function editForm(): void
     {
+        Auth::requireRole(['admin','recruteur','gestionnaire']); // Accès restreint aux rôles spécifiés
         $id = (int)($_GET['id'] ?? 0);
 
         $service    = $this->makeService();

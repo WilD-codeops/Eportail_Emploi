@@ -27,10 +27,11 @@ class Validator
     }
 
     /** Téléphone FR (0X… ou +33X…) */
-    public static function validatePhone(string $phone): bool
-    {
-        return preg_match('/^(0\d{9}|\+33\d{9})$/', $phone);
+    // Doit accepter français
+    public static function validatePhone(string $phone): bool {
+        return preg_match('/^(0[1-9]\d{8}|\+33[1-9]\d{8})$/', $phone) === 1;
     }
+
 
     /** Code postal FR */
     public static function validatePostalCode(string $cp): bool

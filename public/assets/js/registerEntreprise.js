@@ -112,12 +112,17 @@ document.getElementById("btnNextToRecap").onclick = () => {
     ["prenom", (v) => /^[A-Za-zÀ-ÖØ-öø-ÿ\-\s]+$/.test(v), "Prénom invalide."],
     ["nom", (v) => /^[A-Za-zÀ-ÖØ-öø-ÿ\-\s]+$/.test(v), "Nom invalide."],
     ["email", (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Email invalide."],
+    //  fr numéro mobile (06/07)
     [
       "telephone_gestionnaire",
-      (v) => v === "" || /^(0\d{9}|\+33\d{9})$/.test(v),
-      "Numéro de téléphone invalide.",
+      (v) => v === "" || /^0[6-7]\d{8}$/.test(v.replace(/[\s-]/g, "")),
+      "Numéro mobile invalide (06/07).",
     ],
-    ["password", (v) => v.length >= 6, "Mot de passe trop court."],
+    [
+      "password",
+      (v) => v.length >= 6,
+      "Mot de passe trop court. (min 6 caractères)",
+    ],
   ];
 
   let valid = true;

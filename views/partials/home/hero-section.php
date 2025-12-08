@@ -14,11 +14,12 @@
                 </p>
 
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="/login" class="btn btn-primary btn-lg">
+                    <a href="/offres" class="btn btn-primary btn-lg">
                         Je cherche un emploi
                     </a>
-                    <a href="/entreprise/register" class="btn btn-outline-light btn-lg">
+                    <a href="/register/entreprise" class="btn btn-outline-light btn-lg">
                         Je recrute
+
                     </a>
                 </div>
             </div>

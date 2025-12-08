@@ -32,10 +32,13 @@ $router->get('/admin/entreprises', 'App\\Modules\\Entreprise\\EntrepriseControll
 $router->get('/admin/entreprises/create', 'App\\Modules\\Entreprise\\EntrepriseController@createForm');
 $router->post('/admin/entreprises/create', 'App\\Modules\\Entreprise\\EntrepriseController@create');
 
-$router->get('/admin/entreprises/edit', 'App\\Modules\\Entreprise\\EntrepriseController@edit');
+$router->get('/admin/entreprises/edit', 'App\\Modules\\Entreprise\\EntrepriseController@editForm');
 $router->post('/admin/entreprises/edit', 'App\\Modules\\Entreprise\\EntrepriseController@update');
 $router->post('/admin/entreprises/delete', 'App\\Modules\\Entreprise\\EntrepriseController@delete');
 
+
+// Offres route publique
+$router->get('/offres', 'App\\Modules\\Offres\\OffresController@index');    
 
 
 $router->run();
