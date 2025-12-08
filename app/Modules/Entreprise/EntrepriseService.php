@@ -2,85 +2,96 @@
 
 namespace App\Modules\Entreprise;
 
+use App\Core\Database;
 use App\Modules\Auth\AuthService;
 use PDO;
-use Throwable;
 
 class EntrepriseService
 {
     public function __construct(
-        public EntrepriseRepository $repo,
+        private EntrepriseRepository $repo,
         private AuthService $authService,
         private PDO $pdo
     ) {}
 
+    /** Liste */
+    public function listEntreprises(): array
+    {
+        return $this->repo->getAll();
+    }
+
+    /** Secteurs */
+    public function listSecteurs(): array
+    {
+        return $this->repo->getSecteurs();
+    }
+
+    /** Trouver entreprise */
+    public function findEntreprise(int $id): ?array
+    {
+        return $this->repo->find($id);
+    }
+
+    /** Créer entreprise + gestionnaire */
     public function createEntrepriseEtGestionnaire(array $entrepriseData, array $gestionnaireData): array
     {
+        // Validation entreprise
+        $validE = EntrepriseValidator::validateCreate($entrepriseData);
+        if (!$validE['success']) return $validE;
+
+        // Validation gestionnaire
+        $validG = EntrepriseValidator::validateGestionnaire($gestionnaireData);
+        if (!$validG['success']) return $validG;
+
         try {
             $this->pdo->beginTransaction();
 
-            /* --- 1. Hash du mot de passe gestionnaire --- */
-            $gestionnaireData['mot_de_passe'] = password_hash(
-                $gestionnaireData['mot_de_passe'],
-                PASSWORD_DEFAULT
-            );
-
-            /* --- 2. Création du gestionnaire --- */
-            $gestionnaireId = $this->authService->createUser($gestionnaireData);
-
-            if (!$gestionnaireId) {
-                $this->pdo->rollBack();
-                return [
-                    'success' => false,
-                    'error'   => "Impossible de créer le gestionnaire."
-                ];
-            }
-
-            /* --- 3. Création de l’entreprise --- */
-            $entrepriseData['gestionnaire_id'] = $gestionnaireId;
-
-            $entrepriseId = $this->repo->createEntreprise($entrepriseData);
-
-            if (!$entrepriseId) {
-                $this->pdo->rollBack();
-                return [
-                    'success' => false,
-                    'error'   => "Impossible de créer l’entreprise."
-                ];
-            }
-
-            
-            /* --- 4. Mise à jour du user avec entreprise_id --- */
-            $stmt = $this->pdo->prepare(
-                "UPDATE users SET entreprise_id = :entreprise_id WHERE id = :id"
-            );
-
-            $stmt->execute([
-                ':entreprise_id' => $entrepriseId,
-                ':id'            => $gestionnaireId,
+            // 1) Création user gestionnaire
+            $gestionnaireId = $this->authService->createUser([
+                'prenom'       => $gestionnaireData['prenom'],
+                'nom'          => $gestionnaireData['nom'],
+                'email'        => $gestionnaireData['email'],
+                'mot_de_passe' => $gestionnaireData['password'],
+                'role'         => 'gestionnaire',
+                'entreprise_id'=> null
             ]);
 
-            /* --- 5. Fin de la transaction --- */
+            // 2) Création entreprise
+            $entrepriseData['gestionnaire_id'] = $gestionnaireId;
+            $entrepriseId = $this->repo->createEntreprise($entrepriseData);
+
+            // 3) Lier user → entreprise
+            $this->repo->attachUserToEntreprise($gestionnaireId, $entrepriseId);
+
             $this->pdo->commit();
+            return ['success' => true];
 
-            return [
-                'success'       => true,
-                'entreprise_id' => $entrepriseId,
-                'error'         => null
-            ];
-
-        } catch (Throwable $e) {
-
-            if ($this->pdo->inTransaction()) {
-                $this->pdo->rollBack();
-            }
-
-            return [
-                'success'       => false,
-                'entreprise_id' => null,
-                'error'         => "Erreur interne : " . $e->getMessage()
-            ];
+        } catch (\Throwable $e) {
+            $this->pdo->rollBack();
+            return ['success' => false, 'error' => $e->getMessage()];
         }
     }
-}
 
+    /** Version admin */
+    public function createEntrepriseAvecGestionnaireAdmin(array $data): array
+    {
+        return $this->createEntrepriseEtGestionnaire($data, $data);
+    }
+
+    /** Modifier */
+    public function updateEntreprise(int $id, array $data): array
+    {
+        $valid = EntrepriseValidator::validateCreate($data);
+        if (!$valid['success']) return $valid;
+
+        $ok = $this->repo->updateEntreprise($id, $data);
+
+        return $ok ? ['success' => true] : ['success' => false, 'error' => "Échec update"];
+    }
+
+    /** Supprimer */
+    public function deleteEntreprise(int $id): bool
+    {
+        return $this->repo->deleteEntreprise($id);
+    }
+}
