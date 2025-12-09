@@ -33,8 +33,16 @@ class AuthService
             session_start();
         }
 
-        $_SESSION['user_id'] = strtolower($user['id']);
-        $_SESSION['user_role'] = $user['role'];
+        session_regenerate_id(true); // Sécurité régénération ID session et conservatation données
+        
+        // Stockage des informations utilisateur utiles et non sensibles en session
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_role'] = strtolower($user['role']);
+        $_SESSION['user_prenom'] =  ucfirst(strtolower($user['prenom'])); 
+
+        
+        $_SESSION['created_at'] = time();
+        $_SESSION['last_activity'] = time();
 
         return ['success' => true, 'user' => $user];
     }

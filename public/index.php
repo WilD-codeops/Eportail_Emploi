@@ -1,11 +1,18 @@
 <?php
 declare(strict_types=1);
-session_start();
-var_dump(session_id());            // ID de session non vide
-var_dump($_SESSION); 
-require_once __DIR__ . '/../vendor/autoload.php';
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+
+
+require_once __DIR__ . '/../vendor/autoload.php'; 
+
+use App\Core\Auth;
 use App\Core\Router;
+
+Auth::checkSessionExpiration();
 
 $router = new Router();
 

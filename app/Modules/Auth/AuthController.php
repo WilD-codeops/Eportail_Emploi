@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Modules\Auth;
-    use App\Core\Database;
+
+use App\Core\Auth;
+use App\Core\Database;
     use App\Core\Validator;
     use App\Modules\Auth\AuthRegistrationService;
     use App\Modules\Entreprise\EntrepriseRepository;
@@ -184,10 +186,9 @@ namespace App\Modules\Auth;
 
         // --------- LOGOUT ---------
 
-        public function logout(): void
+        public static function logout(): void
         {
-            session_destroy();
-            header("Location: /");
-            exit;
+            Auth::logout();
         }
+
     }

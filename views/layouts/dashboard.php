@@ -15,6 +15,9 @@
         rel="stylesheet"
     >
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <!-- CSS custom -->
     <link rel="stylesheet" href="/assets/css/app.css">
 </head>

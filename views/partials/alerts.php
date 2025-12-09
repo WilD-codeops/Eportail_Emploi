@@ -1,26 +1,23 @@
 <?php if (isset($_GET['reason']) || isset($_SESSION['error'])): ?>
-<div id="error-alert" class="alert alert-warning alert-dismissible fade show" role="alert">
-    <?php 
-    $reason = $_GET['reason'] ?? $_SESSION['error'] ?? '';
-    
-    $messages = [
-        'unauthenticated' => "Veuillez vous connecter pour accéder à cette page",
-        'forbidden' => "Accès restreint. Droits insuffisants",
-        'expired' => "Session expirée. Reconnexion requise"
-    ];
-    
-    echo $messages[$reason] ?? "Une erreur s'est produite";
-    unset($_SESSION['error']); // Flash message
-    ?>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-
 <script>
-Swal.fire({
-    icon: 'warning',
-    title: 'Accès restreint',
-    text: '<?= htmlspecialchars($messages[$reason] ?? "Erreur") ?>',
-    timer: 4000
-});
+
+const reason = '<?= htmlspecialchars($_GET['reason'] ?? $_SESSION['error'] ?? '') ?>';
+const messages = {
+    'logout': {icon: 'success', title: 'Déconnecté !', text: 'À bientôt !', timer: 2500},
+    'unauthenticated': {icon: 'warning', title: 'Connexion requise', text: 'Veuillez vous connecter.', timer: 4000},
+    'forbidden': {icon: 'error', title: 'Accès interdit', text: 'Droits insuffisants.', timer: 3500},
+    'expired': {icon: 'warning', title: 'Session expirée', text: 'Reconnexion nécessaire.', timer: 4000}
+};
+
+if (messages[reason]) {
+    Swal.fire({
+        icon: messages[reason].icon,
+        title: messages[reason].title,
+        text: messages[reason].text,
+        timer: messages[reason].timer,
+        timerProgressBar: true,
+        showConfirmButton: false
+    });
+}
 </script>
-<?php endif; ?>
+<?php unset($_SESSION['error']); endif; ?>

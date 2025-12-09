@@ -21,11 +21,15 @@
 
     <!-- Mon CSS-->
     <link rel="stylesheet" href="/assets/css/app.css">
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
+    
     <?php include __DIR__ . '/../partials/alerts.php'; ?> <!-- GESTION DES ALERTES SWEETALERT -->
-
-<?php require __DIR__ . '/../partials/header.php'; ?>
+    <?php require __DIR__ . '/../partials/header.php'; ?>
 
 <main class="flex-shrink-0">
 <?php

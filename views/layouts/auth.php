@@ -17,17 +17,22 @@
 
     <!-- Bootstrap -->
     <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    >   
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- CSS custom -->
     <link rel="stylesheet" href="/assets/css/app.css">
 </head>
 <body class="auth-body">
-    <?php include __DIR__ . '/../partials/alerts.php'; ?> <!-- GESTION DES ALERTES SWEETALERT -->
 
-</body>
+    <!-- GESTION DES ALERTES SWEETALERT -->
+    <?php include __DIR__ . '/../partials/alerts.php'; ?> 
+
+
 
 
 <div class="auth-layout">
