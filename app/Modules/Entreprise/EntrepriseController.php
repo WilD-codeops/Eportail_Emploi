@@ -29,7 +29,8 @@ class EntrepriseController
 
 
     public function Index(): void
-        {
+        { 
+        
         $service     = $this->makeService();
         $entreprises = $service->listEntreprises();
 

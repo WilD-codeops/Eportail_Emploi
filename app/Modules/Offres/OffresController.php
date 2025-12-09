@@ -10,8 +10,8 @@ class OffresController
 {
     public function index(): void
     { 
-        Auth::requireRole(['admin']);
-        $this->renderOffers('offerspublic_list', [
+        //Auth::requireRole(['admin']);
+        $this->renderOffers('index', [
             'title' => "Nos Offres d'emploi | EPortailEmploi",
         ]);
     }

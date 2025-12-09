@@ -2,7 +2,7 @@
 
 <!-- ===================== LAST OFFERS SECTION ===================== -->
 <section class="featured-offers-hero py-5">
-    <div class="container text-center text-black mb-1">
+    <div class="container text-center text-white mb-5">
         <h2 class="fw-bold mb-2">Offres à la une</h2>
         <p class="opacity-75 small">
             Les meilleures opportunités sélectionnées pour vous
@@ -10,7 +10,7 @@
     </div>
 
     <div class="container">
-        <div class="row g-4 justify-content-center align-items-center">
+        <div class="row g-4 justify-content-center">
 
             <!-- CARD 1 -->
             <div class="col-12 col-md-6 col-lg-4">

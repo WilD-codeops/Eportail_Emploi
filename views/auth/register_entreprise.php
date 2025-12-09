@@ -7,7 +7,7 @@
 
     <!-- Toggle Candidat / Recruteur (visuel pour l'instant) -->
     <div class="auth-role-toggle" aria-label="Choix du type de compte">
-        <button type="button" >Candidat</button>
+        <button type="button" href="/register/candidat">Candidat</button>
         <button type="button" class="active">Recruteur</button>
     </div>
 
