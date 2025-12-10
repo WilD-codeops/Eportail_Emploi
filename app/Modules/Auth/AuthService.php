@@ -3,7 +3,7 @@
 namespace App\Modules\Auth;
 
 use PDO;
-
+use App\Core\SessionManager;
 class AuthService
 {
     public function __construct(
@@ -29,11 +29,9 @@ class AuthService
             return ['success' => false, 'error' => 'Identifiants incorrects'];
         }
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-
-        session_regenerate_id(true); // Sécurité régénération ID session et conservatation données
+        // Initialisation de la session utilisateur
+        SessionManager::startSession();
+        SessionManager::regenerateSessionId();
         
         // Stockage des informations utilisateur utiles et non sensibles en session
         $_SESSION['user_id'] = $user['id'];
