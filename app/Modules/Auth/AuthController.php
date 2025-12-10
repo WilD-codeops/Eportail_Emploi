@@ -80,16 +80,16 @@ use App\Core\Database;
 
             switch ($role) {
                 case 'admin':
-                    header("Location: /admin/dashboard");
+                    header("Location: /admin/dashboard?reason=loggedin");
                     break;
                 case 'gestionnaire':
-                    header("Location: /gestionnaire/dashboard");
+                    header("Location: /gestionnaire/dashboard?reason=loggedin");
                     break;
                 case 'recruteur':
-                    header("Location: /recruteur/dashboard");
+                    header("Location: /recruteur/dashboard?reason=loggedin");
                     break;
                 case 'candidat':
-                    header("Location: /candidat/dashboard");
+                    header("Location: /candidat/dashboard?reason=loggedin");
                     break;
                 default:
                     header("Location: /");

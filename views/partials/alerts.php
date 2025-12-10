@@ -1,23 +1,36 @@
-<?php if (isset($_GET['reason']) || isset($_SESSION['error'])): ?>
+<?php if (isset($_GET['reason'])): ?>
 <script>
-
-const reason = '<?= htmlspecialchars($_GET['reason'] ?? $_SESSION['error'] ?? '') ?>';
 const messages = {
-    'logout': {icon: 'success', title: 'Déconnecté !', text: 'À bientôt !', timer: 2500},
-    'unauthenticated': {icon: 'warning', title: 'Connexion requise', text: 'Veuillez vous connecter.', timer: 4000},
-    'forbidden': {icon: 'error', title: 'Accès interdit', text: 'Droits insuffisants.', timer: 3500},
-    'expired': {icon: 'warning', title: 'Session expirée', text: 'Reconnexion nécessaire.', timer: 4000}
+    // SUCCÈS
+    'logout': {icon: 'success', title: 'Déconnecté !', text: 'À bientôt sur EPortailEmploi !', timer: 2500},
+    'loggedin': {icon: 'success', title: 'Connexion réussie !', text: 'Bienvenue dans votre espace.', timer: 2000},
+    'created': {icon: 'success', title: 'Créé avec succès !', text: 'Votre compte est actif.', timer: 3000},
+    'updated': {icon: 'success', title: 'Mis à jour !', text: 'Modifications enregistrées.', timer: 2500},
+    
+    // AVERTISSEMENTS
+    'unauthenticated': {icon: 'warning', title: 'Connexion requise', text: 'Veuillez vous connecter pour continuer.', timer: 4000},
+    'expired': {icon: 'warning', title: 'Session expirée', text: 'Reconnexion nécessaire.', timer: 4000},
+    
+    // REFUS / ERREURS
+    'forbidden': {icon: 'error', title: 'Accès interdit', text: 'Droits insuffisants pour cette page.', timer: 3500},
+    'invalid_email': {icon: 'error', title: 'Email invalide', text: 'Format email incorrect.', timer: 4000},
+    'duplicate': {icon: 'error', title: 'Déjà existant', text: 'Cet email est déjà utilisé.', timer: 4000},
+    'csrf': {icon: 'error', title: 'Sécurité', text: 'Token CSRF invalide. Rechargez la page.', timer: 4500},
+    
+    // ℹ️ INFO
+    'info': {icon: 'info', title: 'Information', text: 'Action effectuée.', timer: 3000}
 };
 
-if (messages[reason]) {
-    Swal.fire({
-        icon: messages[reason].icon,
-        title: messages[reason].title,
-        text: messages[reason].text,
-        timer: messages[reason].timer,
-        timerProgressBar: true,
-        showConfirmButton: false
-    });
-}
+const reason = '<?= htmlspecialchars($_GET['reason']) ?>';
+const msg = messages[reason] || messages.forbidden;
+
+Swal.fire({
+    icon: msg.icon,
+    title: msg.title,
+    text: msg.text,
+    timer: msg.timer,
+    timerProgressBar: true,
+    showConfirmButton: false
+});
 </script>
-<?php unset($_SESSION['error']); endif; ?>
+<?php endif; ?>
