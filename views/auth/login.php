@@ -7,7 +7,7 @@
         Connectez-vous pour accéder à votre espace professionnel EPortailEmploi.
     </p>
    
-
+    <!--csrf_Token-->
     <?php use App\Core\Security;
     $csrfToken = Security::generateCsrfToken('login');
     ?>

@@ -6,6 +6,7 @@ use App\Core\Database;
 use App\Core\Auth;
 use App\Modules\Auth\AuthRepository;
 use App\Modules\Auth\AuthService;
+use App\Core\Security;
 
 /**
  * Contrôleur Entreprise (partie administrateur)
@@ -83,6 +84,8 @@ class EntrepriseController
     /*Formulaire de création d'une nouvelle entreprise*/
     public function createForm(): void
     {
+        Auth::requireRole(['admin']); // Seul admin peut accéder à cette page
+        
         $service  = $this->makeService();
         $secteurs = $service->listSecteurs();
 
@@ -95,20 +98,23 @@ class EntrepriseController
     /*Traitement de création d'entreprise + gestionnaire post createForm*/
     public function create(): void
     {
-    $service = $this->makeService();
-    $result  = $service->createEntrepriseAvecGestionnaireAdmin($_POST);
+        // Vérification token CSRF
+        Security::requireCsrfToken('entreprise_create', $_POST['csrf_token'] ?? null);
+            
+        $service = $this->makeService();
+        $result  = $service->createEntrepriseAvecGestionnaireAdmin($_POST);
 
-    if (!$result['success']) {
-        $this->renderDashboard("create", [
-            "title"    => "Créer une entreprise",
-            "error"    => $result['error'],
-            "secteurs" => $service->listSecteurs()
-        ]);
-        return;
-    }
+        if (!$result['success']) {
+            $this->renderDashboard("create", [
+                "title"    => "Créer une entreprise",
+                "error"    => $result['error'],
+                "secteurs" => $service->listSecteurs()
+            ]);
+            return;
+        }
 
-    header("Location: /admin/entreprises");
-    exit;
+        header("Location: /admin/entreprises?succes=created");
+        exit;
     }
 
     /**
@@ -138,6 +144,8 @@ class EntrepriseController
      */
     public function update(): void
     {
+        Security::requireCsrfToken('entreprise_edit', $_POST['csrf_token'] ?? null);
+
         $service = $this->makeService();
         $id      = (int)($_POST['id'] ?? 0);
         $result = $service->updateEntreprise($id, $_POST);
@@ -145,7 +153,7 @@ class EntrepriseController
             die("Erreur : " . htmlspecialchars($result['error']));
         }
 
-        header("Location: /admin/entreprises");
+        header("Location: /admin/entreprises?succes=updated");
         exit;
     }
 
@@ -158,7 +166,7 @@ class EntrepriseController
         $id      = (int)($_POST['id'] ?? 0);
         $service->deleteEntreprise($id);
 
-        header("Location: /admin/entreprises");
+        header("Location: /admin/entreprises?succes=deleted");
         exit;
     }
 }

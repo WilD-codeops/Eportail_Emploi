@@ -13,9 +13,6 @@ ini_set('session.cookie_secure', 0);             // Secure = 1 en production HTT
 ini_set('session.cookie_samesite', 'Strict');    // Empêche d’envoyer le cookie depuis un autre domaine (anti CSRF)
 ini_set('session.use_only_cookies', 1);          // Pas d’ID de session dans l’URL
 ini_set('session.gc_maxlifetime', 7200);         // Durée max côté serveur
-session_name("EPORTAILSESSID");                           // Nom personnalisé pour la session
-
-
 
 SessionManager::startSession();
 SessionManager::checkSessionExpiration();

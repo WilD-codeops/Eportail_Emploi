@@ -2,8 +2,12 @@
     <div class="card-body">
         <h2 class="h5 mb-3">Modifier l’entreprise</h2>
 
+        <?php
+         use App\Core\Security;
+         $csrf_token = Security::generateCsrfToken('entreprise_edit'); ?>
+
         <form method="post" action="/admin/entreprises/edit">
-            <input type="hidden" name="id" value="<?= (int)$entreprise['id'] ?>">
+            <input type="hidden" name="csr_token" value="<?= htmlspecialchars($csrf_token) ?>">
 
             <h3 class="h6 text-uppercase text-muted mt-3 mb-2">Informations entreprise</h3>
 

@@ -32,7 +32,6 @@ class Security
     public static function verifyCsrfToken(string $formKey, ?string $token): bool // Verification du token CSRF + Suppression après usage
     {
         SessionManager::startSession();
-
         if (
             empty($token) ||
             !isset($_SESSION['csrf_tokens'][$formKey])
@@ -44,7 +43,22 @@ class Security
 
         // Token one-time pour renforcer la sécurité
         unset($_SESSION['csrf_tokens'][$formKey]);
-
         return $isValid;
     }
+
+
+    public static function forbidden(): void
+    {
+        http_response_code(403);
+        require_once __DIR__ . '/../../views/errors/403.php';
+        exit;   
+    }
+
+    public static function requireCsrfToken(string $formKey, ?string $token): void
+    {
+    if (!self::verifyCsrfToken($formKey, $token)) {
+        self::forbidden();
+        }
+    }
+
 }

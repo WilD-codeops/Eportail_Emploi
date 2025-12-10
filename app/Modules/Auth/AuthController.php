@@ -10,6 +10,7 @@ use App\Core\Database;
     use App\Modules\Auth\AuthRegistrationService;
     use App\Modules\Entreprise\EntrepriseRepository;
     use App\Modules\Entreprise\EntrepriseService;
+    use App\Core\Security;
 
     class AuthController
     {
@@ -57,6 +58,8 @@ use App\Core\Database;
 
         public function login(): void
         {
+            Security::requireCsrfToken('login', $_POST['csrf_token'] ?? null);
+
             $email    = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
 
@@ -98,6 +101,7 @@ use App\Core\Database;
 
         public function showRegisterCandidat(): void
         {
+            
             $this->renderAuth("register_candidat", [
                 "title"       => "Créer un compte candidat",
                 "authVariant" => "register_candidat"
@@ -105,7 +109,10 @@ use App\Core\Database;
         }
 
         public function registerCandidat(): void
-        {              $service = new AuthRegistrationService(
+        {             
+            Security::requireCsrfToken('register_candidat', $_POST['csrf_token'] ?? null);
+
+            $service = new AuthRegistrationService(
                 $this->makeAuthService(),
                 $this->makeEntrepriseService()
             );
@@ -147,6 +154,8 @@ use App\Core\Database;
         
         public function registerEntreprise(): void
         {
+            Security::requireCsrfToken('register_entreprise', $_POST['csrf_token'] ?? null);
+            
             $service = new AuthRegistrationService(
                 $this->makeAuthService(),
                 $this->makeEntrepriseService()

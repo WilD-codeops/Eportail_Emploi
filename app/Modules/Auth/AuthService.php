@@ -29,7 +29,7 @@ class AuthService
             return ['success' => false, 'error' => 'Identifiants incorrects'];
         }
 
-        // Initialisation de la session utilisateur
+        // demarrage session sécurisée
         SessionManager::startSession();
         SessionManager::regenerateSessionId();
         
