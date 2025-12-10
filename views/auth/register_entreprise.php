@@ -81,6 +81,29 @@
                 <input type="text" name="siret" class="form-control" required>
             </div>
 
+            <div class="mb-3">
+                <label class="form-label">Site web</label>
+                <input type="url" name="site_web" class="form-control" placeholder="https://monsite.fr">
+            </div>
+                
+            <div class="mb-3">
+                <label class="form-label">Taille de l'entreprise</label>
+                <select name="taille" class="form-select">
+                    <option value="">— Choisir —</option>
+                    <option value="1-10">1-10 salariés</option>
+                    <option value="11-50">11-50 salariés</option>
+                    <option value="51-250">51-250 salariés</option>
+                    <option value="250+">250+ salariés</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea name="description" class="form-control" rows="3" 
+                          placeholder="Décrivez brièvement votre entreprise et ses activités..."></textarea>
+            </div>
+
+
             <div class="d-flex justify-content-between mt-4">
                 <a href="/login" class="btn btn-outline-secondary">Annuler</a>
                 <button type="button" id="btnNextToManager" class="btn btn-primary">

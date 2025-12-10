@@ -20,15 +20,15 @@ class AuthRegistrationService
         $prenom = Validator::sanitize($data['prenom'] ?? '');
         $nom = Validator::sanitize($data['nom'] ?? '');
         $email = Validator::sanitize($data['email'] ?? '');
-        $password = $data['password'] ?? '';
+        $password = ($data['password'] ?? '');
         $confirm = $data['password_confirm'] ?? '';
 
         // VALIDATION
-        if (!Validator::validateCity($prenom)) {
+        if (!Validator::validateName($prenom)) {
             return $this->fail("Prénom invalide.");
         }
 
-        if (!Validator::validateCity($nom)) {
+        if (!Validator::validateName($nom)) {
             return $this->fail("Nom invalide.");
         }
 
@@ -40,11 +40,11 @@ class AuthRegistrationService
             return $this->fail("Mot de passe invalide ou non confirmé.");
         }
 
-        return $this->authService->registerCandidat([
+        return $this->authService->registerCandidat($candidatData = [
             'prenom' => $prenom,
             'nom' => $nom,
             'email' => $email,
-            'mot_de_passe' => $password
+            'mot_de_passe' => password_hash($password, PASSWORD_DEFAULT),
         ]);
     }
 
@@ -101,11 +101,11 @@ class AuthRegistrationService
 
         /* ====== GESTIONNAIRE ====== */
 
-        if (!Validator::validateCity($data['prenom'])) {
+        if (!Validator::validateName($data['prenom'])) {
             return $this->fail("Prénom gestionnaire invalide.");
         }
 
-        if (!Validator::validateCity($data['nom'])) {
+        if (!Validator::validateName($data['nom'])) {
             return $this->fail("Nom gestionnaire invalide.");
         }
 
@@ -116,6 +116,17 @@ class AuthRegistrationService
         if (!Validator::validatePassword($data['password'], $data['password_confirm'])) {
             return $this->fail("Mot de passe invalide ou non confirmé.");
         }
+
+        // Vérifier email gestionnaire UNIQUE
+        if ($this->authService->emailExists($data['email'])) {
+            return $this->fail("Cet email est déjà utilisé.");
+        }
+        
+        // Vérifier SIRET UNIQUE (entreprise)
+        if ($this->entrepriseService->siretExists($data['siret'])) {
+            return $this->fail("Ce SIRET est déjà enregistré.");
+        }
+
 
         /* ====== Construire les données ====== */
 
@@ -132,14 +143,16 @@ class AuthRegistrationService
             'site_web'    => $data['site_web'] ?: null,
             'taille'      => $data['taille'] ?: null,
             'description' => $data['description'] ?: null,
-            'logo'        => null
+            'logo'        => null,
         ];
 
         $gestionnaireData = [
             'prenom'        => $data['prenom'],
             'nom'           => $data['nom'],
             'email'         => $data['email'],
-            'mot_de_passe'  => $data['password'], // hashé plus tard
+            'telephone'     => $data['telephone_gestionnaire'] ?: null,
+            'mot_de_passe'  => password_hash($data['password'], PASSWORD_DEFAULT),
+            'confirmation_mdp'   => $data['password_confirm'],
             'role'          => 'gestionnaire',
         ];
 

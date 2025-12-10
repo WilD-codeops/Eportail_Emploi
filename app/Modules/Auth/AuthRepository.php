@@ -25,8 +25,9 @@ class AuthRepository
         $stmt->bindParam(':email', $email);
         $stmt->execute();
 
-        return (bool) $stmt->fetch();
+        return (bool) $stmt->fetch(); 
     }
+
 
     public function createUser(array $data): int
     {

@@ -31,8 +31,17 @@ class EntrepriseService
     {
         return $this->repo->find($id);
     }
+    
 
-    /** Créer entreprise + gestionnaire */
+    /** SIRET deja enreistré en base*/
+    public function siretExists(string $siret): bool
+    {
+        return $this->repo->siretExists($siret);
+    }
+
+
+
+    /* Créer entreprise + gestionnaire Inscription */
     public function createEntrepriseEtGestionnaire(array $entrepriseData, array $gestionnaireData): array
     {
         // Validation entreprise
@@ -72,11 +81,17 @@ class EntrepriseService
         }
     }
 
-    /** Version admin */
+
+
+
+
+    /**Création d'Entreprise Version admin */
     public function createEntrepriseAvecGestionnaireAdmin(array $data): array
     {
         return $this->createEntrepriseEtGestionnaire($data, $data);
     }
+
+
 
     /** Modifier */
     public function updateEntreprise(int $id, array $data): array
@@ -89,6 +104,8 @@ class EntrepriseService
         return $ok ? ['success' => true] : ['success' => false, 'error' => "Échec update"];
     }
 
+
+    
     /** Supprimer */
     public function deleteEntreprise(int $id): bool
     {

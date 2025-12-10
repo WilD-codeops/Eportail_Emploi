@@ -20,6 +20,13 @@ class Validator
         return isset($value) && trim($value) !== '';
     }
 
+    // Validator.php → Besoin de validateName()
+    public static function validateName(string $name): bool
+    {
+        return preg_match('/^[a-zA-ZÀ-ÿ\s\-\']{2,50}$/', trim($name));
+    }
+
+
     /** Email valide */
     public static function validateEmail(string $email): bool
     {
@@ -52,9 +59,16 @@ class Validator
     }
 
     /** Mot de passe + confirmation */
+    // Remplace validatePassword()
     public static function validatePassword(string $pass, string $confirm): bool
     {
-        return strlen($pass) >= 6 && $pass === $confirm;
+        // Complexité + longueur + égalité
+        if (strlen($pass) < 8) return false;
+        if ($pass !== $confirm) return false;
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $pass)) {
+            return false;
+        }
+        return true;
     }
 
     /** ID secteur numérique */

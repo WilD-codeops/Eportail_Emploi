@@ -45,6 +45,11 @@ class AuthService
         return ['success' => true, 'user' => $user];
     }
 
+    public function emailExists(string $email): bool
+    {
+        return $this->repo->emailExists($email);
+    }
+
 
     // Inscription candidat simple
     public function registerCandidat(array $data): array

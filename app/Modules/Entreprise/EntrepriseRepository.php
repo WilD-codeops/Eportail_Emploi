@@ -19,7 +19,8 @@ class EntrepriseRepository
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /** Secteurs */
+
+    //Tous les secteurs d'activité
     public function getSecteurs(): array
     {
         return $this->pdo
@@ -27,16 +28,32 @@ class EntrepriseRepository
             ->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /** Trouver entreprise */
+
+    //Trouver entreprise
     public function find(int $id): ?array
     {
         $stmt = $this->pdo->prepare("SELECT * FROM entreprises WHERE id = :id LIMIT 1");
-        $stmt->execute(['id' => $id]);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
 
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    /** Créer entreprise */
+
+
+    public function siretExists(string $siret): bool
+    {
+        $sql = "SELECT id FROM entreprises WHERE siret = :siret LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':siret', $siret);
+        $stmt->execute();
+        
+        return $stmt->fetch() !== false; //
+    }
+
+    
+
+    //Créer entreprise
     public function createEntreprise(array $data): int
     {
         if (empty($data['gestionnaire_id'])) {
@@ -51,21 +68,38 @@ class EntrepriseRepository
                  :telephone, :email, :siret, :site_web, :taille, :description, :logo)";
 
         $stmt = $this->pdo->prepare($sql);
+
+        $stmt->bindParam(':gestionnaire_id', $data['gestionnaire_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':nom', $data['nom'], PDO::PARAM_STR);
+        $stmt->bindParam(':secteur_id', $data['secteur_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':adresse', $data['adresse'], PDO::PARAM_STR);
+        $stmt->bindParam(':code_postal', $data['code_postal'], PDO::PARAM_STR);
+        $stmt->bindParam(':ville', $data['ville'], PDO::PARAM_STR);
+        $stmt->bindParam(':pays', $data['pays'], PDO::PARAM_STR);
+        $stmt->bindParam(':telephone', $data['telephone'], PDO::PARAM_STR);
+        $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
+        $stmt->bindParam(':siret', $data['siret'], PDO::PARAM_STR);
+        $stmt->bindParam(':site_web', $data['site_web'], PDO::PARAM_STR);
+        $stmt->bindParam(':taille', $data['taille'], PDO::PARAM_STR);
+        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+        $stmt->bindParam(':logo', $data['logo'], PDO::PARAM_STR);
+
         $stmt->execute($data);
 
         return (int)$this->pdo->lastInsertId();
     }
+
 
     /** Lien gestionnaire → entreprise */
     public function attachUserToEntreprise(int $userId, int $entrepriseId): void
     {
         $sql = "UPDATE users SET entreprise_id = :eid WHERE id = :uid";
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
-            'eid' => $entrepriseId,
-            'uid' => $userId
-        ]);
+        $stmt->bindParam(':eid', $entrepriseId, PDO::PARAM_INT);
+        $stmt->bindParam(':uid', $userId, PDO::PARAM_INT);
+        $stmt->execute();
     }
+
 
     /** Modifier entreprise */
     public function updateEntreprise(int $id, array $data): bool
@@ -86,7 +120,20 @@ class EntrepriseRepository
                 WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
-        $data['id'] = $id;
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':nom', $data['nom'], PDO::PARAM_STR);
+        $stmt->bindParam(':secteur_id', $data['secteur_id'], PDO::PARAM_INT);
+        $stmt->bindParam(':adresse', $data['adresse'], PDO::PARAM_STR);
+        $stmt->bindParam(':code_postal', $data['code_postal'], PDO::PARAM_STR);
+        $stmt->bindParam(':ville', $data['ville'], PDO::PARAM_STR);
+        $stmt->bindParam(':pays', $data['pays'], PDO::PARAM_STR);
+        $stmt->bindParam(':telephone', $data['telephone'], PDO::PARAM_STR);
+        $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
+        $stmt->bindParam(':siret', $data['siret'], PDO::PARAM_STR);
+        $stmt->bindParam(':site_web', $data['site_web'], PDO::PARAM_STR);
+        $stmt->bindParam(':taille', $data['taille'], PDO::PARAM_STR);
+        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+        //$stmt->bindParam(':logo', $data['logo'],);
 
         return $stmt->execute($data);
     }
@@ -95,6 +142,8 @@ class EntrepriseRepository
     public function deleteEntreprise(int $id): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM entreprises WHERE id = :id");
-        return $stmt->execute(['id' => $id]);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+        return $stmt->execute( );
     }
 }
