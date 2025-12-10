@@ -2,8 +2,7 @@
 
 namespace App\Core;
 
-use App\Modules\Auth\AuthController;
-use App\Modules\Auth\AuthService;
+
 use App\Core\SessionManager;
 
 class Auth

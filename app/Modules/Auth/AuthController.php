@@ -50,7 +50,8 @@ use App\Core\Database;
         {
             $this->renderAuth("login", [
                 "title"       => "Connexion — EPortailEmploi",
-                "authVariant" => "login"
+                "authVariant" => "login",
+                "h1"          => "Connexion à votre compte"
             ]);
         }
 

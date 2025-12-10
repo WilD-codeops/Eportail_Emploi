@@ -80,9 +80,7 @@ class EntrepriseController
         ]);
     }
 
-    /**
-     * Formulaire de création d'une nouvelle entreprise.
-     */
+    /*Formulaire de création d'une nouvelle entreprise*/
     public function createForm(): void
     {
         $service  = $this->makeService();
@@ -94,9 +92,7 @@ class EntrepriseController
         ]);
     }
 
-    /**
-     * Traitement de création d'entreprise + gestionnaire.
-     */
+    /*Traitement de création d'entreprise + gestionnaire post createForm*/
     public function create(): void
     {
     $service = $this->makeService();
