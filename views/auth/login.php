@@ -8,8 +8,13 @@
     </p>
    
 
+    <?php use App\Core\Security;
+    $csrfToken = Security::generateCsrfToken('login');
+    ?>
     <!-- Formulaire de connexion -->
     <form method="post" action="/login" class="auth-form mt-4">
+        <input type="hidden" name="csrf_token" value="<?=htmlspecialchars($csrfToken) //csrf ?>">
+
         <div class="mb-3">
             <label for="email" class="form-label">Email professionnel</label>
             <div class="input-group">

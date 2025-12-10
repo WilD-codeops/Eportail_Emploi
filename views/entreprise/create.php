@@ -1,6 +1,11 @@
 <h1>Créer une entreprise</h1>
 
+<?php use App\Core\Security;
+$csrfToken = Security::generateCsrfToken('entreprise_create');
+ ?>
+
 <form method="post" action="/admin/entreprises/create" class="form-card">
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
 
     <h2>Informations entreprise</h2>
 

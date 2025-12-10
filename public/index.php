@@ -5,6 +5,18 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use App\Core\Router;
 use App\Core\SessionManager;
 
+
+// CONFIGURATION SECURITE SESSION
+ini_set('session.use_strict_mode', 1);           // N'accepte que les ID générés par PHP (anti fixation)
+ini_set('session.cookie_httponly', 1);           // Empêche JS de lire les cookies (anti XSS)
+ini_set('session.cookie_secure', 0);             // Secure = 1 en production HTTPS  => mettre 1 en prod !
+ini_set('session.cookie_samesite', 'Strict');    // Empêche d’envoyer le cookie depuis un autre domaine (anti CSRF)
+ini_set('session.use_only_cookies', 1);          // Pas d’ID de session dans l’URL
+ini_set('session.gc_maxlifetime', 7200);         // Durée max côté serveur
+session_name("EPORTAILSESSID");                           // Nom personnalisé pour la session
+
+
+
 SessionManager::startSession();
 SessionManager::checkSessionExpiration();
 

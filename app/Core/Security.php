@@ -1,12 +1,9 @@
 <?php
-
 declare(strict_types=1);
-
 namespace App\Core;
 
 class Security
 {
-   
     // Génère: token CSRF pour un formulaire cible , Token aléatoire sécurisé lié par clef de formulaire
     public static function generateCsrfToken(string $formKey): string 
     {

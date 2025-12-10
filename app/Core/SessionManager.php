@@ -8,6 +8,7 @@
         public static function startSession(): void
         {
             if (session_status() === PHP_SESSION_NONE) {
+                session_name("EPORTAILSESSID");  // Nom personnalisé pour la session
                 session_start();
             }
         }
@@ -71,7 +72,6 @@
                 }   
 
                 session_destroy();
-                header("Location: /?reason=logout");
-                exit;
+                
         }
     }

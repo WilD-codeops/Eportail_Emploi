@@ -7,18 +7,24 @@
 
     <!-- Toggle Candidat / Recruteur (visuel pour l'instant) -->
     <div class="auth-role-toggle" aria-label="Choix du type de compte">
-        <button type="button" href="/register/candidat">Candidat</button>
-        <button type="button" class="active">Recruteur</button>
+        <a href="/register/candidat"><button type="button">Candidat</button></a>
+        <a href="/register/entreprise"><button type="button" class="active">Recruteur</button></a>
     </div>
 
     <!-- Zone d’erreurs (accessibilité ARIA) -->
     <div id="form-errors" class="alert alert-danger d-none" aria-live="assertive"></div>
 
-    <form id="entrepriseForm" method="post" action="/register/entreprise" onsubmit="return validateFinalStep()" class="auth-form mt-4">
+    <!--Csrf_Token-->
+    <?php use App\Core\Security;
+    $csrfToken = Security::generateCsrfToken('register_entreprise');
+    ?>
 
-        <!-- ============================================================
-             ÉTAPE 1 : Informations entreprise
-        ============================================================= -->
+
+    <!-- Formulaire d'inscription entreprise -->
+    <form id="entrepriseForm" method="post" action="/register/entreprise" onsubmit="return validateFinalStep()" class="auth-form mt-4">
+        <input type="hidden" name="csrf_token" value="<?=htmlspecialchars($csrfToken) //csrf ?>">
+
+        <!-- ÉTAPE 1 FORMULAIRE : INFORMATIONS ENTREPRISE -->
         <div id="step-company">
 
             <h3 class="mb-3 fw-semibold">Informations entreprise</h3>
