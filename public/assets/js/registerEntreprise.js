@@ -100,64 +100,69 @@ document.getElementById("btnNextToManager").onclick = () => {
 // =======================================================================
 // STEP 2 → STEP 3
 // =======================================================================
-document.getElementById("btnNextToRecap").onclick = () => {
-  const form = document.getElementById("entrepriseForm");
-  const errorBox = document.getElementById("form-errors");
-  errorBox.classList.add("d-none");
-  errorBox.innerHTML = "";
+// Live password + confirm
+document
+  .getElementById("password")
+  .addEventListener("input", validatePasswordLive);
+document
+  .getElementById("password_confirm")
+  .addEventListener("input", validatePasswordConfirm);
 
-  resetInvalid(form);
+function validatePasswordLive() {
+  const pass = document.getElementById("password").value;
+  const checks = document.querySelectorAll(".check-item");
+  const fill = document.querySelector(".strength-fill");
 
-  const rules = [
-    ["prenom", (v) => /^[A-Za-zÀ-ÖØ-öø-ÿ\-\s]+$/.test(v), "Prénom invalide."],
-    ["nom", (v) => /^[A-Za-zÀ-ÖØ-öø-ÿ\-\s]+$/.test(v), "Nom invalide."],
-    ["email", (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Email invalide."],
-    //  fr numéro mobile (06/07)
-    [
-      "telephone_gestionnaire",
-      (v) => v === "" || /^0[6-7]\d{8}$/.test(v.replace(/[\s-]/g, "")),
-      "Numéro mobile invalide (06/07).",
-    ],
-    [
-      "password",
-      (v) => v.length >= 6,
-      "Mot de passe trop court. (min 6 caractères)",
-    ],
-  ];
+  let score = 0;
 
-  let valid = true;
+  // 8+ chars
+  if (pass.length >= 8) {
+    checks[0].classList.add("valid");
+    score++;
+  } else checks[0].classList.remove("valid");
 
-  rules.forEach(([name, validator, message]) => {
-    const value = form[name].value.trim();
-    if (!validator(value)) {
-      showError(message, name);
-      valid = false;
-    }
-  });
+  // Majuscule
+  if (/[A-Z]/.test(pass)) {
+    checks[1].classList.add("valid");
+    score++;
+  } else checks[1].classList.remove("valid");
 
-  if (form.password.value !== form.password_confirm.value) {
-    showError("Les mots de passe ne correspondent pas.", "password_confirm");
-    valid = false;
+  // Chiffre
+  if (/\d/.test(pass)) {
+    checks[2].classList.add("valid");
+    score++;
+  } else checks[2].classList.remove("valid");
+
+  // Spécial
+  if (/[@$!%*?&]/.test(pass)) {
+    checks[3].classList.add("valid");
+    score++;
+  } else checks[3].classList.remove("valid");
+
+  fill.className = `strength-fill strength-${score}`;
+}
+
+function validatePasswordConfirm() {
+  const pass = document.getElementById("password").value;
+  const confirm = document.getElementById("password_confirm");
+  const matchIcon =
+    confirm.parentElement.querySelector(".match-icon") ||
+    confirm.parentElement.insertAdjacentHTML(
+      "beforeend",
+      '<i class="bi match-icon ms-1"></i>'
+    );
+
+  if (confirm.value === pass && confirm.value) {
+    confirm.classList.add("field-valid");
+    confirm.classList.remove("field-invalid");
+    matchIcon.className =
+      "bi bi-check-circle-fill text-success match-icon ms-1";
+  } else if (confirm.value) {
+    confirm.classList.add("field-invalid");
+    confirm.classList.remove("field-valid");
+    matchIcon.className = "bi bi-x-circle-fill text-danger match-icon ms-1";
   }
-
-  if (!valid) return;
-
-  // RÉCAP
-  const recap = document.getElementById("recap-content");
-  recap.innerHTML = "";
-
-  const data = new FormData(form);
-  data.forEach((val, key) => {
-    if (key !== "password" && key !== "password_confirm") {
-      recap.innerHTML += `<div><strong>${key}</strong> : ${
-        val || "<em>Non renseigné</em>"
-      }</div>`;
-    }
-  });
-
-  document.getElementById("step-manager").style.display = "none";
-  document.getElementById("step-recap").style.display = "block";
-};
+}
 
 // =======================================================================
 // STEP 3 : Validation finale
@@ -176,3 +181,145 @@ document.getElementById("btnBackToManager").onclick = () => {
   document.getElementById("step-recap").style.display = "none";
   document.getElementById("step-manager").style.display = "block";
 };
+// APRÈS btnBackToManager.onclick = () => { ... }
+
+// NOUVEAU (ajoute ÇA)
+document.addEventListener("DOMContentLoaded", function () {
+  const passwordField = document.getElementById("password");
+  const confirmField = document.getElementById("password_confirm");
+
+  if (passwordField)
+    passwordField.addEventListener("input", validatePasswordLive);
+  if (confirmField)
+    confirmField.addEventListener("input", validatePasswordConfirm);
+});
+
+function validatePasswordLive() {
+  const pass = document.getElementById("password").value;
+  const checks = document.querySelectorAll(".check-item");
+  const fill = document.querySelector(".strength-fill");
+
+  let score = 0;
+
+  if (pass.length >= 8) {
+    checks[0].classList.add("valid");
+    score++;
+  } else checks[0].classList.remove("valid");
+  if (/[A-Z]/.test(pass)) {
+    checks[1].classList.add("valid");
+    score++;
+  } else checks[1].classList.remove("valid");
+  if (/\d/.test(pass)) {
+    checks[2].classList.add("valid");
+    score++;
+  } else checks[2].classList.remove("valid");
+  if (/[@$!%*?&]/.test(pass)) {
+    checks[3].classList.add("valid");
+    score++;
+  } else checks[3].classList.remove("valid");
+
+  fill.className = `strength-fill strength-${score}`;
+}
+
+function validatePasswordConfirm() {
+  const pass = document.getElementById("password").value;
+  const confirmField = document.getElementById("password_confirm");
+  let matchIcon = confirmField.parentElement.querySelector(".match-icon");
+
+  if (!matchIcon) {
+    confirmField.parentElement.insertAdjacentHTML(
+      "beforeend",
+      '<i class="bi match-icon ms-1"></i>'
+    );
+    matchIcon = confirmField.parentElement.querySelector(".match-icon");
+  }
+
+  if (confirmField.value === pass && confirmField.value) {
+    confirmField.classList.add("is-valid");
+    matchIcon.className =
+      "bi bi-check-circle-fill text-success match-icon ms-1";
+  } else if (confirmField.value) {
+    confirmField.classList.add("is-invalid");
+    matchIcon.className = "bi bi-x-circle-fill text-danger match-icon ms-1";
+  }
+}
+
+// Live password + confirm
+document
+  .getElementById("password")
+  .addEventListener("input", validatePasswordLive);
+document
+  .getElementById("password_confirm")
+  .addEventListener("input", validatePasswordConfirm);
+
+function validatePasswordLive() {
+  const pass = document.getElementById("password").value;
+  const checks = document.querySelectorAll(".check-item");
+  const fill = document.querySelector(".strength-fill");
+
+  let score = 0;
+
+  // 8+ chars
+  if (pass.length >= 8) {
+    checks[0].classList.add("valid");
+    score++;
+  } else checks[0].classList.remove("valid");
+
+  // Majuscule
+  if (/[A-Z]/.test(pass)) {
+    checks[1].classList.add("valid");
+    score++;
+  } else checks[1].classList.remove("valid");
+
+  // Chiffre
+  if (/\d/.test(pass)) {
+    checks[2].classList.add("valid");
+    score++;
+  } else checks[2].classList.remove("valid");
+
+  // Spécial
+  if (/[@$!%*?&]/.test(pass)) {
+    checks[3].classList.add("valid");
+    score++;
+  } else checks[3].classList.remove("valid");
+
+  fill.className = `strength-fill strength-${score}`;
+}
+
+// Live SIRET (ajoute à ton JS)
+document.querySelector(".siret-input").addEventListener("input", function () {
+  const val = this.value.replace(/\D/g, "");
+  this.value = val;
+
+  const valid = val.length === 14;
+  this.classList.toggle("is-valid", valid);
+  this.classList.toggle("is-invalid", !valid);
+
+  const validFeedback = this.parentElement.querySelector(".validity-feedback");
+  const invalidFeedback = this.parentElement.querySelector(".invalid-feedback");
+
+  validFeedback.classList.toggle("d-none", !valid);
+  invalidFeedback.classList.toggle("d-none", valid);
+});
+
+function validatePasswordConfirm() {
+  const pass = document.getElementById("password").value;
+  const confirm = document.getElementById("password_confirm");
+  const matchIcon =
+    confirm.parentElement.querySelector(".match-icon") ||
+    confirm.parentElement.insertAdjacentHTML(
+      "beforeend",
+      '<i class="bi match-icon ms-1"></i>'
+    );
+
+  if (confirm.value === pass && confirm.value) {
+    confirm.classList.add("field-valid");
+    confirm.classList.remove("field-invalid");
+    matchIcon.className =
+      "bi bi-check-circle-fill text-success match-icon ms-1";
+  } else if (confirm.value) {
+    confirm.classList.add("field-invalid");
+    confirm.classList.remove("field-valid");
+    matchIcon.className = "bi bi-x-circle-fill text-danger match-icon ms-1";
+  }
+}

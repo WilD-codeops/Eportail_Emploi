@@ -604,6 +604,54 @@ section.bg-light {
   border-style: dashed;
 }
 
+/* FORMULAIRE REGISTERENTREPRISE*/
+.password-strength .strength-fill {
+  height: 4px;
+  transition: all 0.3s;
+  background: linear-gradient(
+    90deg,
+    #dc3545 0%,
+    #ffc107 33%,
+    #28a745 66%,
+    #20c997 100%
+  );
+}
+.strength-0 {
+  width: 25%;
+  background: #dc3545;
+}
+.strength-1 {
+  width: 50%;
+  background: #ffc107;
+}
+.strength-2 {
+  width: 75%;
+  background: #fd7e14;
+}
+.strength-3,
+.strength-4 {
+  width: 100%;
+  background: #28a745;
+}
+
+.check-item {
+  color: #dc3545;
+}
+.check-item.valid {
+  color: #28a745;
+}
+.check-item i.valid {
+  color: #28a745 !important;
+}
+
+.field-invalid {
+  border-color: #dc3545 !important;
+}
+.field-valid {
+  border-color: #28a745 !important;
+  box-shadow: 0 0 0 0.2rem rgba(40, 167, 74, 0.25);
+}
+
 /* RESPONSIVE : en mobile on empile et on montre d'abord le formulaire */
 @media (max-width: 992px) {
   .auth-layout {

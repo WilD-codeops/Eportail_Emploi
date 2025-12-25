@@ -50,10 +50,10 @@ class EntrepriseValidator
     /** Validation des infos du gestionnaire lié à l'entreprise */
     public static function validateGestionnaire(array $data): array
     {
-        if (!Validator::validateCity($data['prenom'] ?? ''))
+        if (!Validator::validateName($data['prenom'] ?? ''))
             return self::fail("Prénom invalide.");
 
-        if (!Validator::validateCity($data['nom'] ?? ''))
+        if (!Validator::validateName($data['nom'] ?? ''))
             return self::fail("Nom invalide.");
 
         if (!Validator::validateEmail($data['email'] ?? ''))

@@ -76,10 +76,20 @@
                 <input type="email" name="email_entreprise" class="form-control">
             </div>
 
+            
             <div class="mb-3">
                 <label class="form-label">SIRET *</label>
-                <input type="text" name="siret" class="form-control" required>
+                <input type="text" name="siret" class="form-control siret-input" maxlength="14" required>
+                <div class="validity-feedback mt-1 small d-none">
+                    <i class="bi bi-check-circle-fill text-success me-1"></i>
+                    SIRET valide (14 chiffres)
+                </div>
+                <div class="invalid-feedback mt-1 d-none">
+                    <i class="bi bi-x-circle-fill text-danger me-1"></i>
+                    SIRET : 14 chiffres requis
+                </div>
             </div>
+
 
             <div class="mb-3">
                 <label class="form-label">Site web</label>
@@ -143,8 +153,21 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Mot de passe *</label>
-                    <input type="password" name="password" class="form-control">
+                    <input type="password" name="password" class="form-control" id="password">
+                    <div class="password-strength mt-2">
+                        <div class="strength-bar">
+                            <div class="strength-fill"></div>
+                        </div>
+                        <small class="text-muted">8+ chars, 1 maj, 1 min, 1 chiffre, 1 spécial</small>
+                        <div class="checks mt-1 small">
+                            <div class="check-item"><i class="bi bi-x"></i> 8+ caractères</div>
+                            <div class="check-item"><i class="bi bi-x"></i> Majuscule</div>
+                            <div class="check-item"><i class="bi bi-x"></i> Chiffre</div>
+                            <div class="check-item"><i class="bi bi-x"></i> Spécial</div>
+                        </div>
+                    </div>
                 </div>
+
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Confirmation *</label>
                     <input type="password" name="password_confirm" class="form-control">
