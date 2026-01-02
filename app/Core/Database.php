@@ -15,9 +15,10 @@ class Database
     {
         if (self::$pdo === null) {
 
-            $dsn = 'mysql:host=localhost;dbname=eportailemploi;charset=utf8mb4';
-            $user = 'root';
-            $password = 'root';
+            $config = require __DIR__ ."/../../config/database.php";
+            $dsn = "mysql:host={$config['host']};dbname={$config['dbname']};charset={$config['charset']}";
+            $user = $config['user'];
+            $password = $config['password'];
 
             try {
                 self::$pdo = new PDO($dsn, $user, $password, [
