@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : ven. 02 jan. 2026 à 16:13
+-- Généré le : sam. 03 jan. 2026 à 15:25
 -- Version du serveur : 8.4.7
 -- Version de PHP : 8.3.28
 
@@ -528,6 +528,8 @@ DROP TABLE IF EXISTS `offres`;
 CREATE TABLE IF NOT EXISTS `offres` (
   `id` int NOT NULL AUTO_INCREMENT,
   `auteur_id` int NOT NULL,
+  `modifie_par` int DEFAULT NULL,
+  `date_modification` datetime DEFAULT NULL,
   `entreprise_id` int NOT NULL,
   `type_offre_id` int NOT NULL,
   `niveau_qualification_id` int NOT NULL,
@@ -546,15 +548,16 @@ CREATE TABLE IF NOT EXISTS `offres` (
   KEY `domaine_emploi_id` (`domaine_emploi_id`),
   KEY `localisation_id` (`localisation_id`),
   KEY `user_id` (`auteur_id`) USING BTREE,
-  KEY `offres_ibfk_2` (`entreprise_id`)
+  KEY `offres_ibfk_2` (`entreprise_id`),
+  KEY `fk_offres_modifie_par` (`modifie_par`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `offres`
 --
 
-INSERT INTO `offres` (`id`, `auteur_id`, `entreprise_id`, `type_offre_id`, `niveau_qualification_id`, `domaine_emploi_id`, `localisation_id`, `titre`, `description`, `date_debut`, `date_fin`, `duree_contrat`, `salaire`, `statut`) VALUES
-(1, 2, 1, 1, 4, 1, 1, 'Développeur PHP', 'Développement d\'applications web...', '2025-06-01', '2025-12-31', 6, 35000.00, 'active');
+INSERT INTO `offres` (`id`, `auteur_id`, `modifie_par`, `date_modification`, `entreprise_id`, `type_offre_id`, `niveau_qualification_id`, `domaine_emploi_id`, `localisation_id`, `titre`, `description`, `date_debut`, `date_fin`, `duree_contrat`, `salaire`, `statut`) VALUES
+(1, 2, NULL, NULL, 1, 1, 4, 1, 1, 'Développeur PHP', 'Développement d\'applications web...', '2025-06-01', '2025-12-31', 6, 35000.00, 'active');
 
 -- --------------------------------------------------------
 
@@ -871,6 +874,7 @@ ALTER TABLE `notifications_processus`
 -- Contraintes pour la table `offres`
 --
 ALTER TABLE `offres`
+  ADD CONSTRAINT `fk_offres_modifie_par` FOREIGN KEY (`modifie_par`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `offres_ibfk_2` FOREIGN KEY (`entreprise_id`) REFERENCES `entreprises` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
   ADD CONSTRAINT `offres_ibfk_3` FOREIGN KEY (`type_offre_id`) REFERENCES `types_offres` (`id`),
   ADD CONSTRAINT `offres_ibfk_4` FOREIGN KEY (`niveau_qualification_id`) REFERENCES `niveaux_qualification` (`id`),
