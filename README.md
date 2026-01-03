@@ -346,9 +346,9 @@ http://localhost/eportail-emploi
 
 # 🚀 14. Améliorations futures
 
-- Entités
+- Entités pour completer les paterns et usage d'objets
 - API REST
-- PhpUnit
+- PhpUnit pour tests unitaires
 - PhpMailer
 - Application mobile
 - Système de notifications internes
