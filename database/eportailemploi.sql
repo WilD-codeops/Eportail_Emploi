@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : sam. 03 jan. 2026 à 15:25
+-- Généré le : sam. 03 jan. 2026 à 15:39
 -- Version du serveur : 8.4.7
 -- Version de PHP : 8.3.28
 
@@ -528,6 +528,7 @@ DROP TABLE IF EXISTS `offres`;
 CREATE TABLE IF NOT EXISTS `offres` (
   `id` int NOT NULL AUTO_INCREMENT,
   `auteur_id` int NOT NULL,
+  `date_creation` datetime NOT NULL,
   `modifie_par` int DEFAULT NULL,
   `date_modification` datetime DEFAULT NULL,
   `entreprise_id` int NOT NULL,
@@ -556,8 +557,8 @@ CREATE TABLE IF NOT EXISTS `offres` (
 -- Déchargement des données de la table `offres`
 --
 
-INSERT INTO `offres` (`id`, `auteur_id`, `modifie_par`, `date_modification`, `entreprise_id`, `type_offre_id`, `niveau_qualification_id`, `domaine_emploi_id`, `localisation_id`, `titre`, `description`, `date_debut`, `date_fin`, `duree_contrat`, `salaire`, `statut`) VALUES
-(1, 2, NULL, NULL, 1, 1, 4, 1, 1, 'Développeur PHP', 'Développement d\'applications web...', '2025-06-01', '2025-12-31', 6, 35000.00, 'active');
+INSERT INTO `offres` (`id`, `auteur_id`, `date_creation`, `modifie_par`, `date_modification`, `entreprise_id`, `type_offre_id`, `niveau_qualification_id`, `domaine_emploi_id`, `localisation_id`, `titre`, `description`, `date_debut`, `date_fin`, `duree_contrat`, `salaire`, `statut`) VALUES
+(1, 2, '0000-00-00 00:00:00', NULL, NULL, 1, 1, 4, 1, 1, 'Développeur PHP', 'Développement d\'applications web...', '2025-06-01', '2025-12-31', 6, 35000.00, 'active');
 
 -- --------------------------------------------------------
 
