@@ -271,7 +271,7 @@ Il contient la base de données.
 # ⚡ 9. Installation rapide
 
 ```bash
-git clone https://github.com/<ton-repo>/eportail-emploi.git
+git clone https://github.com/WilD-codeops/Eportail_Emploi.git
 cd eportail-emploi
 composer install
 ```
@@ -287,15 +287,27 @@ composer install
 
 ### 1. Cloner le projet
 
+git clone https://github.com/<repo>/eportail-emploi.git
+
 ### 2. Installer les dépendances Composer
+
+composer install
 
 ### 3. Configurer la base de données
 
+Modifier config/database.php avec vos identifiants MySQL.
+
 ### 4. Importer le fichier SQL
+
+Importer /database/eportailemploi.sql via phpMyAdmin ou MySQL CLI.
 
 ### 5. Configurer un VirtualHost (recommandé)
 
+Pointer vers /public comme racine du projet.
+
 ### 6. Vérifier les permissions
+
+S’assurer que PHP peut lire les dossiers /app, /views, /config.
 
 ### 7. Accéder à l’application via :
 
