@@ -107,6 +107,10 @@ Rôles gérés :
 
 - Supervision des offres de l’entreprise
 
+**Admin :**
+
+- Accés total
+
 ---
 
 ## 👤 Module Candidat _(prévu)_

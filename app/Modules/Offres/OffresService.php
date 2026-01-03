@@ -9,7 +9,7 @@ class OffresService
         private OffresValidator $validator
     ) {}
 
-    /** Liste publique paginée */
+    /** Liste publique paginee */
     public function listPublic(array $filters, int $page = 1, int $perPage = 10): array
     {
         $page = max(1, (int)$page);
@@ -38,7 +38,7 @@ class OffresService
     }
 
 
-    /** Détail public d'une offre active */
+    /** Detail public d'une offre active */
     public function showPublic(int $id): array
     {
         $offre = $this->repo->findActive($id);
@@ -66,7 +66,7 @@ class OffresService
     }
 
 
-    /** Données de référence (types, niveaux...) */
+    /** Donnees de reference (types, niveaux...) */
     public function getReferenceData(bool $isAdmin): array
     {
         $data = [
@@ -84,7 +84,7 @@ class OffresService
     }
 
 
-    /** Création d'offre */
+    /** Creation d'offre */
     public function createOffre(array $data, int $auteurId, bool $isAdmin, int $entrepriseIdContext): array
     {
         $v = $this->validator->validate($data, $isAdmin);
@@ -99,11 +99,11 @@ class OffresService
 
         $clean = $v['clean'];
 
-        // Contrôle de rattachement / restriction par entreprise
+        // Controle de rattachement / restriction par entreprise
         if ($isAdmin) {
             $entrepriseId = isset($data['entreprise_id']) ? (int)$data['entreprise_id'] : 0;
             if ($entrepriseId <= 0) {
-                return ['success' => false, 'error' => "entreprise_id requis pour admin"];
+                return ['success' => false, 'error' => "Entreprise requise."];
             }
         } else {
             $entrepriseId = $entrepriseIdContext;
@@ -131,7 +131,7 @@ class OffresService
     }
 
 
-    /** Mise à jour d'offre */
+    /** Mise a jour d'offre */
     public function updateOffre(int $id, array $data, int $auteurId, bool $isAdmin, int $entrepriseIdContext): array
     {
         $existing = $this->repo->find($id);
@@ -151,14 +151,18 @@ class OffresService
 
         $clean = $v['clean'];
 
+        $modFields = [
+            'modifie_par'       => $auteurId,
+            'date_modification' => date('Y-m-d H:i:s'),
+        ];
+
         if ($isAdmin) {
             $entrepriseId = isset($data['entreprise_id']) ? (int)$data['entreprise_id'] : 0;
             if ($entrepriseId <= 0) {
-                return ['success' => false, 'error' => "entreprise_id requis pour admin"];
+                return ['success' => false, 'error' => "Entreprise requise."];
             }
 
             $payload = [
-                'auteur_id'               => $auteurId,
                 'entreprise_id'           => $entrepriseId,
                 'type_offre_id'           => $clean['type_offre_id'],
                 'niveau_qualification_id' => $clean['niveau_qualification_id'],
@@ -171,7 +175,7 @@ class OffresService
                 'duree_contrat'           => $clean['duree_contrat'],
                 'salaire'                 => $clean['salaire'],
                 'statut'                  => $clean['statut'],
-            ];
+            ] + $modFields;
 
             $ok = $this->repo->update($id, $payload);
         } else {
@@ -187,9 +191,9 @@ class OffresService
                 'duree_contrat'           => $clean['duree_contrat'],
                 'salaire'                 => $clean['salaire'],
                 'statut'                  => $clean['statut'],
-            ];
+            ] + $modFields;
 
-            // Restriction par entreprise / contrôle de rattachement
+            // Restriction par entreprise / controle de rattachement
             $ok = $this->repo->updateOwned($id, $entrepriseIdContext, $payload);
 
             if (!$ok) {
@@ -212,7 +216,7 @@ class OffresService
         if ($isAdmin) {
             $ok = $this->repo->delete($id);
         } else {
-            // Restriction par entreprise / contrôle de rattachement
+            // Restriction par entreprise / controle de rattachement
             $ok = $this->repo->deleteOwned($id, $entrepriseIdContext);
         }
 

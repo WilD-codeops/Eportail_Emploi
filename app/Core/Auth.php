@@ -68,10 +68,10 @@ class Auth
         SessionManager::sessionDestroy();
         }
     
-
-               
-    
-     
-    
+    public static function entrepriseId(): ?int
+    {
+        $eid = $_SESSION['entreprise_id'] ?? null;
+        return $eid ? (int)$eid : null;
+    } 
 
 }

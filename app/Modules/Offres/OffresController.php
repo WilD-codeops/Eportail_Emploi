@@ -1,23 +1,33 @@
 <?php
-
 declare(strict_types=1);
 
 namespace App\Modules\Offres;
 
-use App\core\Auth;  
+use App\Core\Auth;
+use App\Core\Database;
+use App\Core\Security;
 
 class OffresController
 {
-    public function index(): void
-    { 
-        //Auth::requireRole(['admin']);
-        $this->renderOffers('index', [
-            'title' => "Nos Offres d'emploi | EPortailEmploi",
-        ]);
+    /** Fabrique le service Offres */
+    private function makeService(): OffresService
+    {
+        $pdo       = Database::getConnection();
+        $repo      = new OffresRepository($pdo);
+        $validator = new OffresValidator();
+
+        return new OffresService($repo, $validator);
     }
 
+    /** Fabrique le repository (pour ownership) */
+    private function makeRepository(): OffresRepository
+    {
+        $pdo = Database::getConnection();
+        return new OffresRepository($pdo);
+    }
 
-private function renderOffers(string $view, array $params = []): void
+    /** Vue publique */
+    private function renderPublic(string $view, array $params = []): void
     {
         extract($params);
 
@@ -26,5 +36,299 @@ private function renderOffers(string $view, array $params = []): void
         $content = ob_get_clean();
 
         require __DIR__ . "/../../../views/layouts/main.php";
-    }   
+    }
+
+    /** Vue dashboard */
+    private function renderDashboard(string $view, array $params = []): void
+    {
+        extract($params);
+
+        ob_start();
+        require __DIR__ . "/../../../views/offres/{$view}.php";
+        $content = ob_get_clean();
+
+        require __DIR__ . "/../../../views/layouts/dashboard.php";
+    }
+
+    /** Liste publique avec filtres */
+    public function index(): void
+    {
+        $filters = [
+            'keyword'         => isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : null,
+            'localisation_id' => isset($_GET['localisation_id']) ? (int)$_GET['localisation_id'] : null,
+            'type_offre_id'   => isset($_GET['type_offre_id']) ? (int)$_GET['type_offre_id'] : null,
+        ];
+
+        $page    = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['perPage']) ? (int)$_GET['perPage'] : 10;
+
+        $service = $this->makeService();
+        $result  = $service->listPublic($filters, $page, $perPage);
+        $refs    = $service->getReferenceData(false)['data'] ?? [];
+
+        $this->renderPublic("public_list", [
+            "title" => "Offres d'emploi",
+            "data"  => $result['data'] ?? [],
+            "refs"  => $refs,
+        ]);
+    }
+
+    /** Détail public */
+    public function show(): void
+    {
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+        if ($id <= 0) {
+            http_response_code(404);
+            die("404");
+        }
+
+        $service = $this->makeService();
+        $result  = $service->showPublic($id);
+
+        if (!$result['success']) {
+            http_response_code(404);
+            die("404");
+        }
+
+        $this->renderPublic("show", [
+            "title" => $result['data']['offre']['titre'] ?? "Offre",
+            "offre" => $result['data']['offre'],
+        ]);
+    }
+
+    /** Liste admin */
+    public function adminIndex(): void
+    {
+        Auth::requireRole(['admin']);
+
+        $service = $this->makeService();
+        $result  = $service->listAdmin();
+
+        $this->renderDashboard("list", [
+            "title" => "Gestion des offres",
+            "mode"  => "admin",
+            "items" => $result['data']['items'] ?? []
+        ]);
+    }
+
+    /** Liste gestionnaire/recruteur */
+    public function manageIndex(): void
+    {
+        Auth::requireRole(['gestionnaire', 'recruteur']);
+
+        $entrepriseId = Auth::entrepriseId();
+        if (!$entrepriseId) {
+            Security::forbidden();
+        }
+
+        $service = $this->makeService();
+        $result  = $service->listByEntreprise($entrepriseId);
+
+        $this->renderDashboard("list", [
+            "title" => "Mes offres",
+            "mode"  => "entreprise",
+            "items" => $result['data']['items'] ?? []
+        ]);
+    }
+
+    /** Formulaire création */
+    public function createForm(): void
+    {
+        Auth::requireLogin();
+        $isAdmin = Auth::role() === 'admin';
+        if (!$isAdmin) {
+            Auth::requireRole(['gestionnaire', 'recruteur']);
+        }
+
+        $service = $this->makeService();
+        $refs    = $service->getReferenceData($isAdmin)['data'] ?? [];
+
+        $csrf = Security::generateCsrfToken('offres_create');
+
+        $this->renderDashboard("create", [
+            "title" => "Créer une offre",
+            "refs"  => $refs,
+            "csrf"  => $csrf
+        ]);
+    }
+
+    /** Création (POST) */
+    public function create(): void
+    {
+        Auth::requireLogin();
+        $isAdmin = Auth::role() === 'admin';
+        if (!$isAdmin) {
+            Auth::requireRole(['gestionnaire', 'recruteur']);
+        }
+
+        Security::requireCsrfToken('offres_create', $_POST['csrf_token'] ?? null);
+
+        $service            = $this->makeService();
+        $auteurId           = Auth::userId() ?? 0;
+        $entrepriseIdCtx    = $isAdmin ? 0 : (Auth::entrepriseId() ?? 0);
+        $result             = $service->createOffre($_POST, $auteurId, $isAdmin, $entrepriseIdCtx);
+
+        if (!$result['success']) {
+            $refs = $service->getReferenceData($isAdmin)['data'] ?? [];
+            $csrf = Security::generateCsrfToken('offres_create');
+
+            $this->renderDashboard("create", [
+                "title"  => "Créer une offre",
+                "refs"   => $refs,
+                "errors" => $result['errors'] ?? [],
+                "input"  => $result['data']['input'] ?? [],
+                "csrf"   => $csrf
+            ]);
+            return;
+        }
+
+        $redirect = $isAdmin ? "/admin/offres?success=1" : "/dashboard/offres?success=1";
+        header("Location: {$redirect}");
+        exit;
+    }
+
+    /** Formulaire édition */
+    public function editForm(): void
+    {
+        Auth::requireLogin();
+        $isAdmin = Auth::role() === 'admin';
+        if (!$isAdmin) {
+            Auth::requireRole(['gestionnaire', 'recruteur']);
+        }
+
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+        $repo  = $this->makeRepository();
+        $offre = $repo->find($id);
+        if (!$offre) {
+            http_response_code(404);
+            die("404");
+        }
+
+        if (!$isAdmin) {
+            $entrepriseId = Auth::entrepriseId();
+            if (!$entrepriseId || $offre['entreprise_id'] !== $entrepriseId) {
+                Security::forbidden();
+            }
+        }
+
+        $service = $this->makeService();
+        $refs    = $service->getReferenceData($isAdmin)['data'] ?? [];
+        $csrf    = Security::generateCsrfToken('offres_update');
+
+        $this->renderDashboard("edit", [
+            "title" => "Modifier une offre",
+            "refs"  => $refs,
+            "offre" => $offre,
+            "csrf"  => $csrf
+        ]);
+    }
+
+    /** Mise à jour (POST) */
+    public function update(): void
+    {
+        Auth::requireLogin();
+        $isAdmin = Auth::role() === 'admin';
+        if (!$isAdmin) {
+            Auth::requireRole(['gestionnaire', 'recruteur']);
+        }
+
+        Security::requireCsrfToken('offres_update', $_POST['csrf_token'] ?? null);
+
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+        $repo  = $this->makeRepository();
+        $offre = $repo->find($id);
+        if (!$offre) {
+            http_response_code(404);
+            die("404");
+        }
+
+        if (!$isAdmin) {
+            $entrepriseId = Auth::entrepriseId();
+            if (!$entrepriseId || $offre['entreprise_id'] !== $entrepriseId) {
+                Security::forbidden();
+            }
+        }
+
+        $service         = $this->makeService();
+        $auteurId        = Auth::userId() ?? 0;
+        $entrepriseIdCtx = $isAdmin ? 0 : (Auth::entrepriseId() ?? 0);
+        $result          = $service->updateOffre($id, $_POST, $auteurId, $isAdmin, $entrepriseIdCtx);
+
+        if (!$result['success']) {
+            $refs = $service->getReferenceData($isAdmin)['data'] ?? [];
+            $csrf = Security::generateCsrfToken('offres_update');
+
+            $this->renderDashboard("edit", [
+                "title"  => "Modifier une offre",
+                "refs"   => $refs,
+                "offre"  => $offre,
+                "errors" => $result['errors'] ?? [],
+                "input"  => $result['data']['input'] ?? [],
+                "csrf"   => $csrf
+            ]);
+            return;
+        }
+
+        $redirect = $isAdmin ? "/admin/offres?success=1" : "/dashboard/offres?success=1";
+        header("Location: {$redirect}");
+        exit;
+    }
+
+    /** Suppression */
+    public function delete(): void
+    {
+        Auth::requireLogin();
+        $isAdmin = Auth::role() === 'admin';
+        if (!$isAdmin) {
+            Auth::requireRole(['gestionnaire', 'recruteur']);
+        }
+
+        Security::requireCsrfToken('offres_delete', $_POST['csrf_token'] ?? null);
+
+        $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+
+        $repo  = $this->makeRepository();
+        $offre = $repo->find($id);
+        if (!$offre) {
+            http_response_code(404);
+            die("404");
+        }
+
+        if (!$isAdmin) {
+            $entrepriseId = Auth::entrepriseId();
+            if (!$entrepriseId || $offre['entreprise_id'] !== $entrepriseId) {
+                Security::forbidden();
+            }
+        }
+
+        $entrepriseIdCtx = $isAdmin ? 0 : (Auth::entrepriseId() ?? 0);
+        $service         = $this->makeService();
+        $result          = $service->deleteOffre($id, $isAdmin, $entrepriseIdCtx);
+        if (!$result['success']) {
+            Security::forbidden();
+        }
+
+        $redirect = $isAdmin ? "/admin/offres?success=1" : "/dashboard/offres?success=1";
+        header("Location: {$redirect}");
+        exit;
+    }
 }
+
+// Routes :
+// GET  /offres                 -> index
+// GET  /offres/show?id=ID      -> show
+// GET  /admin/offres           -> adminIndex
+// GET  /admin/offres/create    -> createForm
+// POST /admin/offres/create    -> create
+// GET  /admin/offres/edit?id=ID-> editForm
+// POST /admin/offres/edit?id=ID-> update
+// POST /admin/offres/delete?id=ID -> delete
+// GET  /dashboard/offres          -> manageIndex
+// GET  /dashboard/offres/create   -> createForm
+// POST /dashboard/offres/create   -> create
+// GET  /dashboard/offres/edit?id=ID -> editForm
+// POST /dashboard/offres/edit?id=ID -> update
+// POST /dashboard/offres/delete?id=ID -> delete

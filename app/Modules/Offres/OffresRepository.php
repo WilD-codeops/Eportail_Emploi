@@ -126,8 +126,8 @@ class OffresRepository
                 ORDER BY o.date_debut DESC, o.id DESC";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':eid', $entrepriseId, PDO::PARAM_INT);
-        $stmt->execute();
+        $stmt->execute(['eid' => $entrepriseId]);
+
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -149,8 +149,8 @@ class OffresRepository
                 LIMIT 1";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
+        $stmt->execute(['id' => $id]);
+
 
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
@@ -172,8 +172,7 @@ class OffresRepository
                 LIMIT 1";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
+        $stmt->execute(['id' => $id]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
@@ -184,10 +183,10 @@ class OffresRepository
     {
         $sql = "INSERT INTO offres
                 (auteur_id, entreprise_id, type_offre_id, niveau_qualification_id, domaine_emploi_id, localisation_id,
-                 titre, description, date_debut, date_fin, duree_contrat, salaire, statut)
+                 titre, description, date_debut, date_fin, duree_contrat, salaire, statut, date_creation)
                 VALUES
                 (:auteur_id, :entreprise_id, :type_offre_id, :niveau_qualification_id, :domaine_emploi_id, :localisation_id,
-                 :titre, :description, :date_debut, :date_fin, :duree_contrat, :salaire, :statut)";
+                 :titre, :description, :date_debut, :date_fin, :duree_contrat, :salaire, :statut, NOW())";
 
         $stmt = $this->pdo->prepare($sql);
 
@@ -217,7 +216,6 @@ class OffresRepository
     public function update(int $id, array $data): bool
     {
         $sql = "UPDATE offres SET
-                    auteur_id = :auteur_id,
                     entreprise_id = :entreprise_id,
                     type_offre_id = :type_offre_id,
                     niveau_qualification_id = :niveau_qualification_id,
@@ -229,14 +227,15 @@ class OffresRepository
                     date_fin = :date_fin,
                     duree_contrat = :duree_contrat,
                     salaire = :salaire,
-                    statut = :statut
+                    statut = :statut,
+                    modifie_par = :modifie_par,
+                    date_modification = :date_modification
                 WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
 
         $params = [
             'id'                      => $id,
-            'auteur_id'               => $data['auteur_id'],
             'entreprise_id'           => $data['entreprise_id'],
             'type_offre_id'           => $data['type_offre_id'],
             'niveau_qualification_id' => $data['niveau_qualification_id'],
@@ -249,6 +248,8 @@ class OffresRepository
             'duree_contrat'           => $data['duree_contrat'],
             'salaire'                 => $data['salaire'],
             'statut'                  => $data['statut'],
+            'modifie_par'             => $data['modifie_par'],
+            'date_modification'       => $data['date_modification'],
         ];
 
         return $stmt->execute($params);
@@ -269,7 +270,9 @@ class OffresRepository
                     date_fin = :date_fin,
                     duree_contrat = :duree_contrat,
                     salaire = :salaire,
-                    statut = :statut
+                    statut = :statut,
+                    modifie_par = :modifie_par,
+                    date_modification = :date_modification
                 WHERE id = :id AND entreprise_id = :eid";
 
         $stmt = $this->pdo->prepare($sql);
@@ -288,6 +291,8 @@ class OffresRepository
             'duree_contrat'           => $data['duree_contrat'],
             'salaire'                 => $data['salaire'],
             'statut'                  => $data['statut'],
+            'modifie_par'             => $data['modifie_par'],
+            'date_modification'       => $data['date_modification'],
         ];
 
         return $stmt->execute($params);
@@ -298,9 +303,7 @@ class OffresRepository
     public function delete(int $id): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM offres WHERE id = :id");
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-
-        return $stmt->execute();
+        return $stmt->execute(['id' => $id]);
     }
 
 
@@ -308,10 +311,10 @@ class OffresRepository
     public function deleteOwned(int $id, int $entrepriseId): bool
     {
         $stmt = $this->pdo->prepare("DELETE FROM offres WHERE id = :id AND entreprise_id = :eid");
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':eid', $entrepriseId, PDO::PARAM_INT);
-
-        return $stmt->execute();
+        return $stmt->execute([
+            'id'  => $id,
+            'eid' => $entrepriseId
+        ]);
     }
 
 
