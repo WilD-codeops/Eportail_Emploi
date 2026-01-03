@@ -378,3 +378,7 @@ Il démontre :
 - la capacité à structurer un projet complet
 
 ---
+
+# 17. Déploiement (à venir)
+
+Le projet sera déployé sur un serveur LAMP dans le mois suivant la remise du mémoire.
