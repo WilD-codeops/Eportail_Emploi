@@ -67,5 +67,8 @@ $router->get('/dashboard/offres/edit', 'App\\Modules\\Offres\\OffresController@e
 $router->post('/dashboard/offres/edit', 'App\\Modules\\Offres\\OffresController@update');
 $router->post('/dashboard/offres/delete', 'App\\Modules\\Offres\\OffresController@delete');
 
+// Offres — PARTIALS (AJAX HTML)
+$router->get('/admin/offres/partial', 'App\\Modules\\Offres\\OffresController@adminPartial');
+$router->get('/dashboard/offres/partial', 'App\\Modules\\Offres\\OffresController@managePartial');
 
 $router->run();
