@@ -101,36 +101,67 @@ class OffresRepository
     /** Toutes les offres (admin) */
     public function getAll(): array
     {
-        $sql = "SELECT o.*, e.nom AS entreprise_nom, l.ville AS localisation,
-                       t.code AS type_offre_code, t.description AS type_offre_description
+        $sql = "SELECT 
+                    o.*, 
+                    e.nom AS entreprise_nom, 
+                    l.ville AS localisation,
+                    t.code AS type_offre_code, 
+                    t.description AS type_offre_description,
+
+                    ua.prenom AS auteur_nom,
+                    ua.role   AS auteur_role,
+
+                    um.prenom AS modifie_nom,
+                    um.role   AS modifie_role
+
                 FROM offres o
                 JOIN entreprises e ON e.id = o.entreprise_id
                 LEFT JOIN localisations l ON l.id = o.localisation_id
                 LEFT JOIN types_offres t ON t.id = o.type_offre_id
+
+                LEFT JOIN users ua ON ua.id = o.auteur_id
+                LEFT JOIN users um ON um.id = o.modifie_par
+
                 ORDER BY o.date_debut DESC, o.id DESC";
 
         return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
+
     /** Offres par entreprise (gestionnaire/recruteur) */
     public function getByEntreprise(int $entrepriseId): array
     {
-        $sql = "SELECT o.*, e.nom AS entreprise_nom, l.ville AS localisation,
-                       t.code AS type_offre_code, t.description AS type_offre_description
+        $sql = "SELECT 
+                    o.*, 
+                    e.nom AS entreprise_nom, 
+                    l.ville AS localisation,
+                    t.code AS type_offre_code, 
+                    t.description AS type_offre_description,
+
+                    ua.prenom AS auteur_nom,
+                    ua.role   AS auteur_role,
+
+                    um.prenom AS modifie_nom,
+                    um.role   AS modifie_role
+
                 FROM offres o
                 JOIN entreprises e ON e.id = o.entreprise_id
                 LEFT JOIN localisations l ON l.id = o.localisation_id
                 LEFT JOIN types_offres t ON t.id = o.type_offre_id
+
+                LEFT JOIN users ua ON ua.id = o.auteur_id
+                LEFT JOIN users um ON um.id = o.modifie_par
+
                 WHERE o.entreprise_id = :eid
                 ORDER BY o.date_debut DESC, o.id DESC";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['eid' => $entrepriseId]);
 
-
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
 
 
     /** Trouver une offre (détail complet) */

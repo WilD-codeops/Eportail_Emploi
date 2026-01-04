@@ -21,10 +21,11 @@ $badge = function (?string $statut): array {
 };
 
 $fmtDate = function (?string $dt): string {
-    if (!$dt) return '—';
-    // Si tu as déjà format YYYY-MM-DD HH:ii:ss : on affiche sans casser
-    return htmlspecialchars($dt);
+    if (!$dt) return '-';
+    $ts = strtotime($dt);
+    return $ts ? date('d/m/Y H:i', $ts) : $dt;
 };
+
 
 // Flash via reason (SweetAlert dans partial alerts.php)
 $reason = $_GET['reason'] ?? null;
@@ -64,7 +65,9 @@ $reason = $_GET['reason'] ?? null;
                             <th style="width:110px;">Statut</th>
                             <th style="width:170px;">Créée</th>
                             <th style="width:170px;">Modifiée</th>
+                            <th>Modifié par</th>
                             <th class="text-end" style="width:170px;">Actions</th>
+
                         </tr>
                     </thead>
                     <tbody>
@@ -105,8 +108,18 @@ $reason = $_GET['reason'] ?? null;
                                 </span>
                             </td>
 
-                            <td><?= $fmtDate($offre['date_creation'] ?? null) ?></td>
-                            <td><?= $fmtDate($offre['date_modification'] ?? null) ?></td>
+                            <td><?= htmlspecialchars($fmtDate($offre['date_creation'] ?? null)) ?></td>
+                            <td><?= htmlspecialchars($fmtDate($offre['date_modification'] ?? null)) ?></td>
+                            <?php
+                                $modNom  = $offre['modifie_nom'] ?? null;
+                                $modRole = $offre['modifie_role'] ?? null;
+                                                        
+                                $modifiePar = $modNom
+                                    ? trim($modNom . ($modRole ? " • " . ucfirst((string)$modRole) : ""))
+                                    : '-';
+                            ?>
+                            <td><?= htmlspecialchars($modifiePar) ?></td>
+
 
                             <td class="text-end">
                                 <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars($editUrl) ?>">
