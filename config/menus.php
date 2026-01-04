@@ -2,67 +2,38 @@
 
 return [
     'admin' => [
-        [
-            'icon'  => 'bi-speedometer2',
-            'label' => 'Dashboard',
-            'url'   => '/admin/dashboard'
-        ],
-        [
-            'icon'  => 'bi-people',
-            'label' => 'Utilisateurs',
-            'url'   => '/admin/users'
-        ],
-        [
-            'icon'  => 'bi-briefcase',
-            'label' => 'Offres',
-            'url'   => '/admin/offres'
-        ],
-        [
-            'icon'  => 'bi-building',
-            'label' => 'Entreprises',
-            'url'   => '/admin/entreprises'
-        ],
-        [
-            'icon'  => 'bi-file-earmark-text',
-            'label' => 'Candidatures',
-            'url'   => '/admin/candidatures'
-        ],
-    ],
+        ['section' => 'Général'],
+        ['icon'=>'bi-speedometer2','label'=>'Dashboard','url'=>'/admin/dashboard'],
+
+        ['section' => 'Gestion'],
+        ['icon'=>'bi-briefcase','label'=>'Offres','url'=>'/admin/offres'],
+        ['icon'=>'bi-building','label'=>'Entreprises','url'=>'/admin/entreprises'],
+        ['icon'=>'bi-people','label'=>'Utilisateurs','url'=>'/admin/users'],
+        ['icon'=>'bi-file-earmark-text','label'=>'Candidatures','url'=>'/admin/candidatures'],
+
+        ['section' => 'Référentiels'],
+        ['icon'=>'bi-tags','label'=>'Types d’offre','url'=>'/admin/ref/types-offres'],
+        ['icon'=>'bi-mortarboard','label'=>'Niveaux de qualification','url'=>'/admin/ref/niveaux-qualification'],
+        ['icon'=>'bi-diagram-3','label'=>'Domaines d’emploi','url'=>'/admin/ref/domaines-emploi'],
+        ['icon'=>'bi-geo-alt','label'=>'Localisations','url'=>'/admin/ref/localisations'],
+
+        ['section' => 'Système'],
+        ['icon'=>'bi-shield-lock','label'=>'Sécurité','url'=>'/admin/security'],
+        ['icon'=>'bi-gear','label'=>'Paramètres','url'=>'/admin/settings'],
+    ],      
+
 
     'gestionnaire' => [
-        [
-            'icon'  => 'bi-building',
-            'label' => 'Mon entreprise',
-            'url'   => '/gestionnaire/entreprise'
-        ],
-        [
-            'icon'  => 'bi-briefcase',
-            'label' => 'Offres',
-            'url'   => '/gestionnaire/offres'
-        ],
-        [
-            'icon'  => 'bi-file-earmark-text',
-            'label' => 'Candidatures',
-            'url'   => '/gestionnaire/candidatures'
-        ],
-        [
-            'icon'  => 'bi-gear',
-            'label' => 'Paramètres',
-            'url'   => '/gestionnaire/settings'
-        ],
-    ],
+        ['icon'=>'bi-building','label'=>'Mon entreprise','url'=>'/dashboard/entreprise'],
+        ['icon'=>'bi-briefcase','label'=>'Offres','url'=>'/dashboard/offres'],
+        ['icon'=>'bi-file-earmark-text','label'=>'Candidatures','url'=>'/dashboard/candidatures'],
+        ['icon'=>'bi-gear','label'=>'Paramètres','url'=>'/dashboard/settings'],
+    ],      
+
 
     'recruteur' => [
-        [
-            'icon'  => 'bi-briefcase',
-            'label' => 'Mes offres',
-            'url'   => '/recruteur/offres'
-        ],
-        [
-            'icon'  => 'bi-file-earmark-text',
-            'label' => 'Candidatures',
-            'url'   => '/recruteur/candidatures'
-        ],
+        ['icon'=>'bi-briefcase','label'=>'Mes offres','url'=>'/dashboard/offres'],
+        ['icon'=>'bi-file-earmark-text','label'=>'Candidatures','url'=>'/dashboard/candidatures'],
     ],
 
     'candidat' => [

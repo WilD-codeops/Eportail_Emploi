@@ -725,3 +725,510 @@ section.bg-light {
     padding: 1.25rem; /* slightly reduced on desktop to compact visual */
   }
 }
+/* ===== Dashboard shell ===== */
+.dash {
+  background: #f6f7fb;
+}
+
+.dash-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+.dash-sidebar {
+  width: 280px;
+  background: #0f1115;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dash-sidebar-brand {
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dash-logo {
+  font-size: 18px;
+  letter-spacing: 0.2px;
+}
+.dash-accent {
+  color: #6f42c1;
+} /* violet (tu peux adapter à ta DA) */
+
+.dash-brand-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.dash-sidebar-scroll {
+  padding: 14px 10px;
+  overflow: auto;
+  flex: 1 1 auto;
+}
+
+.dash-nav-title {
+  padding: 6px 10px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.dash-nav {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.dash-nav-item {
+  margin: 2px 0;
+}
+
+.dash-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dash-nav-link i {
+  font-size: 18px;
+  width: 22px;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.dash-nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.dash-nav-link.is-active {
+  background: rgba(111, 66, 193, 0.18);
+  color: #fff;
+  outline: 1px solid rgba(111, 66, 193, 0.35);
+}
+
+/* Footer always visible */
+.dash-sidebar-footer {
+  padding: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.dash-footer-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dash-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.dash-logout {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dash-logout:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* ===== Main ===== */
+.dash-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dash-title {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.dash-subtitle {
+  font-size: 12px;
+}
+
+.dash-content {
+  padding: 18px;
+}
+
+/* ===== Mobile sidebar ===== */
+@media (max-width: 991.98px) {
+  .dash-sidebar {
+    position: fixed;
+    left: -290px;
+    transition: left 0.2s ease;
+    z-index: 50;
+  }
+  body.dash-sidebar-open .dash-sidebar {
+    left: 0;
+  }
+
+  /* backdrop simple */
+  body.dash-sidebar-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 40;
+  }
+}
+@media (max-width: 767.98px) {
+  .offcanvas .sidebar {
+    position: static;
+    height: auto;
+    width: 100%;
+  }
+}
+.sidebar .text-uppercase.small {
+  letter-spacing: 0.08em;
+}
+@media (max-width: 991.98px) {
+  /* < lg */
+  .offcanvas .sidebar {
+    position: static !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+}
+/* =========================
+   DASHBOARD – SIDEBAR THEME
+   Palette : noir + violet + blanc, style SaaS
+   Compatible <nav class="sidebar bg-dark ...">
+   ========================= */
+
+:root {
+  --dash-bg: #0b0f17;
+  --dash-bg-2: #0f1623;
+  --dash-border: rgba(255, 255, 255, 0.08);
+  --dash-text: rgba(255, 255, 255, 0.86);
+  --dash-muted: rgba(255, 255, 255, 0.55);
+  --dash-accent: #6100c2;
+  --dash-accent-2: #2c2cb1;
+  --dash-radius: 14px;
+}
+
+/* =========================
+   SIDEBAR (Desktop + base)
+   ========================= */
+
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  position: relative;
+  overflow-x: hidden; /* anti scroll horizontal */
+  border-right: 1px solid var(--dash-border);
+
+  background: radial-gradient(
+      1200px 700px at -10% -10%,
+      rgba(97, 0, 194, 0.22),
+      transparent 55%
+    ),
+    radial-gradient(
+      900px 600px at 110% 10%,
+      rgba(44, 44, 177, 0.18),
+      transparent 55%
+    ),
+    linear-gradient(180deg, var(--dash-bg) 0%, #070a10 100%) !important;
+}
+
+/* Brand */
+.sidebar .sidebar-brand {
+  border-bottom: 1px solid var(--dash-border) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
+}
+
+.sidebar .sidebar-brand .fw-bold {
+  letter-spacing: 0.2px;
+}
+.sidebar .text-primary {
+  color: var(--dash-accent) !important;
+}
+
+/* Sections */
+.sidebar .text-uppercase {
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Nav */
+.sidebar .nav {
+  width: 100%;
+  padding: 8px 10px;
+  gap: 2px;
+}
+
+/* Links */
+.sidebar .nav-link {
+  border-radius: 12px;
+  color: var(--dash-muted) !important;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.sidebar .nav-link i.bi {
+  font-size: 1.05rem;
+  opacity: 0.9;
+}
+
+/* Hover (desktop) */
+.sidebar .nav-link:hover {
+  color: var(--dash-text) !important;
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateX(2px);
+}
+
+/* Active */
+.sidebar .nav-link.active {
+  color: #fff !important;
+  background: linear-gradient(
+    90deg,
+    rgba(97, 0, 194, 0.28),
+    rgba(44, 44, 177, 0.12)
+  ) !important;
+  border: 1px solid rgba(97, 0, 194, 0.25);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+}
+
+.sidebar .nav-link.active::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--dash-accent), var(--dash-accent-2));
+  box-shadow: 0 0 18px rgba(97, 0, 194, 0.55);
+}
+
+/* Footer */
+.sidebar .border-top {
+  border-top: 1px solid var(--dash-border) !important;
+}
+.sidebar .text-white-50 {
+  color: var(--dash-muted) !important;
+}
+
+.sidebar .rounded-circle {
+  background: linear-gradient(
+    135deg,
+    rgba(97, 0, 194, 0.35),
+    rgba(44, 44, 177, 0.2)
+  ) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar a[href="/logout"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.sidebar a[href="/logout"]:hover {
+  color: #fff !important;
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(97, 0, 194, 0.25);
+}
+
+/* petit fade bas (indice scroll) */
+.sidebar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.55));
+  opacity: 0.9;
+}
+
+/* Responsive sidebar width (si tu l’affiches encore en desktop jusqu’à lg-) */
+@media (max-width: 991.98px) {
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+  }
+}
+
+.dashboard-main {
+  background: #f6f7fb !important;
+}
+
+/* =========================
+   OFFCANVAS (burger)
+   Même thème + UX clean
+   ========================= */
+
+.dash-offcanvas {
+  --bs-offcanvas-width: 320px; /* largeur */
+  max-width: 92vw;
+
+  color: var(--dash-text);
+  border-right: 1px solid var(--dash-border);
+
+  background: radial-gradient(
+      1200px 700px at -10% -10%,
+      rgba(97, 0, 194, 0.22),
+      transparent 55%
+    ),
+    radial-gradient(
+      900px 600px at 110% 10%,
+      rgba(44, 44, 177, 0.18),
+      transparent 55%
+    ),
+    linear-gradient(180deg, var(--dash-bg) 0%, #070a10 100%) !important;
+}
+
+.dash-offcanvas-body {
+  padding: 0 !important;
+}
+
+/* Close overlay */
+.dash-offcanvas-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 5;
+  opacity: 0.9;
+}
+.dash-offcanvas-close:hover {
+  opacity: 1;
+}
+
+.offcanvas {
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+}
+.offcanvas-backdrop.show {
+  opacity: 0.62;
+}
+
+/* Offcanvas : pas de scroll horizontal, mais scroll vertical OK */
+.dash-offcanvas,
+.dash-offcanvas .offcanvas-body {
+  overflow-x: hidden !important;
+}
+.dash-offcanvas .offcanvas-body {
+  overflow-y: auto !important;
+}
+
+/* La sidebar dans l’offcanvas doit prendre 100% SANS min-width */
+.dash-offcanvas .sidebar {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  border-right: 0 !important;
+  overflow-x: hidden !important;
+}
+
+/* IMPORTANT : la liste doit rester en colonne (évite côte à côte) */
+.dash-offcanvas .sidebar .nav {
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+}
+
+/* Hover dans offcanvas : on neutralise le translateX (évite overflow) */
+.dash-offcanvas .sidebar .nav-link:hover {
+  transform: none !important;
+}
+
+/* =========================
+   Scrollbar premium (sidebar + offcanvas)
+   ========================= */
+
+/* Firefox */
+.sidebar,
+.dash-offcanvas .offcanvas-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+/* Webkit */
+.sidebar::-webkit-scrollbar,
+.dash-offcanvas .offcanvas-body::-webkit-scrollbar {
+  width: 10px;
+}
+.sidebar::-webkit-scrollbar-track,
+.dash-offcanvas .offcanvas-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb,
+.dash-offcanvas .offcanvas-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(97, 0, 194, 0.55),
+    rgba(97, 0, 194, 0.25)
+  );
+  border-radius: 999px;
+  border: 3px solid rgba(0, 0, 0, 0.25);
+}
+.sidebar::-webkit-scrollbar-thumb:hover,
+.dash-offcanvas .offcanvas-body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(97, 0, 194, 0.75),
+    rgba(97, 0, 194, 0.35)
+  );
+}
+
+/* (Option) Empêche tout scroll horizontal global si un élément déborde */
+html,
+body {
+  overflow-x: hidden;
+}

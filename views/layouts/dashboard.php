@@ -8,44 +8,95 @@
     <meta charset="UTF-8">
     <title><?= htmlspecialchars($title ?? 'Dashboard – EPortailEmploi', ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- Bootstrap CSS -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap Icons (tu les utilises déjà : bi bi-...) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <!-- CSS custom -->
     <link rel="stylesheet" href="/assets/css/app.css">
 </head>
-<body class="dashboard-body">
-    <?php include __DIR__ . '/../partials/alerts.php'; ?> <!-- GESTION DES ALERTES SWEETALERT -->
 
-<div class="d-flex min-vh-100">
-    <?php require __DIR__ . '/../partials/sidebar_dashboard.php'; ?>
+<body class="dash">
+    <?php include __DIR__ . '/../partials/alerts.php'; ?>
 
-    <div class="flex-grow-1 d-flex flex-column bg-light">
-        <!-- Top bar -->
-        <header class="border-bottom bg-white px-4 py-3 d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="h5 mb-0"><?= htmlspecialchars($title ?? 'Tableau de bord') ?></h1>
-                <div class="text-muted small">Administration EPortailEmploi</div>
+    <div class="dash-shell">
+
+        <!-- Sidebar desktop -->
+            <div class="d-none d-lg-block">
+              <?php require __DIR__ . '/../partials/sidebar_dashboard.php'; ?>
             </div>
-            <!-- mettre ici recherche, notifications, etc. -->
-        </header>
+            
+            <!-- Sidebar mobile/tablette -->
+            
+            <div class="offcanvas offcanvas-start dash-offcanvas"
+                 tabindex="-1"
+                 id="sidebarOffcanvas"
+                 aria-labelledby="sidebarOffcanvasLabel">
 
-        <!-- Contenu principal -->
-        <main class="p-4">
-            <?= $content ?? '' ?>
-        </main>
+              <!-- Bouton close overlay (pas de header => pas de doublon) -->
+              <button type="button"
+                      class="btn-close btn-close-white dash-offcanvas-close"
+                      data-bs-dismiss="offcanvas"
+                      aria-label="Close"></button>
+
+              <div class="offcanvas-body p-0 dash-offcanvas-body">
+                <?php require __DIR__ . '/../partials/sidebar_dashboard.php'; ?>
+              </div>
+            </div>
+
+
+
+
+        <!-- Main -->
+        <div class="dash-main">
+            <header class="border-bottom bg-white px-3 px-md-4 py-3">
+                <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
+
+                  <div class="d-flex align-items-center gap-2">
+                    <!-- bouton burger visible sur mobile -->
+                    <button class="btn dash-burger d-lg-none"
+                        type="button"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#sidebarOffcanvas"
+                        aria-controls="sidebarOffcanvas">
+                        <i class="bi bi-list"></i>
+                    </button>
+
+
+
+                    <div>
+                      <h1 class="h5 mb-0"><?= htmlspecialchars($title ?? 'Tableau de bord') ?></h1>
+                      <div class="text-muted small">Administration EPortailEmploi</div>
+                    </div>
+                  </div>
+
+                  <!-- bloc user : ne shrink jamais -->
+                  <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
+                    <div class="text-end d-none d-sm-block">
+                      <div class="fw-semibold"><?= htmlspecialchars($_SESSION['user_prenom'] ?? 'Compte') ?></div>
+                      <div class="text-muted small"><?= htmlspecialchars($_SESSION['user_role'] ?? '') ?></div>
+                    </div>
+                    <div class="rounded-circle bg-secondary" style="width:38px;height:38px;"></div>
+                  </div>
+
+                </div>
+            </header>
+
+
+            <main class="dash-content">
+                <?= $content ?? '' ?>
+            </main>
+        </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="/assets/js/app.js"></script>
 </body>
 </html>

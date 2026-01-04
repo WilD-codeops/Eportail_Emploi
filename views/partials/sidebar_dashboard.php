@@ -19,26 +19,45 @@ $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
     </div>
 
     <ul class="nav nav-pills flex-column mb-auto mt-2">
-        <?php foreach ($items as $item): 
-            $isActive = $currentPath === $item['url'];
-        ?>
+
+        <?php foreach ($items as $item): ?>
+
+            <?php if (isset($item['section'])): ?>
+                <li class="px-3 mt-3 mb-1 text-uppercase small opacity-75">
+                    <?= htmlspecialchars($item['section']) ?>
+                </li>
+                <?php continue; ?>
+            <?php endif; ?>
+
+            <?php
+                // Sécurisation des clés
+                $url   = $item['url']   ?? '#';
+                $icon  = $item['icon']  ?? 'bi-circle';
+                $label = $item['label'] ?? '';
+
+                // Détection active
+                $isActive = ($currentPath === $url);
+            ?>
+
             <li class="nav-item">
                 <a 
-                    href="<?= htmlspecialchars($item['url']) ?>" 
+                    href="<?= htmlspecialchars($url) ?>" 
                     class="nav-link d-flex align-items-center px-3 py-2 <?= $isActive ? 'active text-white' : 'text-white-50' ?>"
                 >
-                    <i class="bi <?= htmlspecialchars($item['icon']) ?> me-2"></i>
-                    <span><?= htmlspecialchars($item['label']) ?></span>
+                    <i class="bi <?= htmlspecialchars($icon) ?> me-2"></i>
+                    <span><?= htmlspecialchars($label) ?></span>
                 </a>
             </li>
+
         <?php endforeach; ?>
+
     </ul>
 
     <div class="mt-auto px-3 py-3 border-top small">
         <div class="d-flex align-items-center">
             <div class="rounded-circle bg-secondary me-2" style="width:32px;height:32px;"></div>
             <div>
-                <div class="fw-semibold">Mon compte</div>
+                <div class="fw-semibold"><?= htmlspecialchars($_SESSION['user_prenom'] ?? 'Mon compte') ?></div>
                 <div class="text-white-50"><?= htmlspecialchars($role) ?></div>
             </div>
         </div>
