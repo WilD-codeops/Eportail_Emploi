@@ -8,9 +8,6 @@
  * - string $authVariant  : type de page ("login", "register", "forgot", "reset")
  */
 ?>
-<?php
-var_dump(password_hash('lucasmorel!2026', PASSWORD_BCRYPT));
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
