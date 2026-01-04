@@ -226,4 +226,60 @@ class OffresService
 
         return ['success' => true];
     }
+
+    public function listAdminPaginated(array $filters, int $page = 1, int $perPage = 10): array
+    {
+        $page = max(1, (int)$page);
+        $perPage = min(50, max(1, (int)$perPage));
+        $limit  = $perPage;
+        $offset = ($page - 1) * $perPage;
+    
+        $items = $this->repo->getAllPaginated($filters, $limit, $offset);
+        $total = $this->repo->countAll($filters);
+    
+        $totalPages = max(1, (int)ceil($total / $perPage));
+    
+        return [
+            'success' => true,
+            'data' => [
+                'items' => $items,
+                'pagination' => [
+                    'page' => $page,
+                    'perPage' => $perPage,
+                    'total' => $total,
+                    'totalPages' => $totalPages
+                ]
+            ]
+        ];
+    }
+    
+    public function listEntreprisePaginated(int $entrepriseId, array $filters, int $page = 1, int $perPage = 10): array
+    {
+        $page = max(1, (int)$page);
+        $perPage = min(50, max(1, (int)$perPage));
+        $limit  = $perPage;
+        $offset = ($page - 1) * $perPage;
+    
+        $items = $this->repo->getByEntreprisePaginated($entrepriseId, $filters, $limit, $offset);
+        $total = $this->repo->countByEntreprise($entrepriseId, $filters);
+    
+        $totalPages = max(1, (int)ceil($total / $perPage));
+    
+        return [
+            'success' => true,
+            'data' => [
+                'items' => $items,
+                'pagination' => [
+                    'page' => $page,
+                    'perPage' => $perPage,
+                    'total' => $total,
+                    'totalPages' => $totalPages
+                ]
+            ]
+        ];
+    }
+    
+
+
+
 }

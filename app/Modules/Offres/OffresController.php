@@ -102,35 +102,63 @@ class OffresController
     {
         Auth::requireRole(['admin']);
 
+        $filters = [
+            'keyword' => isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : null,
+            'statut'  => isset($_GET['statut']) ? trim((string)$_GET['statut']) : null,
+            'type_offre_id' => isset($_GET['type_offre_id']) ? (int)$_GET['type_offre_id'] : null,
+        ];
+
+        $page    = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['perPage']) ? (int)$_GET['perPage'] : 10;
+
         $service = $this->makeService();
-        $result  = $service->listAdmin();
+        $result  = $service->listAdminPaginated($filters, $page, $perPage);
+        $refs    = $service->getReferenceData(true)['data'] ?? [];
 
         $this->renderDashboard("list", [
             "title" => "Gestion des offres",
             "mode"  => "admin",
-            "items" => $result['data']['items'] ?? []
+            "items" => $result['data']['items'] ?? [],
+            "pagination" => $result['data']['pagination'] ?? [],
+            "filters" => $filters,
+            "refs" => $refs,
         ]);
     }
+
 
     /** Liste gestionnaire/recruteur */
     public function manageIndex(): void
     {
         Auth::requireRole(['gestionnaire', 'recruteur']);
-
+    
         $entrepriseId = Auth::entrepriseId();
         if (!$entrepriseId) {
             Security::forbidden();
         }
-
+    
+        $filters = [
+            'keyword' => isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : null,
+            'statut'  => isset($_GET['statut']) ? trim((string)$_GET['statut']) : null,
+            'type_offre_id' => isset($_GET['type_offre_id']) ? (int)$_GET['type_offre_id'] : null,
+        ];
+    
+        $page    = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['perPage']) ? (int)$_GET['perPage'] : 10;
+    
         $service = $this->makeService();
-        $result  = $service->listByEntreprise($entrepriseId);
-
+        $result  = $service->listEntreprisePaginated($entrepriseId, $filters, $page, $perPage);
+        $refs    = $service->getReferenceData(false)['data'] ?? [];
+    
         $this->renderDashboard("list", [
             "title" => "Mes offres",
             "mode"  => "entreprise",
-            "items" => $result['data']['items'] ?? []
+            "items" => $result['data']['items'] ?? [],
+            "pagination" => $result['data']['pagination'] ?? [],
+            "filters" => $filters,
+            "refs" => $refs,
         ]);
     }
+
 
     /** Formulaire création */
     public function createForm(): void

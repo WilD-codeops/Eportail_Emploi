@@ -348,7 +348,7 @@ class OffresRepository
         ]);
     }
 
-
+//REFERENTIELS
     /** Référentiel types d'offres */
     public function getTypesOffres(): array
     {
@@ -392,4 +392,157 @@ class OffresRepository
             ->query("SELECT id, nom FROM entreprises ORDER BY nom ASC")
             ->fetchAll(PDO::FETCH_ASSOC);
     }
+
+
+
+    /** ===========================
+     *  DASHBOARD LIST (PAGINATED)
+     *  =========================== */
+
+    private function baseSelect(): string
+    {
+        return "SELECT 
+                    o.*,
+                    e.nom AS entreprise_nom,
+                    l.ville AS localisation,
+                    t.code AS type_offre_code,
+                    t.description AS type_offre_description
+                FROM offres o
+                JOIN entreprises e ON e.id = o.entreprise_id
+                LEFT JOIN localisations l ON l.id = o.localisation_id
+                LEFT JOIN types_offres t ON t.id = o.type_offre_id";
+    }
+
+    /**
+     * Construit le WHERE + params en fonction des filtres (hors entreprise_id).
+     * $alias = 'o' pour offres.
+     */
+    private function buildWhere(array $filters, array &$params): string
+    {
+        $where = [];
+
+        // Keyword sur titre + description (placeholders distincts pour PDO/MySQL)
+        if (!empty($filters['keyword'])) {
+            $where[] = "(o.titre LIKE :kw1 OR o.description LIKE :kw2)";
+            $kw = '%' . trim((string)$filters['keyword']) . '%';
+            $params[':kw1'] = $kw;
+            $params[':kw2'] = $kw;
+        }
+
+        // Statut (active/inactive/archive)
+        if (!empty($filters['statut'])) {
+            $where[] = "o.statut = :statut";
+            $params[':statut'] = trim((string)$filters['statut']);
+        }
+
+        // Type offre
+        if (!empty($filters['type_offre_id'])) {
+            $where[] = "o.type_offre_id = :type";
+            $params[':type'] = (int)$filters['type_offre_id'];
+        }
+
+        return $where ? (" WHERE " . implode(" AND ", $where)) : "";
+    }
+
+    private function bindParams(\PDOStatement $stmt, array $params): void
+    {
+        foreach ($params as $k => $v) {
+            if (is_int($v)) {
+                $stmt->bindValue($k, $v, PDO::PARAM_INT);
+            } else {
+                $stmt->bindValue($k, (string)$v, PDO::PARAM_STR);
+            }
+        }
+    }
+
+    /** Admin: liste paginée */
+    public function getAllPaginated(array $filters, int $limit, int $offset): array
+    {
+        $params = [];
+        $where = $this->buildWhere($filters, $params);
+
+        $sql = $this->baseSelect()
+            . $where
+            . " ORDER BY o.date_creation DESC, o.id DESC
+                LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $this->bindParams($stmt, $params);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** Admin: count paginé */
+    public function countAll(array $filters): int
+    {
+        $params = [];
+        $where = $this->buildWhere($filters, $params);
+
+        $sql = "SELECT COUNT(*) 
+                FROM offres o" . $where;
+
+        $stmt = $this->pdo->prepare($sql);
+        $this->bindParams($stmt, $params);
+
+        $stmt->execute();
+        return (int)$stmt->fetchColumn();
+    }
+
+    /** Entreprise: liste paginée */
+    public function getByEntreprisePaginated(int $entrepriseId, array $filters, int $limit, int $offset): array
+    {
+        $params = [];
+        $where = $this->buildWhere($filters, $params);
+
+        // On force entreprise_id en plus
+        if ($where === '') {
+            $where = " WHERE o.entreprise_id = :eid";
+        } else {
+            $where .= " AND o.entreprise_id = :eid";
+        }
+        $params[':eid'] = $entrepriseId;
+
+        $sql = $this->baseSelect()
+            . $where
+            . " ORDER BY o.date_creation DESC, o.id DESC
+                LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $this->bindParams($stmt, $params);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** Entreprise: count paginé */
+    public function countByEntreprise(int $entrepriseId, array $filters): int
+    {
+        $params = [];
+        $where = $this->buildWhere($filters, $params);
+
+        if ($where === '') {
+            $where = " WHERE o.entreprise_id = :eid";
+        } else {
+            $where .= " AND o.entreprise_id = :eid";
+        }
+        $params[':eid'] = $entrepriseId;
+
+        $sql = "SELECT COUNT(*)
+                FROM offres o" . $where;
+
+        $stmt = $this->pdo->prepare($sql);
+        $this->bindParams($stmt, $params);
+
+        $stmt->execute();
+        return (int)$stmt->fetchColumn();
+    }
+
+
 }
