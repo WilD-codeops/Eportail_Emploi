@@ -4,34 +4,35 @@ declare(strict_types=1);
 use App\Core\Security;
 
 /**
- * =============================
+ * ==========================================================
  *  LISTE OFFRES (DASHBOARD)
  *  - Admin : voit toutes les offres
  *  - Entreprise : voit seulement ses offres
- *  + Filtres (GET) + Pagination + Actions (edit/delete)
+ *  - Filtres (GET) + Pagination + Actions (edit/delete)
  *
- *  NOTE FUTUR REFACTOR :
- *  - _filters.php (form filtre)
- *  - _table.php   (table)
- *  - _pagination.php
- * =============================
+ *  Découpage :
+ *  - _filters.php : formulaire filtres (GET)
+ * ==========================================================
  */
 
-$isAdmin   = ($mode ?? '') === 'admin';
-$title     = $title ?? ($isAdmin ? 'Gestion des offres' : 'Mes offres');
+// Contexte (admin/entreprise) transmis par le controller
+$isAdmin = ($mode ?? '') === 'admin';
+$title   = $title ?? ($isAdmin ? 'Gestion des offres' : 'Mes offres');
 
-// Routes selon le contexte (admin / entreprise)
+// Routes selon contexte
 $createUrl = $isAdmin ? "/admin/offres/create" : "/dashboard/offres/create";
 $editBase  = $isAdmin ? "/admin/offres/edit"   : "/dashboard/offres/edit";
 $delBase   = $isAdmin ? "/admin/offres/delete" : "/dashboard/offres/delete";
 
-// Data
+// Data venant du controller/service
 $items      = $items ?? [];
-$refs       = $refs ?? [];             // refs['typesOffres'] attendu
-$filters    = $filters ?? [];          // keyword, statut, type_offre_id
-$pagination = $pagination ?? [];       // page, perPage, total, totalPages
+$refs       = $refs ?? [];        // refs['typesOffres']
+$filters    = $filters ?? [];     // keyword, statut, type_offre_id
+$pagination = $pagination ?? [];  // page, perPage, total, totalPages
 
-// --- Helpers UI ---
+// -----------------------------
+// Helpers UI (badge + date)
+// -----------------------------
 $badge = function (?string $statut): array {
     return match ($statut) {
         'active'   => ['label' => 'Active',   'class' => 'bg-success'],
@@ -47,22 +48,32 @@ $fmtDate = function (?string $dt): string {
     return $ts ? date('d/m/Y H:i', $ts) : $dt;
 };
 
-// --- Filtres (GET) ---
+// -----------------------------
+// Filtres (source : controller -> fallback GET)
+// -----------------------------
 $keyword = trim((string)($filters['keyword'] ?? ($_GET['keyword'] ?? '')));
 $statut  = trim((string)($filters['statut']  ?? ($_GET['statut']  ?? '')));
 $typeId  = (int)($filters['type_offre_id']   ?? ($_GET['type_offre_id'] ?? 0));
 
-// Pagination
-$page       = (int)($pagination['page'] ?? ($_GET['page'] ?? 1));
-$perPage    = (int)($pagination['perPage'] ?? ($_GET['perPage'] ?? 10));
-$total      = (int)($pagination['total'] ?? count($items));
+// -----------------------------
+// Pagination (source : service -> fallback GET)
+// -----------------------------
+$page    = (int)($pagination['page'] ?? ($_GET['page'] ?? 1));
+$perPage = (int)($pagination['perPage'] ?? ($_GET['perPage'] ?? 10));
+$total   = (int)($pagination['total'] ?? count($items));
 $totalPages = (int)($pagination['totalPages'] ?? 1);
 
-// Path courant (pour reconstruire les URLs de pagination)
-$basePath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: ($isAdmin ? '/admin/offres' : '/dashboard/offres');
+// Garde-fous (évite page=0 / perPage=999)
+$page    = max(1, $page);
+$perPage = min(50, max(1, $perPage));
+$totalPages = max(1, $totalPages);
+
+// Path courant (pour action form + pagination)
+$basePath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH)
+    ?: ($isAdmin ? '/admin/offres' : '/dashboard/offres');
 
 /**
- * Construit une URL en conservant les filtres actuels (GET)
+ * Construit une URL en conservant les filtres actuels (GET),
  * et en appliquant des overrides (ex: page => 2).
  */
 $buildUrl = function(array $overrides = []) use ($basePath, $keyword, $statut, $typeId, $perPage, $page): string {
@@ -84,13 +95,15 @@ $buildUrl = function(array $overrides = []) use ($basePath, $keyword, $statut, $
     return $basePath . (empty($qs) ? '' : ('?' . http_build_query($qs)));
 };
 
-// Options Statut (filtre)
+// Options statut : "archive" réservé admin
 $statusOptions = [
     ''         => 'Tous statuts',
     'active'   => 'Active',
     'inactive' => 'Inactive',
-    'archive'  => 'Archivée',
 ];
+if ($isAdmin) {
+    $statusOptions['archive'] = 'Archivée';
+}
 
 // Options perPage
 $perPageOptions = [10, 20, 50];
@@ -104,7 +117,7 @@ $perPageOptions = [10, 20, 50];
             <?= $isAdmin ? "Administration • gestion globale des offres" : "Espace entreprise • offres rattachées à votre entreprise" ?>
             • <?= $total ?> résultat<?= $total > 1 ? 's' : '' ?>
             <?php if ($totalPages > 1): ?>
-                • page <?= max(1, $page) ?> / <?= max(1, $totalPages) ?>
+                • page <?= $page ?> / <?= $totalPages ?>
             <?php endif; ?>
         </div>
     </div>
@@ -116,100 +129,33 @@ $perPageOptions = [10, 20, 50];
     </div>
 </div>
 
-<!-- Filtres (upgrade sans casser ton style) -->
-<div class="card shadow-sm mb-3">
-    <div class="card-body">
-        <form method="GET" action="<?= htmlspecialchars($basePath) ?>" class="row g-2 align-items-end">
-
-            <!-- Keyword -->
-            <div class="col-12 col-md-5">
-                <label class="form-label mb-1">Recherche</label>
-                <input
-                    type="text"
-                    name="keyword"
-                    class="form-control"
-                    placeholder="Titre ou description…"
-                    value="<?= htmlspecialchars($keyword) ?>"
-                >
-            </div>
-
-            <!-- Statut -->
-            <div class="col-12 col-md-3">
-                <label class="form-label mb-1">Statut</label>
-                <select class="form-select" name="statut">
-                    <?php foreach ($statusOptions as $k => $label): ?>
-                        <option value="<?= htmlspecialchars($k) ?>" <?= ($statut === $k) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($label) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <!-- Type offre -->
-            <div class="col-12 col-md-3">
-                <label class="form-label mb-1">Type</label>
-                <select class="form-select" name="type_offre_id">
-                    <option value="0">Tous types</option>
-                    <?php foreach (($refs['typesOffres'] ?? []) as $t): ?>
-                        <?php $id = (int)($t['id'] ?? 0); ?>
-                        <option value="<?= $id ?>" <?= ($typeId === $id) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars(($t['code'] ?? '') . ' — ' . ($t['description'] ?? '')) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <!-- PerPage -->
-            <div class="col-12 col-md-1">
-                <label class="form-label mb-1">Par page</label>
-                <select class="form-select" name="perPage">
-                    <?php foreach ($perPageOptions as $n): ?>
-                        <option value="<?= $n ?>" <?= ($perPage === $n) ? 'selected' : '' ?>><?= $n ?></option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <!-- À chaque filtre -> on revient page 1 -->
-            <input type="hidden" name="page" value="1">
-
-            <div class="col-12 d-flex justify-content-end gap-2">
-                <button class="btn btn-outline-primary" type="submit">
-                    <i class="bi bi-funnel me-1"></i> Filtrer
-                </button>
-
-                <a class="btn btn-outline-secondary" href="<?= htmlspecialchars($basePath) ?>">
-                    Réinitialiser
-                </a>
-            </div>
-
-        </form>
-    </div>
-</div>
+<!-- Filtres (partial) -->
+<?php require __DIR__ . "/_filters.php"; ?>
 
 <!-- Résultats -->
 <?php if (empty($items)): ?>
     <div class="alert alert-info mb-0">
         Aucune offre ne correspond aux filtres.
     </div>
-
 <?php else: ?>
+
     <div class="card shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
-                        <tr>
-                            <th style="width:80px;">#</th>
-                            <th>Titre</th>
-                            <?php if ($isAdmin): ?><th>Entreprise</th><?php endif; ?>
-                            <th style="width:120px;">Type</th>
-                            <th style="width:160px;">Localisation</th>
-                            <th style="width:110px;">Statut</th>
-                            <th style="width:170px;">Créée</th>
-                            <th style="width:170px;">Modifiée</th>
-                            <th>Modifié par</th>
-                            <th class="text-end" style="width:170px;">Actions</th>
-                        </tr>
+                    <tr>
+                        <th style="width:80px;">#</th>
+                        <th>Titre</th>
+                        <?php if ($isAdmin): ?><th>Entreprise</th><?php endif; ?>
+                        <th style="width:120px;">Type</th>
+                        <th style="width:160px;">Localisation</th>
+                        <th style="width:110px;">Statut</th>
+                        <th style="width:170px;">Créée</th>
+                        <th style="width:170px;">Modifiée</th>
+                        <th>Modifié par</th>
+                        <th class="text-end" style="width:170px;">Actions</th>
+                    </tr>
                     </thead>
 
                     <tbody>
@@ -221,8 +167,9 @@ $perPageOptions = [10, 20, 50];
                         $b = $badge($statutRow);
 
                         /**
-                         * CSRF delete : on garde ta stratégie "one-time token par offre"
-                         * => clé unique : offres_delete_{id}
+                         * CSRF delete :
+                         * - Token unique par offre (clé = offres_delete_{id})
+                         * - Vérifié côté serveur dans controller->delete()
                          */
                         $csrfKey = "offres_delete_" . $id;
                         $csrfDel = Security::generateCsrfToken($csrfKey);
@@ -336,12 +283,15 @@ $perPageOptions = [10, 20, 50];
 
     <script>
     /**
-     * Confirmation delete (SweetAlert2) — on conserve ta base.
-     * IMPORTANT : si le user confirme, on submit le form => CSRF vérifié côté serveur.
+     * Confirmation delete (SweetAlert2)
+     * - Si Swal n'est pas chargé => fallback submit natif
+     * - Si confirmé => submit => CSRF vérifié côté serveur
      */
     document.querySelectorAll('.js-delete-form').forEach(form => {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+
+            if (typeof Swal === 'undefined') return form.submit();
 
             Swal.fire({
                 icon: 'warning',
@@ -356,4 +306,5 @@ $perPageOptions = [10, 20, 50];
         });
     });
     </script>
+
 <?php endif; ?>

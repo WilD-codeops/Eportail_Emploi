@@ -108,8 +108,10 @@ class OffresController
             'type_offre_id' => isset($_GET['type_offre_id']) ? (int)$_GET['type_offre_id'] : null,
         ];
 
-        $page    = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $perPage = isset($_GET['perPage']) ? (int)$_GET['perPage'] : 10;
+        // Sécurise la pagination : pas de page 0 / pas de perPage énorme
+        $page    = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = isset($_GET['perPage']) ? min(50, max(1, (int)$_GET['perPage'])) : 10;
+
 
         $service = $this->makeService();
         $result  = $service->listAdminPaginated($filters, $page, $perPage);
@@ -130,25 +132,25 @@ class OffresController
     public function manageIndex(): void
     {
         Auth::requireRole(['gestionnaire', 'recruteur']);
-    
+
         $entrepriseId = Auth::entrepriseId();
         if (!$entrepriseId) {
             Security::forbidden();
         }
-    
+
         $filters = [
             'keyword' => isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : null,
             'statut'  => isset($_GET['statut']) ? trim((string)$_GET['statut']) : null,
             'type_offre_id' => isset($_GET['type_offre_id']) ? (int)$_GET['type_offre_id'] : null,
         ];
-    
-        $page    = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $perPage = isset($_GET['perPage']) ? (int)$_GET['perPage'] : 10;
-    
+
+        $page    = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = isset($_GET['perPage']) ? min(50, max(1, (int)$_GET['perPage'])) : 10;
+
         $service = $this->makeService();
         $result  = $service->listEntreprisePaginated($entrepriseId, $filters, $page, $perPage);
         $refs    = $service->getReferenceData(false)['data'] ?? [];
-    
+
         $this->renderDashboard("list", [
             "title" => "Mes offres",
             "mode"  => "entreprise",

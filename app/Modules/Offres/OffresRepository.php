@@ -399,6 +399,11 @@ class OffresRepository
      *  DASHBOARD LIST (PAGINATED)
      *  =========================== */
 
+    /**
+ * baseSelect :
+ * - SELECT commun aux listes paginées (admin & entreprise)
+ * - inclut les joins nécessaires à l'affichage dashboard
+ */
     private function baseSelect(): string
     {
         return "SELECT 
@@ -406,12 +411,27 @@ class OffresRepository
                     e.nom AS entreprise_nom,
                     l.ville AS localisation,
                     t.code AS type_offre_code,
-                    t.description AS type_offre_description
+                    t.description AS type_offre_description,
+    
+                    d.nom AS domaine_emploi,  -- utile pour l'affichage sous le titre
+    
+                    ua.prenom AS auteur_nom,
+                    ua.role   AS auteur_role,
+    
+                    um.prenom AS modifie_nom,
+                    um.role   AS modifie_role
+    
                 FROM offres o
                 JOIN entreprises e ON e.id = o.entreprise_id
                 LEFT JOIN localisations l ON l.id = o.localisation_id
-                LEFT JOIN types_offres t ON t.id = o.type_offre_id";
+                LEFT JOIN types_offres t ON t.id = o.type_offre_id
+                LEFT JOIN domaines_emploi d ON d.id = o.domaine_emploi_id
+    
+                LEFT JOIN users ua ON ua.id = o.auteur_id
+                LEFT JOIN users um ON um.id = o.modifie_par";
     }
+
+
 
     /**
      * Construit le WHERE + params en fonction des filtres (hors entreprise_id).

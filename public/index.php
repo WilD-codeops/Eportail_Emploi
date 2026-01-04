@@ -49,7 +49,7 @@ $router->post('/admin/entreprises/delete', 'App\\Modules\\Entreprise\\Entreprise
 
 // Offres route publique
 $router->get('/offres', 'App\\Modules\\Offres\\OffresController@index'); 
-$router->get('/offres/show?id', 'App\\Modules\\Offres\\OffresController@show');
+$router->get('/offres/show', 'App\\Modules\\Offres\\OffresController@show');
 
 // Offres — CRUD Admin
 $router->get('/admin/offres', 'App\\Modules\\Offres\\OffresController@adminIndex');
