@@ -1,4 +1,3 @@
-```md
 # 📘 README — EPortail Emploi
 
 Plateforme de recherche d’emploi — PHP natif (Architecture MVC Modulaire)
@@ -144,6 +143,7 @@ Fonctionnalités :
 # 🏗️ 4. Architecture du projet
 
 Le projet suit une architecture **MVC modulaire**, inspirée des frameworks modernes.
+
 ```
 
 /app
@@ -210,7 +210,7 @@ Les routes sont déclarées dans :
 
 /public/index.php
 
-````
+```
 
 Exemples :
 
@@ -219,7 +219,7 @@ $router->get('/', 'App\\Modules\\Home\\HomeController@index');
 $router->get('/login', 'App\\Modules\\Auth\\AuthController@showLogin');
 $router->post('/login', 'App\\Modules\\Auth\\AuthController@login');
 $router->get('/offres', 'App\\Modules\\Offres\\OffresController@index');
-````
+```
 
 Le router maison gère :
 
