@@ -50,6 +50,17 @@ class OffresController
         require __DIR__ . "/../../../views/layouts/dashboard.php";
     }
 
+    /**
+ * Rend un partial (HTML) sans layout.
+ * Utilisé par AJAX : on renvoie uniquement un fragment HTML.
+ */
+    private function renderPartial(string $view, array $params = []): void
+    {
+        extract($params);
+        require __DIR__ . "/../../../views/offres/{$view}.php";
+    }
+
+
     /** Liste publique avec filtres */
     public function index(): void
     {
@@ -158,6 +169,69 @@ class OffresController
             "pagination" => $result['data']['pagination'] ?? [],
             "filters" => $filters,
             "refs" => $refs,
+        ]);
+    }
+
+       /**
+    * AJAX (ADMIN) : renvoie uniquement table + pagination (HTML)
+    * URL: GET /admin/offres/partial?... (keyword/statut/type/page/perPage)
+    */
+    public function adminPartial(): void
+    {
+        Auth::requireRole(['admin']);
+
+        $filters = [
+            'keyword'       => isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : null,
+            'statut'        => isset($_GET['statut']) ? trim((string)$_GET['statut']) : null,
+            'type_offre_id' => isset($_GET['type_offre_id']) ? (int)$_GET['type_offre_id'] : null,
+        ];
+
+        $page    = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['perPage']) ? (int)$_GET['perPage'] : 10;
+
+        $service = $this->makeService();
+        $result  = $service->listAdminPaginated($filters, $page, $perPage);
+
+        $this->renderPartial("_results", [
+            "mode"       => "admin",
+            "items"      => $result['data']['items'] ?? [],
+            "pagination" => $result['data']['pagination'] ?? [],
+            "filters"    => $filters,
+            "refs"       => $service->getReferenceData(true)['data'] ?? [],
+        ]);
+    }
+
+    /**
+     * AJAX (ENTREPRISE) : renvoie uniquement table + pagination (HTML)
+     * URL: GET /dashboard/offres/partial?...
+     */
+    public function managePartial(): void
+    {
+        Auth::requireRole(['gestionnaire', 'recruteur']);
+
+        $entrepriseId = Auth::entrepriseId();
+        if (!$entrepriseId) {
+            Security::forbidden();
+        }
+
+        $filters = [
+            'keyword'       => isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : null,
+            'statut'        => isset($_GET['statut']) ? trim((string)$_GET['statut']) : null,
+            'type_offre_id' => isset($_GET['type_offre_id']) ? (int)$_GET['type_offre_id'] : null,
+        ];
+
+        $page    = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $perPage = isset($_GET['perPage']) ? (int)$_GET['perPage'] : 10;
+
+        $service = $this->makeService();
+        $result  = $service->listEntreprisePaginated($entrepriseId, $filters, $page, $perPage);
+
+        $this->renderPartial("_results", [
+            "mode"       => "entreprise",
+            "items"      => $result['data']['items'] ?? [],
+            "pagination" => $result['data']['pagination'] ?? [],
+            "filters"    => $filters,
+            "refs"       => $service->getReferenceData(false)['data'] ?? [],
         ]);
     }
 
