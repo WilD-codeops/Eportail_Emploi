@@ -149,7 +149,8 @@ class OffresController
         $this->renderDashboard("create", [
             "title" => "Créer une offre",
             "refs"  => $refs,
-            "csrf"  => $csrf
+            "csrf"  => $csrf,
+            "isAdmin" => $isAdmin
         ]);
     }
 
@@ -178,7 +179,8 @@ class OffresController
                 "refs"   => $refs,
                 "errors" => $result['errors'] ?? [],
                 "input"  => $result['data']['input'] ?? [],
-                "csrf"   => $csrf
+                "csrf"   => $csrf,
+                "isAdmin" => $isAdmin
             ]);
             return;
         }
@@ -221,7 +223,8 @@ class OffresController
             "title" => "Modifier une offre",
             "refs"  => $refs,
             "offre" => $offre,
-            "csrf"  => $csrf
+            "csrf"  => $csrf,
+            "isAdmin" => $isAdmin
         ]);
     }
 
@@ -267,7 +270,8 @@ class OffresController
                 "offre"  => $offre,
                 "errors" => $result['errors'] ?? [],
                 "input"  => $result['data']['input'] ?? [],
-                "csrf"   => $csrf
+                "csrf"   => $csrf,
+                "isAdmin" => $isAdmin
             ]);
             return;
         }
@@ -286,7 +290,9 @@ class OffresController
             Auth::requireRole(['gestionnaire', 'recruteur']);
         }
 
-        Security::requireCsrfToken('offres_delete', $_POST['csrf_token'] ?? null);
+        $csrfKey = $_POST['csrf_key'] ?? '';
+        Security::requireCsrfToken($csrfKey, $_POST['csrf_token'] ?? null);
+
 
         $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 

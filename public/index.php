@@ -48,7 +48,24 @@ $router->post('/admin/entreprises/delete', 'App\\Modules\\Entreprise\\Entreprise
 
 
 // Offres route publique
-$router->get('/offres', 'App\\Modules\\Offres\\OffresController@index');    
+$router->get('/offres', 'App\\Modules\\Offres\\OffresController@index'); 
+$router->get('/offres/show?id', 'App\\Modules\\Offres\\OffresController@show');
+
+// Offres — CRUD Admin
+$router->get('/admin/offres', 'App\\Modules\\Offres\\OffresController@adminIndex');
+$router->get('/admin/offres/create', 'App\\Modules\\Offres\\OffresController@createForm');
+$router->post('/admin/offres/create', 'App\\Modules\\Offres\\OffresController@create');
+$router->get('/admin/offres/edit', 'App\\Modules\\Offres\\OffresController@editForm');
+$router->post('/admin/offres/edit', 'App\\Modules\\Offres\\OffresController@update');
+$router->post('/admin/offres/delete', 'App\\Modules\\Offres\\OffresController@delete');
+
+// Offres — CRUD Dashboard Recruteur/Gestionnaire
+$router->get('/dashboard/offres', 'App\\Modules\\Offres\\OffresController@manageIndex');
+$router->get('/dashboard/offres/create', 'App\\Modules\\Offres\\OffresController@createForm');
+$router->post('/dashboard/offres/create', 'App\\Modules\\Offres\\OffresController@create');
+$router->get('/dashboard/offres/edit', 'App\\Modules\\Offres\\OffresController@editForm');
+$router->post('/dashboard/offres/edit', 'App\\Modules\\Offres\\OffresController@update');
+$router->post('/dashboard/offres/delete', 'App\\Modules\\Offres\\OffresController@delete');
 
 
 $router->run();
