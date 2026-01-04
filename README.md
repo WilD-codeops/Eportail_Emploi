@@ -1,4 +1,5 @@
-# 📘 **README — EPortail Emploi**
+```md
+# 📘 README — EPortail Emploi
 
 Plateforme de recherche d’emploi — PHP natif (Architecture MVC Modulaire)
 
@@ -31,7 +32,7 @@ L’accès aux fonctionnalités dépend du **rôle de l’utilisateur**, géré 
 
 ---
 
-## 🔐 Module Auth (Authentification & Rôles)
+## 🔐 Module Auth (Authentification, Rôles & Gestion des utilisateurs)
 
 Fonctionnalités :
 
@@ -39,16 +40,15 @@ Fonctionnalités :
 - Inscription entreprise
 - Connexion / déconnexion
 - Gestion des sessions sécurisées
+- Vérification des permissions
 - Redirection automatique selon le rôle
-- Vérification des permissions avant chaque action
 
-Rôles gérés :
+**Gestion des utilisateurs (Admin) :**
 
-- Visiteur
-- Candidat
-- Recruteur
-- Gestionnaire
-- Administrateur
+- Liste des utilisateurs
+- Création / modification / suppression
+- Attribution des rôles
+- Association des utilisateurs à une entreprise (recruteurs / gestionnaires)
 
 ---
 
@@ -56,8 +56,8 @@ Rôles gérés :
 
 - Page d’accueil
 - Présentation du service
-- Accès aux offres publiques
 - Redirection selon le rôle si connecté
+- Pages publiques statiques
 
 ---
 
@@ -109,7 +109,7 @@ Rôles gérés :
 
 **Admin :**
 
-- Accés total
+- Accès total
 
 ---
 
@@ -144,8 +144,8 @@ Rôles gérés :
 # 🏗️ 4. Architecture du projet
 
 Le projet suit une architecture **MVC modulaire**, inspirée des frameworks modernes.
-
 ```
+
 /app
     /Core
         Router.php
@@ -154,24 +154,50 @@ Le projet suit une architecture **MVC modulaire**, inspirée des frameworks mode
         SessionManager.php
     /Modules
         /Auth
+            AuthController.php
+            AuthRepository.php
+            AuthService.php
+            AuthValidator.php
         /Entreprise
+            EntrepriseController.php
+            EntrepriseRepository.php
+            EntrepriseService.php
+            EntrepriseValidator.php
         /Offres
+            OffresController.php
+            OffresRepository.php
+            OffresService.php
+            OffresValidator.php
         /Home
-        (Candidat, Candidatures, prévus)
+            HomeController.php
+        (Candidat, Candidatures — prévus)
 /config
     database.php
     menu.php
 /public
+    /assets
+        /css
+        /js
     index.php
 /views
     /layouts
+        main.php
+        auth.php
+        dashboard.php
+    /partials
     /auth
     /entreprise
+    /errors
     /offres
     /home
 /database
     eportailemploi.sql
 /vendor
+    /composer
+composer.json
+README.md
+
+
 ```
 
 ---
@@ -181,8 +207,10 @@ Le projet suit une architecture **MVC modulaire**, inspirée des frameworks mode
 Les routes sont déclarées dans :
 
 ```
+
 /public/index.php
-```
+
+````
 
 Exemples :
 
@@ -191,7 +219,7 @@ $router->get('/', 'App\\Modules\\Home\\HomeController@index');
 $router->get('/login', 'App\\Modules\\Auth\\AuthController@showLogin');
 $router->post('/login', 'App\\Modules\\Auth\\AuthController@login');
 $router->get('/offres', 'App\\Modules\\Offres\\OffresController@index');
-```
+````
 
 Le router maison gère :
 
@@ -206,7 +234,7 @@ Le router maison gère :
 
 Chaque module possède ses vues dans `/views/<module>`.
 
-Le rendu se fait via des méthodes personnalisées dans les controllers :
+Exemple de méthode de rendu :
 
 ```php
 private function renderAuth(string $view, array $params = []): void
@@ -246,6 +274,7 @@ Le projet intègre plusieurs mesures de sécurité :
 
 - Token unique par formulaire
 - Vérification + invalidation automatique
+- Protection des actions sensibles (delete)
 
 ### ✔️ Authentification
 
@@ -268,8 +297,6 @@ Le fichier SQL se trouve dans :
 /database/eportailemploi.sql
 ```
 
-Il contient la base de données.
-
 ---
 
 # ⚡ 9. Installation rapide
@@ -289,31 +316,13 @@ composer install
 
 # 📘 10. Installation détaillée
 
-### 1. Cloner le projet
-
-git clone https://github.com/<repo>/eportail-emploi.git
-
-### 2. Installer les dépendances Composer
-
-composer install
-
-### 3. Configurer la base de données
-
-Modifier config/database.php avec vos identifiants MySQL.
-
-### 4. Importer le fichier SQL
-
-Importer /database/eportailemploi.sql via phpMyAdmin ou MySQL CLI.
-
-### 5. Configurer un VirtualHost (recommandé)
-
-Pointer vers /public comme racine du projet.
-
-### 6. Vérifier les permissions
-
-S’assurer que PHP peut lire les dossiers /app, /views, /config.
-
-### 7. Accéder à l’application via :
+1. Cloner le projet
+2. Installer les dépendances Composer
+3. Configurer la base de données
+4. Importer le fichier SQL
+5. Configurer un VirtualHost
+6. Vérifier les permissions
+7. Accéder à l’application via :
 
 ```
 http://localhost/eportail-emploi
@@ -321,48 +330,115 @@ http://localhost/eportail-emploi
 
 ---
 
-# 🧩 11. Modules existants
+# 👥 11. Comptes de test
+
+### Administrateur
+
+- Email : `admin@site.fr`
+- Mot de passe : `hashpwdadmin`
+
+### Gestionnaire
+
+- Email : `paul.martin@santeplus.fr`
+- Mot de passe : `paulmartin`
+
+### Gestionnaire
+
+- Email : `lucas.morel@techcorp.fr`
+- Mot de passe : `lucasmorel!2026`
+
+### Recruteur
+
+- Email : `marie.durand@techcorp.fr`
+- Mot de passe : `mariedurand`
+
+### Candidat
+
+- Email : `jean.dupont@example.com`
+- Mot de passe : `jeandupont`
+
+---
+
+# 🔄 12. Rechargement AJAX (Module Offres)
+
+Le module **Offres** utilise un rechargement AJAX pour mettre à jour la liste (table + pagination) sans recharger toute la page.
+
+Principe :
+
+- Le JavaScript intercepte les clics de pagination et les filtres
+- Une requête `fetch()` est envoyée vers :  
+  `/admin/offres/partial` ou `/dashboard/offres/partial`
+- Le contrôleur renvoie un **fragment HTML** (`_results.php`)
+- Le JS remplace le contenu du bloc `#offres-results`
+
+Ce choix permet une navigation fluide tout en conservant les vues PHP du MVC.
+
+---
+
+# 🧾 13. Conventions de commit
+
+Le projet suit les conventions **Conventional Commits** :
+
+- `feat:` → nouvelle fonctionnalité
+- `fix:` → correction de bug
+- `refactor:` → amélioration interne
+- `style:` → formatage
+- `docs:` → documentation
+- `chore:` → maintenance
+
+Exemples :
+
+```
+feat(offres): ajout de la pagination et des filtres
+fix(ui): correction de la hauteur de la sidebar
+refactor(auth): simplification de la gestion des sessions
+```
+
+---
+
+# 🧩 14. Modules existants
 
 - Auth
 - Entreprise
 - Offres
 - Home
 
-# 🧱 Modules prévus
+## 🧱 Modules prévus
 
 - Candidat
 - Candidatures
 
 ---
 
-# 🖼️ 12. Aperçu (captures d’écran)
+# 🖼️ 15. Aperçu (captures d’écran)
+
+_(à compléter)_
 
 ---
 
-# 🚧 13. Limites actuelles
+# 🚧 16. Limites actuelles
 
-- Certains modules non finalisés
+- Certains modules non finalisés (Auth, Entreprise, Offres toujours en cours)
+- Pas de messagerie interne
 - Pas encore d’API REST
-- Pas de système de messagerie interne
-- Pas de gestion avancée des permissions fines
 
 ---
 
-# 🚀 14. Améliorations futures
+# 🚀 17. Améliorations futures
 
-- Entités pour completer les paterns et usage d'objets
+- Entités pour compléter les patterns
 - API REST
-- PhpUnit pour tests unitaires
+- PhpUnit
 - PhpMailer
 - Application mobile
-- Système de notifications internes
+- Notifications internes
 - Commentaires sur les candidatures
 - Tableau de bord avancé
 - Optimisation des performances
 
 ---
 
-# 👤 15. Auteur
+# 👤 18. Auteur
 
 **Wildane MADI**  
 Certification **RNCP 37273 – Développeur Web & Web Mobile**  
@@ -370,19 +446,24 @@ Projet réalisé en 2025–2026
 
 ---
 
-# 🎓 16. Contexte pédagogique
+# 🎓 19. Contexte pédagogique
 
-Ce projet a été réalisé dans le cadre de la certification RNCP 37273.  
-Il démontre :
+Ce projet démontre :
 
 - la maîtrise d’une architecture MVC modulaire
-- la capacité à concevoir une base de données professionnelle
-- la mise en œuvre de bonnes pratiques de sécurité
+- la conception d’une base de données professionnelle
+- les bonnes pratiques de sécurité
 - l’utilisation de Git et Composer
 - la capacité à structurer un projet complet
 
 ---
 
-# 17. Déploiement (à venir)
+# 20. Déploiement (à venir)
 
-Le projet sera déployé sur un serveur LAMP dans le mois suivant la remise du mémoire.
+Déploiement prévu sur serveur LAMP.
+
+```
+
+---
+
+```
