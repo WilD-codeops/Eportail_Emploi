@@ -354,7 +354,7 @@ http://localhost/eportail-emploi
 
 ### Candidat
 
-- Email : `jean.dupont@example.com`
+- Email : `jean.dupont@exemple.com`
 - Mot de passe : `jeandupont`
 
 ---
