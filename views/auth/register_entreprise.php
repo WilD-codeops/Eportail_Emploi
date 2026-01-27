@@ -38,9 +38,9 @@
                 <label class="form-label">Secteur d'activité *</label>
                 <select name="secteur_id" class="form-select" required>
                     <option value="">— Choisir un secteur —</option>
-                    <option value="1">Informatique</option>
-                    <option value="2">Marketing</option>
-                    <option value="3">Ressources humaines</option>
+                    <option value="1">Programmation informatique</option>
+                    <option value="2">Activités hospitalières</option>
+                    <option value="3">Commerce de détail alimentaire</option>
                 </select>
             </div>
 
