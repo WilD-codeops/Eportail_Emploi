@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : sam. 03 jan. 2026 à 15:39
+-- Généré le : mar. 27 jan. 2026 à 13:19
 -- Version du serveur : 8.4.7
 -- Version de PHP : 8.3.28
 
@@ -221,8 +221,8 @@ CREATE TABLE IF NOT EXISTS `entreprises` (
   `logo` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `siret` (`siret`),
-  KEY `secteur_id` (`secteur_id`),
-  KEY `fk_entreprises_gestionnaire` (`gestionnaire_id`)
+  UNIQUE KEY `fk_entreprises_gestionnaire` (`gestionnaire_id`) USING BTREE,
+  KEY `secteur_id` (`secteur_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -230,8 +230,8 @@ CREATE TABLE IF NOT EXISTS `entreprises` (
 --
 
 INSERT INTO `entreprises` (`id`, `date_inscription`, `gestionnaire_id`, `nom`, `secteur_id`, `adresse`, `code_postal`, `ville`, `pays`, `telephone`, `email`, `siret`, `site_web`, `taille`, `description`, `logo`) VALUES
-(1, '2025-12-10 17:50:28', 3, 'TechCorp', 1, '10 rue Tech', '75012', 'Paris', 'France', '0145789632', 'contact@techcorp.fr', '12345678901234', 'https://techcorp.fr', '', NULL, NULL),
-(2, '2025-12-10 17:50:28', NULL, 'Clinique SantéPlus', 2, '5 avenue Santé, Lyon', '74100', 'molret', 'france', '0475841236', 'info@santeplus.fr', '98765432109876', 'https://santeplus.fr', '15', 'InfosantePlus est une PME spécialisée dans les solutions numériques pour le secteur de la santé. Leader régional en e-santé, l\'entreprise développe des plateformes SaaS pour la gestion des dossiers médicaux, la téléconsultation et la coordination des soins', NULL);
+(1, '2025-12-10 17:50:28', 5, 'TechCorp', 1, '10 rue Tech', '75012', 'Paris', 'France', '0145789632', 'contact@techcorp.fr', '12345678901234', 'https://techcorp.fr', '', NULL, NULL),
+(2, '2025-12-10 17:50:28', 3, 'Clinique SantéPlus', 2, '5 avenue Santé, Lyon', '74100', 'molret', 'france', '0475841236', 'info@santeplus.fr', '98765432109876', 'https://santeplus.fr', '15', 'InfosantePlus est une PME spécialisée dans les solutions numériques pour le secteur de la santé. Leader régional en e-santé, l\'entreprise développe des plateformes SaaS pour la gestion des dossiers médicaux, la téléconsultation et la coordination des soins', NULL);
 
 -- --------------------------------------------------------
 
@@ -551,14 +551,17 @@ CREATE TABLE IF NOT EXISTS `offres` (
   KEY `user_id` (`auteur_id`) USING BTREE,
   KEY `offres_ibfk_2` (`entreprise_id`),
   KEY `fk_offres_modifie_par` (`modifie_par`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `offres`
 --
 
 INSERT INTO `offres` (`id`, `auteur_id`, `date_creation`, `modifie_par`, `date_modification`, `entreprise_id`, `type_offre_id`, `niveau_qualification_id`, `domaine_emploi_id`, `localisation_id`, `titre`, `description`, `date_debut`, `date_fin`, `duree_contrat`, `salaire`, `statut`) VALUES
-(1, 2, '0000-00-00 00:00:00', NULL, NULL, 1, 1, 4, 1, 1, 'Développeur PHP', 'Développement d\'applications web...', '2025-06-01', '2025-12-31', 6, 35000.00, 'active');
+(1, 2, '0000-00-00 00:00:00', 4, '2026-01-03 19:41:09', 1, 1, 4, 1, 1, 'Développeur PHP', 'Développement d\'applications web...', '2025-06-01', '2025-12-30', 6, 37000.00, 'active'),
+(2, 2, '2026-01-04 00:24:41', NULL, NULL, 1, 2, 2, 1, 2, 'Développeur Web Junior PHP / MySQL', 'Nous recherchons un développeur web junior motivé pour rejoindre notre équipe et participer au développement de nouvelles fonctionnalités sur nos applications internes. Vous travaillerez en collaboration avec un développeur senior et un chef de projet.\r\nLes missions incluent :\r\n\r\ndéveloppement PHP natif et MVC\r\n\r\nintégration HTML/CSS\r\n\r\nparticipation aux réunions techniques\r\n\r\nmaintenance corrective et évolutive', '2026-02-02', '2026-09-01', 7, 1800.00, 'active'),
+(4, 4, '2026-01-04 10:02:35', NULL, NULL, 1, 1, 3, 1, 1, 'Développeur Web Full‑Stack (H/F)', 'recherche un Développeur Web Full‑Stack pour renforcer son équipe technique.\r\nVous participerez au développement de solutions logicielles sur mesure pour nos clients, en collaboration avec les chefs de projet et les designers.\r\n✔️ Missions\r\nDévelopper des fonctionnalités front-end et back-end\r\n\r\nParticiper à la conception technique des projets\r\n\r\nMaintenir et améliorer les applications existantes\r\n\r\nCollaborer avec l’équipe produit et UX\r\n\r\nRédiger une documentation technique claire\r\n\r\n✔️ Profil recherché\r\nMaîtrise de PHP, JavaScript, HTML/CSS\r\n\r\nConnaissance d’un framework (Laravel, Symfony, Vue.js, React…)\r\n\r\nBonne compréhension des bases de données SQL\r\n\r\nCapacité à travailler en équipe\r\n\r\nCuriosité, autonomie et sens du détail', NULL, NULL, NULL, 45000.00, 'active'),
+(5, 3, '2026-01-27 12:37:25', 3, '2026-01-27 11:38:22', 2, 2, 3, 2, 2, 'Infirmier(ère) Coordinateur(trice)', 'SantéPlus recherche un(e) Infirmier(ère) Coordinateur(trice) pour accompagner les patients dans leur parcours de soins, assurer la coordination avec les professionnels de santé partenaires et garantir une prise en charge optimale.\r\nLe poste implique un suivi régulier des dossiers, la planification des interventions et la participation à l’amélioration continue des protocoles internes.', '2026-03-16', '2027-03-16', 12, 2450.00, 'active');
 
 -- --------------------------------------------------------
 
@@ -758,18 +761,19 @@ CREATE TABLE IF NOT EXISTS `users` (
   `dernier_acces` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `entreprise_id` (`entreprise_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `fk_users_entreprise` (`entreprise_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `users`
 --
 
 INSERT INTO `users` (`id`, `prenom`, `nom`, `email`, `mot_de_passe`, `telephone`, `role`, `entreprise_id`, `date_creation`, `dernier_acces`) VALUES
-(1, 'jean', 'dupont', 'jean.dupont@example.com', '$2y$10$X5YYOYMCaWeMDZjWCQra2.BbCuCdEvjoCBEoo7FuIJJRvf4Cv6Qxu', NULL, 'candidat', NULL, '2025-10-22 14:33:16', NULL),
-(2, 'marie', 'durand', 'marie.durand@techcorp.fr', '$2y$10$SKpo7alI7JTrVKhvgVnh9O4BBJELNr.F4mQIlJ5bKhtI0dqbbKVXe', NULL, 'recruteur', NULL, '2025-10-22 14:33:16', NULL),
-(3, 'paul', 'martin', 'paul.martin@santeplus.fr', '$2y$10$5RznGtpMk9tMyWAMeFVAIuBLW7Hi8us.hWNJq/JI8.YHoOKQ3hT1O', NULL, 'gestionnaire', 1, '2025-10-22 14:33:16', NULL),
-(4, 'wildane', 'madi', 'admin@site.fr', '$2y$10$Oq1N.0rEQPn6iPOPmqhageEapMTcBBWnXr/uYEChbo1uYsHmnM7Wm', NULL, 'admin', NULL, '2025-10-22 14:33:16', NULL);
+(1, 'jean', 'dupont', 'jean.dupont@exemple.com', '$2y$10$X5YYOYMCaWeMDZjWCQra2.BbCuCdEvjoCBEoo7FuIJJRvf4Cv6Qxu', NULL, 'candidat', NULL, '2025-10-22 14:33:16', NULL),
+(2, 'marie', 'durand', 'marie.durand@techcorp.fr', '$2y$10$SKpo7alI7JTrVKhvgVnh9O4BBJELNr.F4mQIlJ5bKhtI0dqbbKVXe', NULL, 'recruteur', 1, '2025-10-22 14:33:16', NULL),
+(3, 'paul', 'martin', 'paul.martin@santeplus.fr', '$2y$10$5RznGtpMk9tMyWAMeFVAIuBLW7Hi8us.hWNJq/JI8.YHoOKQ3hT1O', NULL, 'gestionnaire', 2, '2025-10-22 14:33:16', NULL),
+(4, 'wildane', 'madi', 'admin@site.fr', '$2y$10$Oq1N.0rEQPn6iPOPmqhageEapMTcBBWnXr/uYEChbo1uYsHmnM7Wm', NULL, 'admin', NULL, '2025-10-22 14:33:16', NULL),
+(5, 'Lucas', 'Morel', 'lucas.morel@techcorp.fr', '$2y$10$7Z4FwalqGqFeHGkFXW4sa.p0KB7ttmfSxXdHniuQJpWiWi37d8V6S', '0612458793', 'gestionnaire', 1, '2026-01-04 09:37:08', NULL);
 
 --
 -- Contraintes pour les tables déchargées
@@ -779,9 +783,9 @@ INSERT INTO `users` (`id`, `prenom`, `nom`, `email`, `mot_de_passe`, `telephone`
 -- Contraintes pour la table `candidatures`
 --
 ALTER TABLE `candidatures`
-  ADD CONSTRAINT `candidatures_ibfk_2` FOREIGN KEY (`offre_id`) REFERENCES `offres` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-  ADD CONSTRAINT `candidatures_ibfk_3` FOREIGN KEY (`statut_id`) REFERENCES `statuts_candidature` (`id`),
-  ADD CONSTRAINT `candidatures_ibfk_4` FOREIGN KEY (`candidat_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+  ADD CONSTRAINT `candidatures_ibfk_2` FOREIGN KEY (`offre_id`) REFERENCES `offres` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `candidatures_ibfk_3` FOREIGN KEY (`statut_id`) REFERENCES `statuts_candidature` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `candidatures_ibfk_4` FOREIGN KEY (`candidat_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `commentaires_candidatures`
@@ -815,7 +819,7 @@ ALTER TABLE `documents_candidats`
 --
 ALTER TABLE `entreprises`
   ADD CONSTRAINT `entreprises_ibfk_1` FOREIGN KEY (`secteur_id`) REFERENCES `secteurs_entreprises` (`id`),
-  ADD CONSTRAINT `fk_entreprises_gestionnaire` FOREIGN KEY (`gestionnaire_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `fk_entreprises_gestionnaire` FOREIGN KEY (`gestionnaire_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `experiences_professionnelles`
@@ -827,7 +831,7 @@ ALTER TABLE `experiences_professionnelles`
 -- Contraintes pour la table `favoris`
 --
 ALTER TABLE `favoris`
-  ADD CONSTRAINT `fk_favoris_offre` FOREIGN KEY (`offre_id`) REFERENCES `offres` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_favoris_offre` FOREIGN KEY (`offre_id`) REFERENCES `offres` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_favoris_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
@@ -900,7 +904,7 @@ ALTER TABLE `taches_processus`
 -- Contraintes pour la table `users`
 --
 ALTER TABLE `users`
-  ADD CONSTRAINT `fk_users_entreprise` FOREIGN KEY (`entreprise_id`) REFERENCES `entreprises` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT;
+  ADD CONSTRAINT `fk_users_entreprise` FOREIGN KEY (`entreprise_id`) REFERENCES `entreprises` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
