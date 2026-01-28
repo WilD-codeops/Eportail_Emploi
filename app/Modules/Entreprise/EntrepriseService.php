@@ -44,13 +44,6 @@ class EntrepriseService
     /* Créer entreprise + gestionnaire Inscription */
     public function createEntrepriseEtGestionnaire(array $entrepriseData, array $gestionnaireData): array
     {
-        // Validation entreprise
-        $validE = EntrepriseValidator::validateCreate($entrepriseData);
-        if (!$validE['success']) return $validE;
-
-        // Validation gestionnaire
-        $validG = EntrepriseValidator::validateGestionnaire($gestionnaireData);
-        if (!$validG['success']) return $validG;
 
         try {
             $this->pdo->beginTransaction();
@@ -96,7 +89,7 @@ class EntrepriseService
     /** Modifier */
     public function updateEntreprise(int $id, array $data): array
     {
-        $valid = EntrepriseValidator::validateCreate($data);
+        $valid = EntrepriseValidator::validateEntreprise($data);
         if (!$valid['success']) return $valid;
 
         $ok = $this->repo->updateEntreprise($id, $data);
