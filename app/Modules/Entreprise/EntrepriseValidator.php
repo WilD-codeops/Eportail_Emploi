@@ -10,7 +10,7 @@ use App\Core\Validator;
 class EntrepriseValidator
 {
     /** Validation création entreprise */
-    public static function validateCreate(array $data): array
+    public static function validateEntreprise(array $data): array
     {
         if (!Validator::validateNotEmpty($data['nom'] ?? ''))
             return self::fail("Nom entreprise obligatoire.");
