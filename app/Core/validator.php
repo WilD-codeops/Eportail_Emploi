@@ -71,6 +71,14 @@ class Validator
         return true;
     }
 
+    public static function validatePasswordNotEmpty(string $pass): bool
+    {
+        if (!self::validateNotEmpty($pass)) {
+            return false;
+        }
+        return true;
+    }
+
     /** ID secteur numérique */
     public static function validateSecteurId($value): bool
     {
