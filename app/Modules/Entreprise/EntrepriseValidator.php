@@ -12,7 +12,7 @@ class EntrepriseValidator
     /** Validation création entreprise */
     public static function validateCreate(array $data): array
     {
-        if (!Validator::validateNotEmpty($data['nom_entreprise'] ?? ''))
+        if (!Validator::validateNotEmpty($data['nom'] ?? ''))
             return self::fail("Nom entreprise obligatoire.");
 
         if (!Validator::validateSecteurId($data['secteur_id'] ?? null))
@@ -33,8 +33,8 @@ class EntrepriseValidator
         if (!Validator::validateSiret($data['siret'] ?? ''))
             return self::fail("SIRET invalide.");
 
-        if (!empty($data['email_entreprise']) &&
-            !Validator::validateEmail($data['email_entreprise']))
+        if (!empty($data['email']) &&
+            !Validator::validateEmail($data['email']))
             return self::fail("Email entreprise invalide.");
 
         if (!empty($data['telephone']) &&
@@ -59,7 +59,7 @@ class EntrepriseValidator
         if (!Validator::validateEmail($data['email'] ?? ''))
             return self::fail("Email invalide.");
 
-        if (!Validator::validatePassword($data['password'] ?? '', $data['password_confirm'] ?? ''))
+        if (!Validator::validatePassword($data['mot_de_passe'] ?? '', $data['confirmation_mdp'] ?? ''))
             return self::fail("Mot de passe incorrect.");
 
         return ['success' => true];

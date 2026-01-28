@@ -60,7 +60,7 @@ class EntrepriseService
                 'prenom'       => $gestionnaireData['prenom'],
                 'nom'          => $gestionnaireData['nom'],
                 'email'        => $gestionnaireData['email'],
-                'mot_de_passe' => $gestionnaireData['password'],
+                'mot_de_passe' => $gestionnaireData['mot_de_passe'],
                 'role'         => 'gestionnaire',
                 'entreprise_id'=> null
             ]);
