@@ -59,6 +59,12 @@ class EntrepriseValidator
         if (!Validator::validateEmail($data['email'] ?? ''))
             return self::fail("Email invalide.");
 
+        if (!Validator::validatePasswordNotEmpty($data['mot_de_passe'] ?? ''))
+            return self::fail("Mot de passe requis.");
+
+        if (!Validator::validatePasswordNotEmpty($data['confirmation_mdp'] ?? ''))
+            return self::fail("Confirmation du mot de passe requise.");
+
         if (!Validator::validatePassword($data['mot_de_passe'] ?? '', $data['confirmation_mdp'] ?? ''))
             return self::fail("Mot de passe incorrect.");
 
