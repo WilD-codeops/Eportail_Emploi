@@ -75,17 +75,6 @@ class EntrepriseService
     }
 
 
-
-
-
-    /**Création d'Entreprise Version admin */
-    public function createEntrepriseAvecGestionnaireAdmin(array $data): array
-    {
-        return $this->createEntrepriseEtGestionnaire($data, $data);
-    }
-
-
-
     /** Modifier */
     public function updateEntreprise(int $id, array $data): array
     {
