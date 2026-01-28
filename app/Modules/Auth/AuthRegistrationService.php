@@ -56,62 +56,79 @@ class AuthRegistrationService
 
     public function registerEntreprise(array $data): array
     {
-        foreach ($data as $k => $v) {
-            $data[$k] = Validator::sanitize($v ?? '');
+        $dataCanonique = [  // structure canonique des données attendue pour validation et evite la trop forte dépendance aux noms des champs du formulaire
+            'entreprise' => [
+                'nom'         => $data['nom_entreprise'] ?? $data['nom'] ?? null,
+                'secteur_id'  => $data['secteur_id'] ?? null,
+                'adresse'     => $data['adresse'] ?? null,
+                'code_postal' => $data['code_postal'] ?? null,
+                'ville'       => $data['ville'] ?? null,
+                'pays'        => $data['pays'] ?? null,
+                'telephone'   => $data['telephone'] ?? $data['telephone_entreprise'] ?? null,
+                'email'       => $data['email_entreprise'] ?? $data['email'] ?? null,
+                'siret'       => $data['siret'] ?? null,
+                'site_web'    => $data['site_web'] ?? null,
+                'taille'      => $data['taille'] ?? $data['taille_entreprise'] ?? null,
+                'description' => $data['description'] ?? $data['description_entreprise'] ?? null,
+                'logo'        => $data['logo'] ?? $data['logo_entreprise'] ?? null,
+ 
+            ],
+            'gestionnaire' => [
+                'prenom'   => $data['prenom'] ?? null,
+                'nom'      => $data['nom'] ?? null,
+                'email'    => $data['email_gestionnaire'] ?? $data['email'] ?? null,
+                'telephone'=> $data['telephone_gestionnaire'] ?? $data['telephone'] ?? null,
+                'mot_de_passe' => $data['mot_de_passe'] ?? $data['password'] ?? null,
+                'confirmation_mdp'  => $data['confirmation_mdp'] ?? $data['password_confirm'] ?? null,
+            ]
+        ];
+
+
+        // SANITIZE
+        foreach ($dataCanonique['entreprise'] as $k => $v) {
+            if (is_string($v)){ 
+                $dataCanonique['entreprise'][$k] = Validator::sanitize($v ?? ''); // sanitize tous les champs entreprise
+            }
+        }
+
+        foreach ($dataCanonique['gestionnaire'] as $k => $v) { 
+            if (in_array($k, ["mot_de_passe", "confirmation_mdp"],true)) { // sanitize tous les champs gestionnaire sauf mdp pour qu'il soit vérifié en clair
+                continue;
+            }
+            if (is_string($v)){
+                $dataCanonique["gestionnaire"][$k] = Validator::sanitize($v ?? '');
+            }
         }
 
 
         // VALIDATION DONNEES ENTREPRISE
-        $validEntreprise = EntrepriseValidator::validateEntreprise($entrepriseData);
+        $validEntreprise = EntrepriseValidator::validateEntreprise($dataCanonique['entreprise']);
         if (!$validEntreprise['success']) return $validEntreprise;
        
 
         // VALIDATION DONNEES GESTIONNAIRE
-        $validGestionnaire = EntrepriseValidator::validateGestionnaire($gestionnaireData);
+        $validGestionnaire = EntrepriseValidator::validateGestionnaire($dataCanonique['gestionnaire']);
         if (!$validGestionnaire['success']) return $validGestionnaire;
 
 
         // Vérifier email gestionnaire UNIQUE
-        if ($this->authService->emailExists($data['email'])) {
+        if ($this->authService->emailExists($dataCanonique['gestionnaire']['email'])) {
             return $this->fail("Cet email est déjà utilisé.");
         }
         
         // Vérifier SIRET UNIQUE (entreprise)
-        if ($this->entrepriseService->siretExists($data['siret'])) {
+        if ($this->entrepriseService->siretExists($dataCanonique['entreprise']['siret'])) {
             return $this->fail("Ce SIRET est déjà enregistré.");
         }
 
+        //hashage du mdp gestionnaire apres validation
+        $dataCanonique['gestionnaire']['mot_de_passe'] = password_hash($dataCanonique['gestionnaire']['mot_de_passe'], PASSWORD_DEFAULT);
+        unset($dataCanonique['gestionnaire']['confirmation_mdp']); // inutilisé après validation
 
-        /* ====== Construire les données ====== */
-
-        $entrepriseData = [
-            'nom'         => $data['nom_entreprise'],
-            'secteur_id'  => (int)$data['secteur_id'],
-            'adresse'     => $data['adresse'],
-            'code_postal' => $data['code_postal'],
-            'ville'       => $data['ville'],
-            'pays'        => $data['pays'],
-            'telephone'   => $data['telephone'] ?: null,
-            'email'       => $data['email_entreprise'] ?: null,
-            'siret'       => $data['siret'],
-            'site_web'    => $data['site_web'] ?: null,
-            'taille'      => $data['taille'] ?: null,
-            'description' => $data['description'] ?: null,
-            'logo'        => null,
-        ];
-
-        $gestionnaireData = [
-            'prenom'        => $data['prenom'],
-            'nom'           => $data['nom'],
-            'email'         => $data['email'],
-            'telephone'     => $data['telephone_gestionnaire'] ?: null,
-            'mot_de_passe'  => password_hash($data['password'], PASSWORD_DEFAULT),
-            'role'          => 'gestionnaire',
-        ];
 
         return $this->entrepriseService->createEntrepriseEtGestionnaire(
-            $entrepriseData,
-            $gestionnaireData
+            $dataCanonique['entreprise'],
+            $dataCanonique['gestionnaire']
         );
     }
 
