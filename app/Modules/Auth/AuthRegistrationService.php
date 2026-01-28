@@ -4,6 +4,7 @@ namespace App\Modules\Auth;
 
 use App\Core\Validator;
 use App\Modules\Entreprise\EntrepriseService;
+use App\Modules\Entreprise\EntrepriseValidator;
 
 class AuthRegistrationService
 {
@@ -59,63 +60,16 @@ class AuthRegistrationService
             $data[$k] = Validator::sanitize($v ?? '');
         }
 
-        /* ====== ENTREPRISE ====== */
 
-        if (empty($data['nom_entreprise'])) {
-            return $this->fail("Le nom de l’entreprise est obligatoire.");
-        }
+        // VALIDATION DONNEES ENTREPRISE
+        $validEntreprise = EntrepriseValidator::validateEntreprise($entrepriseData);
+        if (!$validEntreprise['success']) return $validEntreprise;
+       
 
-        if (!is_numeric($data['secteur_id'])) {
-            return $this->fail("Le secteur est obligatoire.");
-        }
+        // VALIDATION DONNEES GESTIONNAIRE
+        $validGestionnaire = EntrepriseValidator::validateGestionnaire($gestionnaireData);
+        if (!$validGestionnaire['success']) return $validGestionnaire;
 
-        if (empty($data['adresse'])) {
-            return $this->fail("L’adresse est obligatoire.");
-        }
-
-        if (!Validator::validatePostalCode($data['code_postal'])) {
-            return $this->fail("Code postal invalide.");
-        }
-
-        if (!Validator::validateCity($data['ville'])) {
-            return $this->fail("Ville invalide.");
-        }
-
-        if (empty($data['pays'])) {
-            return $this->fail("Le pays est obligatoire.");
-        }
-
-        if (!Validator::validateSiret($data['siret'])) {
-            return $this->fail("SIRET invalide (14 chiffres).");
-        }
-
-        if (!empty($data['telephone']) &&
-            !Validator::validatePhone($data['telephone'])) {
-            return $this->fail("Téléphone entreprise invalide.");
-        }
-
-        if (!empty($data['email_entreprise']) &&
-            !Validator::validateEmail($data['email_entreprise'])) {
-            return $this->fail("Email entreprise invalide.");
-        }
-
-        /* ====== GESTIONNAIRE ====== */
-
-        if (!Validator::validateName($data['prenom'])) {
-            return $this->fail("Prénom gestionnaire invalide.");
-        }
-
-        if (!Validator::validateName($data['nom'])) {
-            return $this->fail("Nom gestionnaire invalide.");
-        }
-
-        if (!Validator::validateEmail($data['email'])) {
-            return $this->fail("Email gestionnaire invalide.");
-        }
-
-        if (!Validator::validatePassword($data['password'], $data['password_confirm'])) {
-            return $this->fail("Mot de passe invalide ou non confirmé.");
-        }
 
         // Vérifier email gestionnaire UNIQUE
         if ($this->authService->emailExists($data['email'])) {
@@ -152,7 +106,6 @@ class AuthRegistrationService
             'email'         => $data['email'],
             'telephone'     => $data['telephone_gestionnaire'] ?: null,
             'mot_de_passe'  => password_hash($data['password'], PASSWORD_DEFAULT),
-            'confirmation_mdp'   => $data['password_confirm'],
             'role'          => 'gestionnaire',
         ];
 
