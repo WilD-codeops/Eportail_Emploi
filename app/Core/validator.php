@@ -23,7 +23,7 @@ class Validator
     // Validator.php → Besoin de validateName()
     public static function validateName(string $name): bool
     {
-        return preg_match('/^[a-zA-ZÀ-ÿ\s\-\']{2,50}$/', trim($name));
+        return preg_match('/^[a-zA-ZÀ-ÿ\s\-\']{2,50}$/', trim($name)) === 1;
     }
 
 
@@ -43,19 +43,19 @@ class Validator
     /** Code postal FR */
     public static function validatePostalCode(string $cp): bool
     {
-        return preg_match('/^\d{5}$/', $cp);
+        return preg_match('/^\d{5}$/', $cp) === 1;
     }
 
     /** Chaîne alphabétique (villes, prénoms…) */
     public static function validateCity(string $city): bool
     {
-        return preg_match('/^[A-Za-zÀ-ÖØ-öø-ÿ\-\s]+$/', $city);
+        return preg_match('/^[A-Za-zÀ-ÖØ-öø-ÿ\-\s]+$/', $city) === 1;
     }
 
     /** SIRET = 14 chiffres */
     public static function validateSiret(string $siret): bool
     {
-        return preg_match('/^\d{14}$/', $siret);
+        return preg_match('/^\d{14}$/', $siret)===1;
     }
 
     /** Mot de passe + confirmation */
