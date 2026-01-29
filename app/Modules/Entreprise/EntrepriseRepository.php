@@ -48,9 +48,19 @@ class EntrepriseRepository
         $stmt->bindParam(':siret', $siret);
         $stmt->execute();
         
-        return $stmt->fetch() !== false; //
+        return $stmt->fetch() !== false; // Retourne true si un enregistrement est trouvé
     }
 
+    public function siretExistsExceptId(int $entrepriseId, string $siret): bool  // Pour update entreprise pour exclure l'entreprise elle-même eviter le faux doublon
+    {
+        $sql = "SELECT id FROM entreprises WHERE siret = :siret AND id != :id LIMIT 1";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':siret', $siret);
+        $stmt->bindParam(':id', $entrepriseId, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetch() !== false; // Retourne true si un enregistrement est trouvé
+    }
     
 
     //Créer entreprise
@@ -116,7 +126,8 @@ class EntrepriseRepository
                     siret = :siret,
                     site_web = :site_web,
                     taille = :taille,
-                    description = :description
+                    description = :description  ,
+                    logo = :logo
                 WHERE id = :id";
 
         $stmt = $this->pdo->prepare($sql);
@@ -133,9 +144,9 @@ class EntrepriseRepository
         $stmt->bindParam(':site_web', $data['site_web'], PDO::PARAM_STR);
         $stmt->bindParam(':taille', $data['taille'], PDO::PARAM_STR);
         $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
-        //$stmt->bindParam(':logo', $data['logo'],);
+        $stmt->bindParam(':logo', $data['logo'], PDO::PARAM_STR);
 
-        return $stmt->execute($data);
+        return $stmt->execute();
     }
 
     /** Supprimer entreprise */

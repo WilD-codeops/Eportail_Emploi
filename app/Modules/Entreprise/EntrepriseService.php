@@ -39,6 +39,12 @@ class EntrepriseService
         return $this->repo->siretExists($siret);
     }
 
+    // Pour update entreprise exclure l'entreprise elle-même eviter le faux doublon
+    public function siretExistsForOtherEntreprise(int $entrepriseId, string $siret): bool 
+    {
+        return $this->repo->siretExistsExceptId($entrepriseId, $siret);
+    }
+
 
 
     /* Créer entreprise + gestionnaire Inscription */
@@ -78,12 +84,33 @@ class EntrepriseService
     /** Modifier */
     public function updateEntreprise(int $id, array $data): array
     {
-        $valid = EntrepriseValidator::validateEntreprise($data);
+        $dataEntrepriseCanonique = [
+            'nom'        => $data['nom'] ?? $data['nom_entreprise'] ?? null,
+            'secteur_id' => $data['secteur_id'] ?? null,
+            'adresse'    => $data['adresse'] ?? null,
+            'code_postal'=> $data['code_postal'] ?? null,
+            'ville'      => $data['ville'] ?? null,
+            'pays'       => $data['pays'] ?? null,
+            'telephone'  => $data['telephone'] ?? $data['telephone_entreprise'] ?? null,
+            'email'      => $data['email'] ?? $data['email_entreprise'] ?? null,
+            'siret'      => $data['siret'] ?? null,
+            'site_web'   => $data['site_web'] ?? null,
+            'taille'     => $data['taille'] ?? null,
+            'description'=> $data['description'] ?? null,
+            'logo'       => $data['logo'] ?? null,
+        ];
+
+        $valid = EntrepriseValidator::validateEntreprise($dataEntrepriseCanonique);
         if (!$valid['success']) return $valid;
 
-        $ok = $this->repo->updateEntreprise($id, $data);
+        // Vérifier SIRET UNIQUE (entreprise)
+        if ($this->siretExists($dataEntrepriseCanonique['siret'])) {
+            return $this->fail("Ce SIRET est déjà enregistré.");
+        }
 
-        return $ok ? ['success' => true] : ['success' => false, 'error' => "Échec update"];
+        $ok = $this->repo->updateEntreprise($id, $dataEntrepriseCanonique);
+
+        return $ok ? ['success' => true] : $this->fail("Erreur lors de la mise à jour de l'entreprise.");
     }
 
 
@@ -92,5 +119,10 @@ class EntrepriseService
     public function deleteEntreprise(int $id): bool
     {
         return $this->repo->deleteEntreprise($id);
+    }
+    
+    private function fail(string $msg): array
+    {
+        return ['success' => false, 'error' => $msg];
     }
 }

@@ -1,61 +1,26 @@
-<h1>Créer une entreprise</h1>
+<?php
+// Page de création d'une entreprise (partie administrateur).
+// Cette vue prépare les variables nécessaires et inclut le partial _form.php.
 
-<?php use App\Core\Security;
-$csrfToken = Security::generateCsrfToken('entreprise_create');
- ?>
+use App\Core\Security;
 
-<form method="post" action="/admin/entreprises/create" class="form-card">
-    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken) ?>">
+// Variables fournies par le contrôleur :
+// - $secteurs : liste des secteurs disponibles
+// - $errors   : tableau d'erreurs (peut être vide)
 
-    <h2>Informations entreprise</h2>
+// Génération d'un token CSRF
+$csrfToken  = Security::generateCsrfToken("entreprise_create");
+// En création, il n'y a pas encore de données d'entreprise
+$entreprise = null;
 
-    <label>Nom</label>
-    <input name="nom" required>
+?>
+<h1 class="mb-4">Créer une entreprise</h1>
 
-    <label>Secteur</label>
-    <select name="secteur_id" required>
-        <?php foreach ($secteurs as $s): ?>
-            <option value="<?= $s['id'] ?>"><?= $s['libelle'] ?></option>
-        <?php endforeach; ?>
-    </select>
-
-    <label>Adresse</label>
-    <input name="adresse" required>
-
-    <label>Code postal</label>
-    <input name="code_postal">
-
-    <label>Ville</label>
-    <input name="ville">
-
-    <label>Pays</label>
-    <input name="pays">
-
-    <label>Téléphone</label>
-    <input name="telephone">
-
-    <label>Email entreprise</label>
-    <input name="email">
-
-    <label>SIRET</label>
-    <input name="siret" required>
-
-    <label>Site web</label>
-    <input name="site_web">
-
-    <h2>Gestionnaire principal</h2>
-
-    <label>Prénom</label>
-    <input name="prenom" required>
-
-    <label>Nom</label>
-    <input name="nom_gestionnaire" required>
-
-    <label>Email professionnel</label>
-    <input name="email_gestionnaire" type="email" required>
-
-    <label>Mot de passe</label>
-    <input name="mot_de_passe" type="password" required>
-
-    <button class="btn btn-primary">Créer l’entreprise</button>
+<form method="post" action="/admin/entreprises/create">
+    <?php
+    // Les variables passées au partial
+    $csrf = $csrfToken;
+    $withGestionnaire = true; // en création admin : entreprise + gestionnaire
+    require __DIR__ . '/_form.php';
+    ?>
 </form>

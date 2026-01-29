@@ -124,11 +124,15 @@ class EntrepriseController
         $result  = $registration->registerEntreprise($_POST);
 
         if (!$result['success']) {
+
+            $entrepriseToCreate = $_POST;
             $this->renderDashboard("create", [
-                "title"    => "Créer une entreprise",
-                "error"    => $result['error'],
-                "secteurs" => $service->listSecteurs()
+                "title"       => "Créer une entreprise",
+                "entreprise" => $entrepriseToCreate,
+                "error"      => $result['error'],
+                "secteurs"   => $service->listSecteurs()
             ]);
+            
             return;
         }
 
@@ -163,18 +167,36 @@ class EntrepriseController
      */
     public function update(): void
     {
+        Auth::requireRole(['admin','recruteur','gestionnaire']); // Acces restreint aux rôles spécifiés
         Security::requireCsrfToken('entreprise_edit', $_POST['csrf_token'] ?? null);
 
         $service = $this->makeEntrepriseService();
         $id      = (int)($_POST['id'] ?? 0);
+
+        // Appel service
         $result = $service->updateEntreprise($id, $_POST);
+
+        // Si erreur => on ré-affiche le formulaire avec les données saisies
         if (!$result['success']) {
-            die("Erreur : " . htmlspecialchars($result['error']));
+            // IMPORTANT : on renvoie au form les valeurs saisies (POST) pour éviter de tout retaper
+            // On garde aussi l'id car edit.php construit l'action avec l'id
+            $entreprise = $_POST;
+            $entreprise['id'] = $id;
+
+            $this->renderDashboard("edit", [
+                "title"      => "Modifier une entreprise",
+                "entreprise" => $entreprise,
+                "secteurs"   => $service->listSecteurs(),
+                "errors"     => [],                 // si pas d’erreurs par champ
+                "error"      => $result['error'],    // message global d’erreur
+            ]);
+            return;
         }
 
         header("Location: /admin/entreprises?succes=updated");
         exit;
     }
+
 
     /**
      * Suppression d'une entreprise.

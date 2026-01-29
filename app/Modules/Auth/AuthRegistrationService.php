@@ -75,7 +75,7 @@ class AuthRegistrationService
             ],
             'gestionnaire' => [
                 'prenom'   => $data['prenom'] ?? null,
-                'nom'      => $data['nom'] ?? null,
+                'nom'      => $data['nom'] ?? $data['nom_gestionnaire'] ?? null,
                 'email'    => $data['email_gestionnaire'] ?? $data['email'] ?? null,
                 'telephone'=> $data['telephone_gestionnaire'] ?? $data['telephone'] ?? null,
                 'mot_de_passe' => $data['mot_de_passe'] ?? $data['password'] ?? null,
