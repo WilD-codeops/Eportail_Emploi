@@ -21,7 +21,7 @@
 
 
     <!-- Formulaire d'inscription entreprise -->
-    <form id="entrepriseForm" method="post" action="/register/entreprise" onsubmit="return validateFinalStep()" class="auth-form mt-4">
+    <form id="entrepriseForm" method="post" action="/register/entreprise" class="auth-form mt-4">
         <input type="hidden" name="csrf_token" value="<?=htmlspecialchars($csrfToken) //csrf ?>">
 
         <!-- ÉTAPE 1 FORMULAIRE : INFORMATIONS ENTREPRISE -->
@@ -132,17 +132,17 @@
 
             <div class="mb-3">
                 <label class="form-label">Prénom *</label>
-                <input type="text" name="prenom" class="form-control">
+                <input type="text" name="prenom" class="form-control" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Nom *</label>
-                <input type="text" name="nom" class="form-control">
+                <input type="text" name="nom" class="form-control" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Email professionnel *</label>
-                <input type="email" name="email" class="form-control">
+                <input type="email" name="email" class="form-control" required>
             </div>
 
             <div class="mb-3">
@@ -153,7 +153,12 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Mot de passe *</label>
-                    <input type="password" name="password" class="form-control" id="password">
+                    <div class="input-group">
+                      <input type="password" name="password" id="password" class="form-control" required>
+                      <button type="button" class="btn btn-outline-secondary toggle-password" data-target="password">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
                     <div class="password-strength mt-2">
                         <div class="strength-bar">
                             <div class="strength-fill"></div>
@@ -170,12 +175,17 @@
 
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Confirmation *</label>
-                    <input type="password" name="password_confirm" class="form-control">
+                    <div class="input-group">
+                      <input type="password" name="password_confirm" id="password_confirm" class="form-control" required>
+                      <button type="button" class="btn btn-outline-secondary toggle-password" data-target="password_confirm">
+                        <i class="bi bi-eye"></i>
+                      </button>
+                    </div>
                 </div>
             </div>
 
             <div class="form-check mb-3">
-                <input type="checkbox" class="form-check-input" id="cgu" required>
+                <input type="checkbox" class="form-check-input" id="cgu" name="cgu" required>
                 <label for="cgu" class="form-check-label">
                     J’accepte les Conditions Générales d’Utilisation
                 </label>
