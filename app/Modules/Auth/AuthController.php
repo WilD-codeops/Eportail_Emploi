@@ -164,15 +164,18 @@ use App\Core\Database;
             $result = $service->registerEntreprise($_POST);
         
             if (!$result['success']) {
+                $entrepriseToCreate = $_POST;
+
                      $this->renderAuth("register_entreprise", [
                         "title"       => "Créer un espace entreprise",
                         "authVariant" => "register_entreprise",
-                        "error"       => $result['error']
+                        "error"       => $result['error'],
+                        "entreprise" => $entrepriseToCreate,
                     ]);
                     return;
                 }
             
-                header("Location: /login");
+                header("Location: /login?reason=created");
                 exit;
             }
 

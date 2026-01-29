@@ -1,3 +1,16 @@
+<?php
+$entreprise = is_array($entreprise ?? null) ? $entreprise : [];
+$secteurs   = is_array($secteurs ?? null)   ? $secteurs   : [];
+
+// Fonction d’échappement HTML
+$echappe = static fn($val) : string => htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8');
+
+//Récupérer la valeur d'un champ (valeurs existantes) depuis $entreprise
+$value = static function (string $key, $default = '') use ($entreprise) {
+    return htmlspecialchars((string)($entreprise[$key] ?? $default), ENT_QUOTES, 'UTF-8');
+};
+
+?>
 <div class="auth-form-wrapper mt-4">
 
     <h1 class="auth-page-title">Créer un espace entreprise</h1>
@@ -31,55 +44,55 @@
 
             <div class="mb-3">
                 <label class="form-label">Nom de l'entreprise *</label>
-                <input type="text" name="nom_entreprise" class="form-control" required>
+                <input id="nom_entreprise" type="text" name="nom_entreprise" class="form-control" value="<?= $value('nom_entreprise') ?>" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Secteur d'activité *</label>
-                <select name="secteur_id" class="form-select" required>
-                    <option value="">— Choisir un secteur —</option>
-                    <option value="1">Programmation informatique</option>
-                    <option value="2">Activités hospitalières</option>
-                    <option value="3">Commerce de détail alimentaire</option>
+                <select id="secteur_id" name="secteur_id" class="form-select" required>
+                    <?php foreach ($secteurs as $s): ?>
+                        <?php $selected = ((int)$value('secteur_id') === (int)$s['id']) ? 'selected' : ''; ?>
+                        <option value="<?= $echappe($s['id']) ?>" <?= $selected ?>><?= $echappe($s['nom']) ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Adresse *</label>
-                <input type="text" name="adresse" class="form-control" required>
+                <input type="text" id="adresse" name="adresse" class="form-control" value="<?= $echappe($value('adresse')) ?>" required>
             </div>
 
             <div class="row">
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Code postal *</label>
-                    <input type="text" name="code_postal" class="form-control" required>
+                    <input id="code_postal" type="text" name="code_postal" class="form-control" value="<?= $echappe($value('code_postal')) ?>" required>
                 </div>
 
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Ville *</label>
-                    <input type="text" name="ville" class="form-control" required>
+                    <input type="text" id="ville" name="ville" class="form-control" value="<?= $echappe($value('ville')) ?>" required>
                 </div>
 
                 <div class="col-md-4 mb-3">
                     <label class="form-label">Pays *</label>
-                    <input type="text" name="pays" class="form-control" required>
+                    <input type="text" id="pays" name="pays" class="form-control" value="<?= $echappe($value('pays')) ?>" required>
                 </div>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Téléphone professionnel</label>
-                <input type="text" name="telephone" class="form-control">
+                <input id="telephone_entreprise" type="text" name="telephone" class="form-control" value="<?= $echappe($value('telephone')) ?>">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Email entreprise</label>
-                <input type="email" name="email_entreprise" class="form-control">
+                <input id="email_entreprise" type="email" name="email_entreprise" class="form-control" value="<?= $echappe($value('email_entreprise')) ?>">
             </div>
 
             
             <div class="mb-3">
                 <label class="form-label">SIRET *</label>
-                <input type="text" name="siret" class="form-control siret-input" maxlength="14" required>
+                <input id="siret" type="text" name="siret" class="form-control siret-input" maxlength="14" value="<?= $echappe($value('siret')) ?>" required>
                 <div class="validity-feedback mt-1 small d-none">
                     <i class="bi bi-check-circle-fill text-success me-1"></i>
                     SIRET valide (14 chiffres)
@@ -93,24 +106,26 @@
 
             <div class="mb-3">
                 <label class="form-label">Site web</label>
-                <input type="url" name="site_web" class="form-control" placeholder="https://monsite.fr">
+                <input id="url" name="site_web" class="form-control" placeholder="https://monsite.fr" value="<?= $echappe($value('site_web')) ?>">
             </div>
                 
             <div class="mb-3">
                 <label class="form-label">Taille de l'entreprise</label>
-                <select name="taille" class="form-select">
-                    <option value="">— Choisir —</option>
-                    <option value="1-10">1-10 salariés</option>
-                    <option value="11-50">11-50 salariés</option>
-                    <option value="51-250">51-250 salariés</option>
-                    <option value="250+">250+ salariés</option>
+                <select id="taille" name="taille" class="form-select">
+                    <?php
+                        $tailleOptions = ['1-10', '11-50', '51-250', '250+'];
+                        foreach ($tailleOptions as $opt):
+                            $selected = ($value('taille') === $opt) ? 'selected' : '';
+                    ?>
+                        <option value="<?= $e($opt) ?>" <?= $selected ?>><?= $e($opt) ?> salariés</option>
+                <?php endforeach; ?>
                 </select>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Description</label>
-                <textarea name="description" class="form-control" rows="3" 
-                          placeholder="Décrivez brièvement votre entreprise et ses activités..."></textarea>
+                <textarea id="description" name="description" class="form-control" rows="3" 
+                          placeholder="Décrivez brièvement votre entreprise et ses activités..."><?= $echappe($value('description')) ?></textarea>
             </div>
 
 
@@ -132,22 +147,22 @@
 
             <div class="mb-3">
                 <label class="form-label">Prénom *</label>
-                <input type="text" name="prenom" class="form-control" required>
+                <input id="prenom" type="text" name="prenom" class="form-control" value="<?= $echappe($value('prenom')) ?>" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Nom *</label>
-                <input type="text" name="nom" class="form-control" required>
+                <input id="nom" type="text" name="nom" class="form-control" value="<?= $echappe($value('nom')) ?>" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Email professionnel *</label>
-                <input type="email" name="email" class="form-control" required>
+                <input id="email" type="email" name="email" class="form-control" value="<?= $echappe($value('email')) ?>" required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Téléphone professionnel</label>
-                <input type="text" name="telephone_gestionnaire" class="form-control">
+                <input id="telephone_gestionnaire" type="text" name="telephone_gestionnaire" class="form-control" value="<?= $echappe($value('telephone_gestionnaire')) ?>">
             </div>
 
             <div class="row">
