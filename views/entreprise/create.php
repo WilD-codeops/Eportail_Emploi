@@ -16,7 +16,7 @@ $entreprise = null;
 ?>
 <h1 class="mb-4">Créer une entreprise</h1>
 
-<form method="post" action="/admin/entreprises/create">
+<form id="entrepriseForm" method="post" action="/admin/entreprises/create">
     <?php
     // Les variables passées au partial
     $csrf = $csrfToken;
@@ -24,3 +24,4 @@ $entreprise = null;
     require __DIR__ . '/_form.php';
     ?>
 </form>
+<script src="/assets/js/registerEntreprise.js" defer></script>
