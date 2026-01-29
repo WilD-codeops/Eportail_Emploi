@@ -187,8 +187,7 @@ class EntrepriseController
                 "title"      => "Modifier une entreprise",
                 "entreprise" => $entreprise,
                 "secteurs"   => $service->listSecteurs(),
-                "errors"     => [],                 // si pas d’erreurs par champ
-                "error"      => $result['error'],    // message global d’erreur
+                "error"      => $result['error'],    // message d’erreur
             ]);
             return;
         }
