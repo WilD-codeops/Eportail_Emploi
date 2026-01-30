@@ -72,14 +72,13 @@ class EntrepriseService
             $this->repo->attachUserToEntreprise($gestionnaireId, $entrepriseId);
 
             $this->pdo->commit();
-            return ['success' => true];
+            return $this->success("Entreprise et gestionnaire créés avec succès.");
 
         } catch (\Throwable $e) {
             $this->pdo->rollBack();
-            return ['success' => false, 'error' => $e->getMessage()];
+            return $this->fail("Erreur lors de la création de l'entreprise et du gestionnaire : " . $e->getMessage());
         }
     }
-
 
     /** Modifier */
     public function updateEntreprise(int $id, array $data): array
@@ -110,15 +109,16 @@ class EntrepriseService
 
         $ok = $this->repo->updateEntreprise($id, $dataEntrepriseCanonique);
 
-        return $ok ? ['success' => true] : $this->fail("Erreur lors de la mise à jour de l'entreprise.");
+        return $ok ? $this->success("Entreprise mise à jour avec succès.") : $this->fail("Erreur lors de la mise à jour de l'entreprise.");
     }
 
 
     
     /** Supprimer */
-    public function deleteEntreprise(int $id): bool
+    public function deleteEntreprise(int $id): array
     {
-        return $this->repo->deleteEntreprise($id);
+        $ok = $this->repo->deleteEntreprise($id);
+        return $ok ? $this->success("Entreprise supprimée avec succès.") : $this->fail("Erreur lors de la suppression de l'entreprise.");
     }
     
     private function fail(string $msg): array

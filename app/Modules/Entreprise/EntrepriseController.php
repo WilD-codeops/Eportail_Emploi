@@ -46,6 +46,37 @@ class EntrepriseController
         return new AuthRegistrationService($authService, $entrepriseService);
     }
 
+    /**
+     * MES RENDERERS PERSONNALISÉS
+     */
+    
+    // Charge une vue publique (layout main)
+    private function renderPublic(string $view, array $params = []): void
+    {
+        extract($params);
+        
+        ob_start();
+        require __DIR__ . "/../../../views/entreprise/{$view}.php";
+        $content = ob_get_clean();
+        
+        require __DIR__ . "/../../../views/layouts/main.php";
+    }       
+    
+    // Charge une vue du tableau de bord (layout dashboard) 
+    private function renderDashboard(string $view, array $params = []): void
+    {
+        extract($params);
+        
+        ob_start();
+        require __DIR__ . "/../../../views/entreprise/{$view}.php";
+        $content = ob_get_clean();
+        
+        require __DIR__ . "/../../../views/layouts/dashboard.php";
+    }
+
+    /**
+     * MES FONCTIONS CONTROLEUR
+     */
     public function Index(): void
         { 
         
@@ -59,31 +90,6 @@ class EntrepriseController
         ]);
     }
     
-    private function renderPublic(string $view, array $params = []): void
-    {
-        extract($params);
-
-        ob_start();
-        require __DIR__ . "/../../../views/entreprise/{$view}.php";
-        $content = ob_get_clean();
-
-        require __DIR__ . "/../../../views/layouts/main.php";
-    }       
-    
-    /**
-     * Charge une vue du tableau de bord (layout back-office).
-     */
-    private function renderDashboard(string $view, array $params = []): void
-    {
-        extract($params);
-
-        ob_start();
-        require __DIR__ . "/../../../views/entreprise/{$view}.php";
-        $content = ob_get_clean();
-
-        require __DIR__ . "/../../../views/layouts/dashboard.php";
-    }
-
     
     public function adminIndex(): void
     {
@@ -97,6 +103,7 @@ class EntrepriseController
             "entreprises" => $entreprises
         ]);
     }
+    
 
     /*Formulaire de création d'une nouvelle entreprise*/
     public function createForm(): void
@@ -136,7 +143,7 @@ class EntrepriseController
             return;
         }
 
-        header("Location: /admin/entreprises?succes=created");
+        header("Location: /admin/entreprises");
         exit;
     }
 
@@ -192,7 +199,7 @@ class EntrepriseController
             return;
         }
 
-        header("Location: /admin/entreprises?succes=updated");
+        header("Location: /admin/entreprises");
         exit;
     }
 
@@ -206,7 +213,7 @@ class EntrepriseController
         $id      = (int)($_POST['id'] ?? 0);
         $service->deleteEntreprise($id);
 
-        header("Location: /admin/entreprises?succes=deleted");
+        header("Location: /admin/entreprises");
         exit;
     }
 }
