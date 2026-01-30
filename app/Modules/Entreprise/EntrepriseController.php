@@ -143,6 +143,7 @@ class EntrepriseController
             return;
         }
 
+        self::flashSuccess($result['message']);
         header("Location: /admin/entreprises");
         exit;
     }
@@ -198,7 +199,7 @@ class EntrepriseController
             ]);
             return;
         }
-
+        self::flashSuccess($result['message']);
         header("Location: /admin/entreprises");
         exit;
     }
@@ -211,9 +212,26 @@ class EntrepriseController
     {
         $service = $this->makeEntrepriseService();
         $id      = (int)($_POST['id'] ?? 0);
-        $service->deleteEntreprise($id);
+        $result=$service->deleteEntreprise($id);
 
+        if (!$result['success']) {
+            self::flashError($result['error']);
+            header("Location: /admin/entreprises");
+            exit;
+        } 
+
+        self::flashSuccess($result['message']);
         header("Location: /admin/entreprises");
         exit;
+    }
+
+    public static function flashSuccess(string $message): void
+    {
+        $_SESSION['success'] = $message;   
+    }
+
+    public static function flashError(string $message): void
+    {
+        $_SESSION['error'] = $message;   
     }
 }

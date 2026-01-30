@@ -1,24 +1,30 @@
 <?php
-    //GESTION DES ERREURS PASSÉES PAR LE CONTRÔLEUR EN VARIABLE $error 
-    if (!empty($error)): ?>
+    //GESTION DES ERREURS PASSÉES PAR LE CONTRÔLEUR EN VARIABLE $error ou EN SESSION['error']
+
+    $errorMessgae = $error ?? $_SESSION['error'] ?? null; // si error n'existe pas, on regarde en session si une erreur y est stockée
+
+    if (!empty($errorMessgae)): ?>
     <script>
     Swal.fire({
         icon: 'error',
         title: 'Erreur',
-        text: '<?= htmlspecialchars($error) ?>',
+        text: '<?= htmlspecialchars($errorMessgae) ?>',
         confirmButtonColor: '#d33'
     });
     </script>
+
+    <?php unset($_SESSION['error']); // on supprime l'erreur de la session après l'avoir affichée eviter boucle d'erreur ?> 
+
 <?php endif; ?>
 
 <?php 
     //GESTION DES SUCCÈS PASSÉS PAR LE CONTRÔLEUR EN VARIABLE $success 
-    if (!empty($success)): ?>
+    if (!empty($_SESSION['success'])): ?>
     <script>
     Swal.fire({
         icon: 'success',
         title: 'Succès',
-        text: '<?= htmlspecialchars($success) ?>',
+        text: '<?= htmlspecialchars($_SESSION['success']) ?>',
         timer: 2500,
         timerProgressBar: true,
         showConfirmButton: false

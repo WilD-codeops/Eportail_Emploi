@@ -80,16 +80,16 @@ use App\Core\Database;
 
             switch ($role) {
                 case 'admin':
-                    header("Location: /?reason=loggedin");
+                    header("Location: admin/entreprises?reason=loggedin");
                     break;
                 case 'gestionnaire':
-                    header("Location: /gestionnaire/dashboard?reason=loggedin");
+                    header("Location: /gestionnaire/dashboard/offres?reason=loggedin");
                     break;
                 case 'recruteur':
-                    header("Location: /recruteur/dashboard?reason=loggedin");
+                    header("Location: /recruteur/dashboard/offres?reason=loggedin");
                     break;
                 case 'candidat':
-                    header("Location: /candidat/dashboard?reason=loggedin");
+                    header("Location: /?reason=loggedin");
                     break;
                 default:
                     header("Location: /");
@@ -127,7 +127,8 @@ use App\Core\Database;
                 ]);
                 return;
             }
-        
+            
+            self::flashSuccess("Inscription réussie. Vous pouvez maintenant vous connecter.");
             header("Location: /login");
             exit;   
         }
@@ -175,7 +176,8 @@ use App\Core\Database;
                     return;
                 }
             
-                header("Location: /login?reason=created");
+                self::flashSuccess($result['message']);
+                header("Location: /login");
                 exit;
             }
 
@@ -206,4 +208,13 @@ use App\Core\Database;
             exit;
         }
 
+        public static function flashSuccess(string $message): void
+        {
+            $_SESSION['success'] = $message;   
+        }
+
+        public static function flashError(string $message): void
+        {
+            $_SESSION['error'] = $message;   
+        }
     }

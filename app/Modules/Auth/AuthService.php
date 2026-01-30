@@ -17,16 +17,16 @@ class AuthService
         $email = trim($email);
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return ['success' => false, 'error' => 'Email invalide'];
+            return $this->fail("Email invalide.");
         }
 
         $user = $this->repo->findByEmail($email);
         if (!$user) {
-            return ['success' => false, 'error' => 'Identifiants incorrects'];
+            return $this->fail("email incorrect");
         }
 
         if (!password_verify($password, $user['mot_de_passe'])) {
-            return ['success' => false, 'error' => 'Identifiants incorrects'];
+            return $this->fail("Mot de passe incorrect");
         }
 
         // demarrage session sécurisée
@@ -42,7 +42,7 @@ class AuthService
         $_SESSION['created_at'] = time();
         $_SESSION['last_activity'] = time();
 
-        return ['success' => true, 'user' => $user];
+        return $this->success("Connexion réussie.");
     }
 
     public function emailExists(string $email): bool
@@ -67,5 +67,15 @@ class AuthService
     {
         $data['mot_de_passe'] = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
         return $this->repo->createUser($data);  
+    }
+
+    private function fail(string $msg): array
+    {
+        return ['success' => false, 'error' => $msg];
+    }
+
+    private function success(string $msg): array
+    {
+        return ['success' => true, 'message' => $msg];
     }
 }
