@@ -125,4 +125,9 @@ class EntrepriseService
     {
         return ['success' => false, 'error' => $msg];
     }
+
+    private function success(string $msg): array
+    {
+        return ['success' => true,'message'=>$msg];
+    }
 }
