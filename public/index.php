@@ -22,6 +22,9 @@ $router = new Router();
 // Routes home
 $router->get('/', 'App\\Modules\\Home\\HomeController@index');
 
+// Maintenance page
+$router->get('/maintenance', 'App\\Modules\\Home\\HomeController@maintenance');
+
 // Auth routes page d'authentification
 $router->get('/login', 'App\\Modules\\Auth\\AuthController@showLogin');
 $router->post('/login', 'App\\Modules\\Auth\\AuthController@login');

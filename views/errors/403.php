@@ -9,7 +9,7 @@
     Swal.fire({
         icon: 'error',
         title: "Accès interdit",
-        text: "Droits insuffisants",
+        text: "Droits insuffisants pour acceder à cette page.",
         timer: 2500,  // 2.5s
         timerProgressBar: true
     }).then(() => {

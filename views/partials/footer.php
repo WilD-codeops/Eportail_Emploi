@@ -42,9 +42,9 @@
             <div class="col-6 col-md-3">
                 <h6 class="footer-title">Support</h6>
                 <ul class="footer-links list-unstyled">
-                    <li><a href="/aide">Centre d’aide</a></li>
-                    <li><a href="/contact">Contact</a></li>
-                    <li><a href="/mentions-legales">Mentions légales</a></li>
+                    <li><a href="/maintenance">Centre d’aide</a></li>
+                    <li><a href="/maintenance">Contact</a></li>
+                    <li><a href="/maintenance">Mentions légales</a></li>
                 </ul>
             </div>
         </div>

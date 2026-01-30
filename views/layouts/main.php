@@ -26,12 +26,12 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     
     <?php include __DIR__ . '/../partials/alerts.php'; ?> <!-- GESTION DES ALERTES SWEETALERT -->
     <?php require __DIR__ . '/../partials/header.php'; ?>
 
-<main class="flex-shrink-0">
+<main class="flex-grow-1">
 <?php
     if (isset($content))
          {echo $content;

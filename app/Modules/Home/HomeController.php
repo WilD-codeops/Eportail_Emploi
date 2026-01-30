@@ -16,4 +16,15 @@ class HomeController
 
         require __DIR__ . '/../../../views/layouts/main.php';
     }
+
+    public function maintenance(): void
+    {
+        $title = "Maintenance – EPortailEmploi";
+
+        ob_start();
+        require __DIR__ . '/../../../views/errors/maintenance.php';
+        $content = ob_get_clean();
+
+        require __DIR__ . '/../../../views/layouts/main.php';
+    }
 }
