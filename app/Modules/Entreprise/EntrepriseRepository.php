@@ -11,108 +11,165 @@ class EntrepriseRepository
     /** Toutes les entreprises */
     public function getAll(): array
     {
-        $sql = "SELECT e.*, s.libelle AS secteur
-                FROM entreprises e
-                LEFT JOIN secteurs_entreprises s ON s.id = e.secteur_id
-                ORDER BY e.nom ASC";
+        try {
+            $sql = "SELECT e.*, u.nom AS gestionnaire_nom, u.prenom AS gestionnaire_prenom, s.libelle AS secteur
+                    FROM entreprises e
+                    LEFT JOIN users u ON u.id = e.gestionnaire_id
+                    LEFT JOIN secteurs_entreprises s ON s.id = e.secteur_id
+                    ORDER BY e.nom ASC";
 
-        return $this->pdo->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+            $stmt=$this->pdo->prepare($sql);
+            $stmt->execute();
+            $dataEntreprises = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return ['success' => true, 'data' => $dataEntreprises];
+
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(), 'code'=>$e->getCode()];
+        }
     }
 
 
     //Tous les secteurs d'activité
     public function getSecteurs(): array
     {
-        return $this->pdo
-            ->query("SELECT id, libelle FROM secteurs_entreprises ORDER BY libelle ASC")
-            ->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $sql = "SELECT id, libelle FROM secteurs_entreprises ORDER BY libelle ASC";
+
+            $stmt=$this->pdo->prepare($sql);
+            $stmt->execute();
+            $dataSecteurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+         
+        return ['success' => true, 'data' => $dataSecteurs];
+
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(), 'code'=>$e->getCode()];
+        }
     }
 
 
     //Trouver entreprise
-    public function find(int $id): ?array
+    public function find(int $id): array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM entreprises WHERE id = :id LIMIT 1");
+        try{
+        //infos entreprise + gestionnaire lie à l'entrrise + secteur
+        $sql = "SELECT e.*, u.nom AS gestionnaire_nom, u.prenom AS gestionnaire_prenom, s.libelle AS secteur
+                FROM entreprises e
+                LEFT JOIN users u ON u.id = e.gestionnaire_id
+                LEFT JOIN secteurs_entreprises s ON s.id = e.secteur_id
+                WHERE e.id = :id LIMIT 1";
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        $data = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+        return ['success' => true, 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(),'code'=>$e->getCode()];
+        }
     }
 
 
 
-    public function siretExists(string $siret): bool
+    public function siretExists(string $siret): array
     {
-        $sql = "SELECT id FROM entreprises WHERE siret = :siret LIMIT 1";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':siret', $siret);
-        $stmt->execute();
-        
-        return $stmt->fetch() !== false; // Retourne true si un enregistrement est trouvé
+        try {
+            $sql = "SELECT id FROM entreprises WHERE siret = :siret LIMIT 1";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':siret', $siret);
+            $stmt->execute();
+
+            $result = $stmt->fetch() !== false; // Retourne true si un enregistrement est trouvé
+
+            return ['success' => true, 'exists' => $result]; // Renvoie true si le SIRET existe en base
+
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(), 'code'=>$e->getCode()];
+        }
     }
 
-    public function siretExistsExceptId(int $entrepriseId, string $siret): bool  // Pour update entreprise pour exclure l'entreprise elle-même eviter le faux doublon
+    public function siretExistsExceptId(int $entrepriseId, string $siret): array  // Pour update entreprise pour exclure l'entreprise elle-même eviter le faux doublon
     {
-        $sql = "SELECT id FROM entreprises WHERE siret = :siret AND id != :id LIMIT 1";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':siret', $siret);
-        $stmt->bindParam(':id', $entrepriseId, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt->fetch() !== false; // Retourne true si un enregistrement est trouvé
+        try {    
+            $sql = "SELECT id FROM entreprises WHERE siret = :siret AND id != :id LIMIT 1";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':siret', $siret);
+            $stmt->bindParam(':id', $entrepriseId, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch() !== false; // Retourne true si un enregistrement est trouvé
+
+            return ['success' => true, 'exists' => $result];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(),'code'=>$e->getCode()];
+        }
+
+
     }
     
 
     //Créer entreprise
-    public function createEntreprise(array $data): int
+    public function createEntreprise(array $data): array
     {
         if (empty($data['gestionnaire_id'])) {
             throw new \Exception("Entreprise sans gestionnaire interdite.");
         }
 
         $sql = "INSERT INTO entreprises
-                (gestionnaire_id, nom, secteur_id, adresse, code_postal, ville, pays,
-                 telephone, email, siret, site_web, taille, description, logo)
-                VALUES
-                (:gestionnaire_id, :nom, :secteur_id, :adresse, :code_postal, :ville, :pays,
-                 :telephone, :email, :siret, :site_web, :taille, :description, :logo)";
+                    (gestionnaire_id, nom, secteur_id, adresse, code_postal, ville, pays,
+                     telephone, email, siret, site_web, taille, description, logo)
+                    VALUES
+                    (:gestionnaire_id, :nom, :secteur_id, :adresse, :code_postal, :ville, :pays,
+                     :telephone, :email, :siret, :site_web, :taille, :description, :logo)";
 
-        $stmt = $this->pdo->prepare($sql);
+        try {
+            $stmt = $this->pdo->prepare($sql);
 
-        $stmt->bindParam(':gestionnaire_id', $data['gestionnaire_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':nom', $data['nom'], PDO::PARAM_STR);
-        $stmt->bindParam(':secteur_id', $data['secteur_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':adresse', $data['adresse'], PDO::PARAM_STR);
-        $stmt->bindParam(':code_postal', $data['code_postal'], PDO::PARAM_STR);
-        $stmt->bindParam(':ville', $data['ville'], PDO::PARAM_STR);
-        $stmt->bindParam(':pays', $data['pays'], PDO::PARAM_STR);
-        $stmt->bindParam(':telephone', $data['telephone'], PDO::PARAM_STR);
-        $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
-        $stmt->bindParam(':siret', $data['siret'], PDO::PARAM_STR);
-        $stmt->bindParam(':site_web', $data['site_web'], PDO::PARAM_STR);
-        $stmt->bindParam(':taille', $data['taille'], PDO::PARAM_STR);
-        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
-        $stmt->bindParam(':logo', $data['logo'], PDO::PARAM_STR);
+            $stmt->bindParam(':gestionnaire_id', $data['gestionnaire_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $data['nom'], PDO::PARAM_STR);
+            $stmt->bindParam(':secteur_id', $data['secteur_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':adresse', $data['adresse'], PDO::PARAM_STR);
+            $stmt->bindParam(':code_postal', $data['code_postal'], PDO::PARAM_STR);
+            $stmt->bindParam(':ville', $data['ville'], PDO::PARAM_STR);
+            $stmt->bindParam(':pays', $data['pays'], PDO::PARAM_STR);
+            $stmt->bindParam(':telephone', $data['telephone'], PDO::PARAM_STR);
+            $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
+            $stmt->bindParam(':siret', $data['siret'], PDO::PARAM_STR);
+            $stmt->bindParam(':site_web', $data['site_web'], PDO::PARAM_STR);
+            $stmt->bindParam(':taille', $data['taille'], PDO::PARAM_STR);
+            $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+            $stmt->bindParam(':logo', $data['logo'], PDO::PARAM_STR);
 
-        $stmt->execute($data);
+            $stmt->execute($data);
+            return ['success' => true, 'id' => (int)$this->pdo->lastInsertId()];
 
-        return (int)$this->pdo->lastInsertId();
+        } catch (\PDOException $e) { // Gestion erreur PDO
+            return ['success' => false, 'error' => $e->getMessage(), 'code'=>$e->getCode()]; // Recupere message erreur pour debug
+        }
     }
 
 
     /** Lien gestionnaire → entreprise */
-    public function attachUserToEntreprise(int $userId, int $entrepriseId): void
+    public function attachUserToEntreprise(int $userId, int $entrepriseId): array
     {
         $sql = "UPDATE users SET entreprise_id = :eid WHERE id = :uid";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':eid', $entrepriseId, PDO::PARAM_INT);
-        $stmt->bindParam(':uid', $userId, PDO::PARAM_INT);
-        $stmt->execute();
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':eid', $entrepriseId, PDO::PARAM_INT);
+            $stmt->bindParam(':uid', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            return ['success' => true];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(),'code'=>$e->getCode()];
+        }
     }
 
 
     /** Modifier entreprise */
-    public function updateEntreprise(int $id, array $data): bool
+    public function updateEntreprise(int $id, array $data): array
     {
         $sql = "UPDATE entreprises SET
                     nom = :nom,
@@ -129,32 +186,42 @@ class EntrepriseRepository
                     description = :description  ,
                     logo = :logo
                 WHERE id = :id";
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->bindParam(':nom', $data['nom'], PDO::PARAM_STR);
+            $stmt->bindParam(':secteur_id', $data['secteur_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':adresse', $data['adresse'], PDO::PARAM_STR);
+            $stmt->bindParam(':code_postal', $data['code_postal'], PDO::PARAM_STR);
+            $stmt->bindParam(':ville', $data['ville'], PDO::PARAM_STR);
+            $stmt->bindParam(':pays', $data['pays'], PDO::PARAM_STR);
+            $stmt->bindParam(':telephone', $data['telephone'], PDO::PARAM_STR);
+            $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
+            $stmt->bindParam(':siret', $data['siret'], PDO::PARAM_STR);
+            $stmt->bindParam(':site_web', $data['site_web'], PDO::PARAM_STR);
+            $stmt->bindParam(':taille', $data['taille'], PDO::PARAM_STR);
+            $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
+            $stmt->bindParam(':logo', $data['logo'], PDO::PARAM_STR);
+            $stmt->execute();
 
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->bindParam(':nom', $data['nom'], PDO::PARAM_STR);
-        $stmt->bindParam(':secteur_id', $data['secteur_id'], PDO::PARAM_INT);
-        $stmt->bindParam(':adresse', $data['adresse'], PDO::PARAM_STR);
-        $stmt->bindParam(':code_postal', $data['code_postal'], PDO::PARAM_STR);
-        $stmt->bindParam(':ville', $data['ville'], PDO::PARAM_STR);
-        $stmt->bindParam(':pays', $data['pays'], PDO::PARAM_STR);
-        $stmt->bindParam(':telephone', $data['telephone'], PDO::PARAM_STR);
-        $stmt->bindParam(':email', $data['email'], PDO::PARAM_STR);
-        $stmt->bindParam(':siret', $data['siret'], PDO::PARAM_STR);
-        $stmt->bindParam(':site_web', $data['site_web'], PDO::PARAM_STR);
-        $stmt->bindParam(':taille', $data['taille'], PDO::PARAM_STR);
-        $stmt->bindParam(':description', $data['description'], PDO::PARAM_STR);
-        $stmt->bindParam(':logo', $data['logo'], PDO::PARAM_STR);
-
-        return $stmt->execute();
+            return ['success' => true];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(),'code'=>$e->getCode()];
+        }
     }
 
     /** Supprimer entreprise */
-    public function deleteEntreprise(int $id): bool
+    public function deleteEntreprise(int $id): array
     {
-        $stmt = $this->pdo->prepare("DELETE FROM entreprises WHERE id = :id");
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        try {
+            $stmt = $this->pdo->prepare("DELETE FROM entreprises WHERE id = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+            $stmt->execute( );
 
-        return $stmt->execute( );
+            return  ['success' => true];
+
+        } catch (\PdoException $e) {
+            return ['success' => false, 'error' => $e->getMessage(),'code'=>$e->getCode()];
+        }    
     }
 }
