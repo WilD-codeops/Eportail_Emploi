@@ -33,20 +33,17 @@
     if (isset($_GET['reason'])): ?>
     <script>
     const messages = {
-        // SUCCÈS
+        // CONNEXION / DÉCONNEXION
         'logout': {icon: 'success', title: 'Déconnecté !', text: 'À bientôt sur EPortailEmploi !', timer: 2500},
-        'loggedin': {icon: 'success', title: 'Connexion réussie !', text: 'Bienvenue dans votre espace.', timer: 2000},
-        'created': {icon: 'success', title: 'Créé avec succès !', text: 'Votre compte est actif.', timer: 3000},
-        'updated': {icon: 'success', title: 'Mis à jour !', text: 'Modifications enregistrées.', timer: 2500},
+        'loggedin': {icon: 'success', title: 'Connexion réussie !', text: 'Bienvenue <?= htmlspecialchars($_SESSION['user_prenom'] ?? '') ?> connexion réussie.', timer: 2000},
+        
 
         // AVERTISSEMENTS
-        'unauthenticated': {icon: 'warning', title: 'Connexion requise', text: 'Veuillez vous connecter pour continuer.', timer: 4000},
+        'unauthenticated': {icon: 'warning', title: 'Connexion requise', text: 'Veuillez vous connecter.', timer: 4000},
         'expired': {icon: 'warning', title: 'Session expirée', text: 'Reconnexion nécessaire.', timer: 4000},
 
         // REFUS / ERREURS
         'forbidden': {icon: 'error', title: 'Accès interdit', text: 'Droits insuffisants pour cette page.', timer: 3500},
-        'invalid_email': {icon: 'error', title: 'Email invalide', text: 'Format email incorrect.', timer: 4000},
-        'duplicate': {icon: 'error', title: 'Déjà existant', text: 'Cet email est déjà utilisé.', timer: 4000},
         'csrf': {icon: 'error', title: 'Sécurité', text: 'Token CSRF invalide. Rechargez la page.', timer: 4500},
 
         // ℹ️ INFO

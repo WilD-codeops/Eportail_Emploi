@@ -202,7 +202,7 @@ use App\Core\Database;
         public static function logout(): void
         {
             Auth::logout();
-            header("Location: /?reason=logged_out");
+            header("Location: /?reason=logout");
             exit;
         }
 
