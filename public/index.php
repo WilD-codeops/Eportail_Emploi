@@ -24,6 +24,7 @@ $router->get('/', 'App\\Modules\\Home\\HomeController@index');
 
 // Maintenance page
 $router->get('/maintenance', 'App\\Modules\\Home\\HomeController@maintenance');
+$router->get('/500', 'App\\Modules\\Home\\HomeController@error500');
 
 // Auth routes page d'authentification
 $router->get('/login', 'App\\Modules\\Auth\\AuthController@showLogin');

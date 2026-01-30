@@ -17,32 +17,52 @@ class EntrepriseService
     /** Liste */
     public function listEntreprises(): array
     {
-        return $this->repo->getAll();
+        $resultat = $this->repo->getAll();
+        if ($this->systemError($resultat)) {//verif erreur systeme  
+            return $this->systemError($resultat);
+        }
+        return $resultat;
     }
 
     /** Secteurs */
     public function listSecteurs(): array
     {
-        return $this->repo->getSecteurs();
+        $resultat = $this->repo->getSecteurs();
+        if ($this->systemError($resultat)) {//verif erreur systeme
+            return $this->systemError($resultat);
+        }
+        return $resultat;
     }
 
     /** Trouver entreprise */
     public function findEntreprise(int $id): ?array
     {
-        return $this->repo->find($id);
+        $resultat = $this->repo->find($id);
+        if ($this->systemError($resultat)) {
+            return $this->systemError($resultat);
+        }
+        return $resultat;
     }
     
 
     /** SIRET deja enreistré en base*/
-    public function siretExists(string $siret): bool
+    public function siretExists(string $siret): array
     {
-        return $this->repo->siretExists($siret);
+        $resultat = $this->repo->siretExists($siret);
+        if ($this->systemError($resultat)) {
+            return $this->systemError($resultat);
+        }
+        return $resultat;
     }
 
     // Pour update entreprise exclure l'entreprise elle-même eviter le faux doublon
-    public function siretExistsForOtherEntreprise(int $entrepriseId, string $siret): bool 
+    public function siretExistsForOtherEntreprise(int $entrepriseId, string $siret): array 
     {
-        return $this->repo->siretExistsExceptId($entrepriseId, $siret);
+        $resultat = $this->repo->siretExistsExceptId($entrepriseId, $siret);
+        if ($this->systemError($resultat)) {
+            return $this->systemError($resultat);
+        }
+        return $resultat;
     }
 
 
@@ -69,7 +89,7 @@ class EntrepriseService
             $entrepriseId = $this->repo->createEntreprise($entrepriseData);
 
             // 3) Lier user → entreprise
-            $this->repo->attachUserToEntreprise($gestionnaireId, $entrepriseId);
+            $this->repo->attachUserToEntreprise($gestionnaireId, $entrepriseId['id']);
 
             $this->pdo->commit();
             return $this->success("Entreprise et gestionnaire créés avec succès.");
@@ -109,7 +129,11 @@ class EntrepriseService
 
         $ok = $this->repo->updateEntreprise($id, $dataEntrepriseCanonique);
 
-        return $ok ? $this->success("Entreprise mise à jour avec succès.") : $this->fail("Erreur lors de la mise à jour de l'entreprise.");
+        if ($this->systemError($ok)) {
+            return $this->systemError($ok);
+        }
+
+        return $this->success("Entreprise mise à jour avec succès.");
     }
 
 
@@ -117,9 +141,13 @@ class EntrepriseService
     /** Supprimer */
     public function deleteEntreprise(int $id): array
     {
-        $ok = $this->repo->deleteEntreprise($id);
-        return $ok ? $this->success("Entreprise supprimée avec succès.") : $this->fail("Erreur lors de la suppression de l'entreprise.");
+        $result = $this->repo->deleteEntreprise($id);
+        if ($this->systemError($result)) {
+            return $this->systemError($result);
+        }
+        return  $this->success("Entreprise supprimée avec succès.");
     }
+    
     
     private function fail(string $msg): array
     {
@@ -130,4 +158,16 @@ class EntrepriseService
     {
         return ['success' => true,'message'=>$msg];
     }
+
+    private function systemError($result){
+        if(!$result['success']){
+            return [
+                'success' => false,
+                'systemError'=>true,
+                'error'=>$result['error'] ?? 'Erreur système inconnue',
+                'code'=>$result['code']
+            ];
+        }
+    }
+    
 }

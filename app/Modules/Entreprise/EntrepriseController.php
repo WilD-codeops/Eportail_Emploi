@@ -82,11 +82,15 @@ class EntrepriseController
         
         $service     = $this->makeEntrepriseService();
         $entreprises = $service->listEntreprises();
+        
+        if (!$entreprises['success']) {
+            self::VerifyFailSystem($entreprises);
+        }
 
         // vue publique avec layout main
         $this->renderPublic("public_list", [
             "title"       => "Gestion des entreprises",
-            "entreprises" => $entreprises
+            "entreprises" => $entreprises['data']
         ]);
     }
     
@@ -98,9 +102,15 @@ class EntrepriseController
         $service     = $this->makeEntrepriseService();
         $entreprises = $service->listEntreprises();
 
+        if (!$entreprises['success']) {
+            self::VerifyFailSystem($entreprises);
+        }
+
+         // vue dashboard avec layout dashboard
+
         $this->renderDashboard("list", [
             "title"       => "Gestion des entreprises",
-            "entreprises" => $entreprises
+            "entreprises" => $entreprises['data']
         ]);
     }
     
@@ -112,10 +122,13 @@ class EntrepriseController
         
         $service  = $this->makeEntrepriseService();
         $secteurs = $service->listSecteurs();
+        if (!$secteurs['success']) {
+            self::VerifyFailSystem($secteurs);
+        }
 
         $this->renderDashboard("create", [
             "title"    => "Créer une entreprise",
-            "secteurs" => $secteurs
+            "secteurs" => $secteurs['data']
         ]);
     }
 
@@ -132,12 +145,17 @@ class EntrepriseController
 
         if (!$result['success']) {
 
+            $secteurs = $service->listSecteurs();
+            if (!$secteurs['success']) {
+                self::VerifyFailSystem($secteurs);
+            }
+
             $entrepriseToCreate = $_POST;
             $this->renderDashboard("create", [
                 "title"       => "Créer une entreprise",
                 "entreprise" => $entrepriseToCreate,
                 "error"      => $result['error'],
-                "secteurs"   => $service->listSecteurs()
+                "secteurs"   => $secteurs['data'],
             ]);
             
             return;
@@ -159,14 +177,20 @@ class EntrepriseController
         $service    = $this->makeEntrepriseService();
         $entreprise = $service->findEntreprise($id);
 
-        if (!$entreprise) {
-            die("Entreprise introuvable.");
+        if (!$entreprise['success']) {
+            self::VerifyFailSystem($entreprise);
         }
+
+        $secteurs= $service->listSecteurs();
+        if (!$secteurs['success']) {
+            self::VerifyFailSystem($secteurs);
+        }
+        
 
         $this->renderDashboard("edit", [
             "title"      => "Modifier une entreprise",
-            "entreprise" => $entreprise,
-            "secteurs"   => $service->listSecteurs()
+            "entreprise" => $entreprise['data'],
+            "secteurs"   => $secteurs['data'],
         ]);
     }
 
@@ -184,17 +208,24 @@ class EntrepriseController
         // Appel service
         $result = $service->updateEntreprise($id, $_POST);
 
-        // Si erreur => on ré-affiche le formulaire avec les données saisies
+        // Si erreur metier => on ré-affiche le formulaire avec les données saisies sinon systemError -> page 500
         if (!$result['success']) {
+
+            self::VerifyFailSystem($result);
             // IMPORTANT : on renvoie au form les valeurs saisies (POST) pour éviter de tout retaper
             // On garde aussi l'id car edit.php construit l'action avec l'id
             $entreprise = $_POST;
             $entreprise['id'] = $id;
 
+            $secteurs= $service->listSecteurs();
+            if (!$secteurs['success']) {
+                self::VerifyFailSystem($secteurs);
+            }
+
             $this->renderDashboard("edit", [
                 "title"      => "Modifier une entreprise",
                 "entreprise" => $entreprise,
-                "secteurs"   => $service->listSecteurs(),
+                "secteurs"   => $secteurs['data'],
                 "error"      => $result['error'],    // message d’erreur
             ]);
             return;
@@ -215,6 +246,8 @@ class EntrepriseController
         $result=$service->deleteEntreprise($id);
 
         if (!$result['success']) {
+            self::VerifyFailSystem($result);
+
             self::flashError($result['error']);
             header("Location: /admin/entreprises");
             exit;
@@ -233,5 +266,20 @@ class EntrepriseController
     public static function flashError(string $message): void
     {
         $_SESSION['error'] = $message;   
+    }
+
+    public static function flashSystemError(string $message): void
+    {
+        $_SESSION['systemError'] = $message;   
+    }
+
+    public static function VerifyFailSystem($result): void
+    {
+        if (isset($result['systemError']) && $result['code']>=2000) {
+                self::flashSystemError($result['error']);
+                header("Location: /500");
+                exit;
+            }
+        
     }
 }

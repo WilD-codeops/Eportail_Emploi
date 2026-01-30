@@ -20,7 +20,7 @@ class EntrepriseRepository
 
             $stmt=$this->pdo->prepare($sql);
             $stmt->execute();
-            $dataEntreprises = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $dataEntreprises = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: null;
 
             return ['success' => true, 'data' => $dataEntreprises];
 
@@ -38,7 +38,7 @@ class EntrepriseRepository
 
             $stmt=$this->pdo->prepare($sql);
             $stmt->execute();
-            $dataSecteurs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $dataSecteurs = $stmt->fetchAll(PDO::FETCH_ASSOC)?:null;
          
         return ['success' => true, 'data' => $dataSecteurs];
 
