@@ -11,6 +11,22 @@
     </script>
 <?php endif; ?>
 
+<?php 
+    //GESTION DES SUCCÈS PASSÉS PAR LE CONTRÔLEUR EN VARIABLE $success 
+    if (!empty($success)): ?>
+    <script>
+    Swal.fire({
+        icon: 'success',
+        title: 'Succès',
+        text: '<?= htmlspecialchars($success) ?>',
+        timer: 2500,
+        timerProgressBar: true,
+        showConfirmButton: false
+    });
+    </script>
+<?php endif; ?>
+
+
 
 <?php 
     // AFFICHEGE DES ALERTES BASEES SUR LE PARAMETRE "reason" DANS L'URL
