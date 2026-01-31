@@ -37,6 +37,8 @@ $router->post('/register/candidat', 'App\\Modules\\Auth\\AuthController@register
 $router->get('/register/entreprise', 'App\\Modules\\Auth\\AuthController@showRegisterEntreprise');
 $router->post('/register/entreprise', 'App\\Modules\\Auth\\AuthController@registerEntreprise');
 
+$router->get('/password/forgot',       'App\\Modules\Auth\\AuthController@showForgotPassword' );    
+$router->post('/password/forgot',       'App\\Modules\Auth\\AuthController@showRegisterForgot' );
 
 // Entreprises Liste publique
 $router->get('/entreprises', 'App\\Modules\\Entreprise\\EntrepriseController@index');
@@ -50,7 +52,6 @@ $router->post('/admin/entreprises/create', 'App\\Modules\\Entreprise\\Entreprise
 $router->get('/admin/entreprises/edit', 'App\\Modules\\Entreprise\\EntrepriseController@editForm');
 $router->post('/admin/entreprises/edit', 'App\\Modules\\Entreprise\\EntrepriseController@update');
 $router->post('/admin/entreprises/delete', 'App\\Modules\\Entreprise\\EntrepriseController@delete');
-
 
 // Offres route publique
 $router->get('/offres', 'App\\Modules\\Offres\\OffresController@index'); 
