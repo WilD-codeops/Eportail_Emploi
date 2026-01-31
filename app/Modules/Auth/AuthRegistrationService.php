@@ -116,8 +116,13 @@ class AuthRegistrationService
             return $this->fail("Cet email est déjà utilisé.");
         }
         
-        // Vérifier SIRET UNIQUE (entreprise)
-        if ($this->entrepriseService->siretExists($dataCanonique['entreprise']['siret'])) {
+        $siretCheck = $this->entrepriseService->siretExists($dataCanonique['entreprise']['siret']);
+        if (isset($siretCheck['systemError']) && $siretCheck['systemError']) {
+            // remonter l’erreur système
+            return $siretCheck;
+        }
+        if (($siretCheck['success'] ?? false) && ($siretCheck['exists'] ?? false)) {
+            // le SIRET est déjà utilisé
             return $this->fail("Ce SIRET est déjà enregistré.");
         }
 

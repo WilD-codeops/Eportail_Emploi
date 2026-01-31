@@ -60,6 +60,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         }</p>
                     </div>
 
+                    <div class="col-md-12">
+                        <p><strong>Date d'inscription :</strong><br>${
+                          btn.dataset.date_inscription || "—"
+                        }</p>
+
                 </div>
             `;
 

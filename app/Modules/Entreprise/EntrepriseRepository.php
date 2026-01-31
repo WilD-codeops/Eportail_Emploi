@@ -121,22 +121,22 @@ class EntrepriseRepository
                 $params['ville'] = '%' . $filters['ville'] . '%';
             }
 
-            if (!empty($filters['taille'])) {
-                $sql .= " AND e.taille = :taille";
-                $params['taille'] = $filters['taille'];
-            }
-
             if (!empty($filters['gestionnaire'])) {
                 $sql .= " AND CONCAT(u.nom, ' ', u.prenom) LIKE :gestionnaire";
                 $params['gestionnaire'] = '%' . $filters['gestionnaire'] . '%';
             }
 
-        // --- TRI ---
-        if (($filters['tri'] ?? '') === 'za') {
-            $sql .= " ORDER BY e.nom DESC";
-        } else {
-            $sql .= " ORDER BY e.nom ASC";
-        }
+            // --- TRI ---
+            if (($filters['tri'] ?? '') === 'newest') {
+                $sql .= " ORDER BY e.date_inscription DESC, e.nom ASC";
+            } elseif (($filters['tri'] ?? '') === 'oldest') {
+                $sql .= " ORDER BY e.date_inscription ASC, e.nom ASC";
+            } elseif (($filters['tri'] ?? '') === 'za') {
+                $sql .= " ORDER BY e.nom DESC";
+            } else {
+                $sql .= " ORDER BY e.nom ASC";
+            }
+
 
         // --- PAGINATION ---
         $sql .= " LIMIT :limit OFFSET :offset";

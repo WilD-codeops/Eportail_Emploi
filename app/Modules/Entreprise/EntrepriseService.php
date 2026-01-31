@@ -143,7 +143,13 @@ class EntrepriseService
         if (!$valid['success']) return $valid;
 
         // Vérifier SIRET UNIQUE (entreprise)
-        if ($this->siretExistsForOtherEntreprise($id, $dataEntrepriseCanonique['siret'])) {
+        $siretCheck = $this->siretExistsForOtherEntreprise($id, $dataEntrepriseCanonique['siret']);
+        if (isset($siretCheck['systemError']) && $siretCheck['systemError']) {
+            // remonter l’erreur système
+            return $siretCheck;
+        }
+        if (($siretCheck['success'] ?? false) && ($siretCheck['exists'] ?? false)) {
+            // le SIRET est déjà utilisé par une autre entreprise
             return $this->fail("Ce SIRET est déjà enregistré.");
         }
 

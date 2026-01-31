@@ -47,22 +47,6 @@
                        value="<?= htmlspecialchars($_GET['ville'] ?? '') ?>">
             </div>
 
-            <!-- Taille -->
-            <div class="col-md-3">
-                <label class="form-label fw-semibold">Taille</label>
-                <select name="taille" class="form-select">
-                    <option value="">Toutes</option>
-                    <?php
-                    $tailles = ["TPE", "PME", "ETI", "Grand groupe"];
-                    foreach ($tailles as $t):
-                    ?>
-                        <option value="<?= $t ?>"
-                            <?= (($_GET['taille'] ?? '') === $t) ? 'selected' : '' ?>>
-                            <?= $t ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
 
             <!-- Gestionnaire -->
             <div class="col-md-3">
@@ -81,6 +65,8 @@
                     <option value="">Aucun</option>
                     <option value="az" <?= (($_GET['tri'] ?? '') === 'az') ? 'selected' : '' ?>>Nom A → Z</option>
                     <option value="za" <?= (($_GET['tri'] ?? '') === 'za') ? 'selected' : '' ?>>Nom Z → A</option>
+                    <option value="newest" <?= (($_GET['tri'] ?? '') === 'newest') ? 'selected' : '' ?>>Les plus récents</option>
+                    <option value="oldest" <?= (($_GET['tri'] ?? '') === 'oldest') ? 'selected' : '' ?>>Les plus anciens</option>
                 </select>
             </div>
 

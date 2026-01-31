@@ -26,6 +26,7 @@
                         <th class="d-none d-md-table-cell">Secteur</th>
                         <th>Localisation</th>
                         <th class="d-none d-lg-table-cell">Gestionnaire</th>
+                        <th class="d-none d-lg-table-cell">Date d'inscription</th>
                         <th class="d-none d-xl-table-cell">Email</th>
                         <th class="d-none d-xl-table-cell">Téléphone</th>
                         <th class="d-none d-lg-table-cell">SIRET</th>
@@ -50,6 +51,9 @@
                         <td class="d-none d-lg-table-cell">
                             <?= htmlspecialchars(($e['gestionnaire'])) ?>
                         </td>
+                        <td class="d-none d-lg-table-cell">
+                            <?= htmlspecialchars((new DateTime($e['date_inscription'] ?? ''))->format('d/m/Y')) ?>
+                        </td>
 
                         <td class="d-none d-xl-table-cell"><?= htmlspecialchars($e['email'] ?? '—') ?></td>
 
@@ -73,6 +77,7 @@
                                 data-adresse="<?= htmlspecialchars($e['adresse'] ?? '') ?>"
                                 data-cp="<?= htmlspecialchars($e['code_postal'] ?? '') ?>"
                                 data-gestionnaire="<?= htmlspecialchars($e['gestionnaire'] ?? '') ?>"
+                                data-date_inscription="<?= htmlspecialchars((new DateTime($e['date_inscription'] ?? ''))->format('d/m/Y')) ?>"
                                 data-description="<?= htmlspecialchars($e['description'] ?? '') ?>"
                                 data-site="<?= htmlspecialchars($e['site_web'] ?? '') ?>"
                                 data-bs-toggle="modal"
