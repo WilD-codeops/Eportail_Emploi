@@ -24,6 +24,26 @@ class EntrepriseService
         return $resultat;
     }
 
+    /** Liste des gestionnaires (les entreprises sont liés a un gestionnaire) */
+    public function listGestionnaires(): array
+    {
+        $resultat = $this->repo->getGestionnaires();
+        if ($this->systemError($resultat)) {
+            return $this->systemError($resultat);
+        }
+        return $resultat;
+    }
+
+    // Recherche entreprises avec filtres
+    public function searchEntreprises(array $filters, int $limit, int $offset): array
+    {
+        $result = $this->repo->search($filters, $limit, $offset);
+        if ($this->systemError($result)) {//verif erreur systeme
+            return $this->systemError($result);
+        }
+        return $result;
+    }
+
     /** Secteurs */
     public function listSecteurs(): array
     {

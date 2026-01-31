@@ -30,6 +30,7 @@
         showConfirmButton: false
     });
     </script>
+    <?php unset($_SESSION['success']); // on supprime le succès de la session après l'avoir affichée eviter boucle de succès  ?>
 <?php endif; ?>
 
 

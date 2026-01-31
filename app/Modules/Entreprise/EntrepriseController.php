@@ -99,18 +99,52 @@ class EntrepriseController
     {
         Auth::requireRole(['admin']); // Seul admin peut accéder à cette page
 
-        $service     = $this->makeEntrepriseService();
-        $entreprises = $service->listEntreprises();
+        $filters = [ // Récupération des filtres de recherche
+        'nom'          => $_GET['nom'] ?? null,
+        'secteur'      => $_GET['secteur'] ?? null,
+        'ville'        => $_GET['ville'] ?? null,
+        'taille'       => $_GET['taille'] ?? null,
+        'gestionnaire' => $_GET['gestionnaire'] ?? null,
+        'tri'          => $_GET['tri'] ?? null
+        ];
 
+        // Pagination
+        $page = max(1, (int)($_GET['page'] ?? 1));//page minimum = 1 
+        $limit = 10; //elements par page
+        $offset = ($page - 1) * $limit;//calcul offset qui correspond au nb d'elements a sauter avant de commencer a recuperer les elements
+
+        $service     = $this->makeEntrepriseService();
+        $entreprises = $service->searchEntreprises($filters, $limit, $offset);
+
+        
         if (!$entreprises['success']) {
             self::VerifyFailSystem($entreprises);
         }
 
+        $total= $entreprises['total'];
+        
+        
+        $pages = (int)ceil($total / $limit); //calcul nb total de pages a afficher selon le total d'elements et le nb d'elements par page
+
+        //Données pour les filtres
+        $secteurs = $service->listSecteurs();
+        if (!$secteurs['success']) {
+            self::VerifyFailSystem($secteurs);
+        }
+
+        $gestionnaires = $service->listGestionnaires();
+        if (!$gestionnaires['success']) {
+            self::VerifyFailSystem($gestionnaires);
+        }
          // vue dashboard avec layout dashboard
 
         $this->renderDashboard("list", [
             "title"       => "Gestion des entreprises",
-            "entreprises" => $entreprises['data']
+            "entreprises" => $entreprises['data'],
+            "secteurs"    => $secteurs['data'],
+            "gestionnaires" => $gestionnaires['data'],
+            "page"        => $page,
+            "pages"       => $pages
         ]);
     }
     

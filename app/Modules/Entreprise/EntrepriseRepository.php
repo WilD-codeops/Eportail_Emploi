@@ -47,6 +47,23 @@ class EntrepriseRepository
         }
     }
 
+    //liste  des gestionnaire (users avec role gestionnaire)
+    public function getGestionnaires(): array 
+    {
+        try {
+            $sql = "SELECT id, prenom, nom, email FROM users WHERE role = 'gestionnaire' ORDER BY nom ASC";
+
+            $stmt=$this->pdo->prepare($sql);
+            $stmt->execute();
+            $dataGestionnaires = $stmt->fetchAll(PDO::FETCH_ASSOC)?:null;
+         
+        return ['success' => true, 'data' => $dataGestionnaires];
+
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(), 'code'=>$e->getCode()];
+        }
+    }
+
 
     //Trouver entreprise
     public function find(int $id): array
@@ -71,7 +88,91 @@ class EntrepriseRepository
         }
     }
 
+    /**
+ * Recherche filtrée + pagination + tri
+ */
+    public function search(array $filters, int $limit, int $offset): array
+    {
+        try {
+            $sql = "SELECT SQL_CALC_FOUND_ROWS 
+                        e.*, 
+                        u.nom AS gestionnaire_nom, 
+                        u.prenom AS gestionnaire_prenom, 
+                        s.libelle AS secteur
+                    FROM entreprises e
+                    LEFT JOIN users u ON u.id = e.gestionnaire_id
+                    LEFT JOIN secteurs_entreprises s ON s.id = e.secteur_id
+                    WHERE 1";
 
+            $params = [];
+
+            // --- FILTRES ---
+            if (!empty($filters['nom'])) {
+                $sql .= " AND e.nom LIKE :nom";
+                $params['nom'] = '%' . $filters['nom'] . '%';
+            }
+
+            if (!empty($filters['secteur'])) {
+                $sql .= " AND e.secteur_id = :secteur";
+                $params['secteur'] = $filters['secteur'];
+            }
+
+            if (!empty($filters['ville'])) {
+                $sql .= " AND e.ville LIKE :ville";
+                $params['ville'] = '%' . $filters['ville'] . '%';
+            }
+
+            if (!empty($filters['taille'])) {
+                $sql .= " AND e.taille = :taille";
+                $params['taille'] = $filters['taille'];
+            }
+
+            if (!empty($filters['gestionnaire'])) {
+                $sql .= " AND e.gestionnaire_id = :gestionnaire";
+                $params['gestionnaire'] = $filters['gestionnaire'];
+            }
+
+        // --- TRI ---
+        if (($filters['tri'] ?? '') === 'za') {
+            $sql .= " ORDER BY e.nom DESC";
+        } else {
+            $sql .= " ORDER BY e.nom ASC";
+        }
+
+        // --- PAGINATION ---
+        $sql .= " LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+
+        $stmt->bindValue(':limit', $limit, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $sqltotal = "SELECT FOUND_ROWS()";
+        $total = $this->pdo->prepare($sqltotal);
+        $total->execute();
+        $total = $total->fetchColumn();
+
+        return [
+            'success' => true,
+            'data' => $data,
+            'total' => (int)$total
+        ];
+
+    } catch (\PDOException $e) {
+        return [
+            'success' => false,
+            'error' => $e->getMessage(),
+            'code' => $e->getCode()
+        ];
+    }
+}
 
     public function siretExists(string $siret): array
     {

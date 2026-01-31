@@ -16,7 +16,7 @@ if(isset($_SESSION['systemError'])){
             </p>
         </div>
 
-        <?php if (!empty($errorMessage) && getenv('APP_ENV') === 'dev'): ?>
+        <?php if (!empty($errorMessage) ): ?>
             <div class="alert alert-warning">
                 <h5 class="fw-bold">Message technique (mode développement)</h5>
                 <pre class="bg-light p-3 border rounded small"><?= htmlspecialchars($errorMessage) ?></pre>

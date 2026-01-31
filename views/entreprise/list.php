@@ -1,3 +1,5 @@
+<?php use App\Core\Security; ?>
+<?php include __DIR__ . "/_filters.php"; ?>
 <div class="card shadow-sm">
     <div class="card-body">
 
@@ -88,16 +90,25 @@
                             </a>
 
                             <!-- Supprimer -->
-                            <form method="post"
-                                  action="/admin/entreprises/delete"
-                                  class="d-inline js-delete-form">
-                                <input type="hidden" name="id" value="<?= (int)$e['id'] ?>">
-                                <button type="submit"
-                                        class="btn btn-danger btn-sm"
-                                        aria-label="Supprimer l’entreprise <?= htmlspecialchars($e['nom']) ?>">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
+                            <?php
+                                $csrfKey = "entreprise_delete_" . (int)$e['id'];
+                                $csrfDel = Security::generateCsrfToken($csrfKey);
+                                ?>
+
+                                <form method="POST"
+                                      action="/admin/entreprises/delete"
+                                      class="d-inline js-delete-form">
+
+                                    <input type="hidden" name="id" value="<?= (int)$e['id'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfDel) ?>">
+                                    <input type="hidden" name="csrf_key" value="<?= htmlspecialchars($csrfKey) ?>">
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            aria-label="Supprimer l’entreprise <?= htmlspecialchars($e['nom']) ?>">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
 
                         </td>
                     </tr>
@@ -113,7 +124,8 @@
                 </tbody>
             </table>
         </div>
-
+        <!-- Pagination -->
+        <?php include __DIR__ . '/../partials/pagination.php';  ?>
     </div>
 </div>
 
