@@ -164,3 +164,27 @@
     </div>
   </div>
 </div>
+
+<script>
+    function bindDeleteConfirmations(root = document) {
+  root.querySelectorAll('.js-delete-form').forEach(form => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (typeof Swal === 'undefined') return form.submit();
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Supprimer cette entreprise ?',
+        text: "Cette action est irréversible.",
+        showCancelButton: true,
+        confirmButtonText: 'Oui, supprimer',
+        cancelButtonText: 'Annuler',
+      }).then((result) => {
+        if (result.isConfirmed) form.submit();
+      });
+    });
+  });
+}
+
+bindDeleteConfirmations();
+</script>

@@ -96,7 +96,9 @@ class EntrepriseController
     
     
     public function adminIndex(): void
+
     {
+        Auth::requireLogin();
         Auth::requireRole(['admin']); // Seul admin peut accéder à cette page
 
         $filters = [ // Récupération des filtres de recherche
@@ -152,6 +154,7 @@ class EntrepriseController
     /*Formulaire de création d'une nouvelle entreprise*/
     public function createForm(): void
     {
+        Auth::requireLogin();
         Auth::requireRole(['admin']); // Seul admin peut accéder à cette page
         
         $service  = $this->makeEntrepriseService();
@@ -169,6 +172,7 @@ class EntrepriseController
     /*Traitement de création d'entreprise + gestionnaire post createForm*/
     public function create(): void
     {
+        Auth::requireLogin();
         Auth::requireRole(['admin']); // Seul admin peut accéder à cette action
         // Vérification token CSRF
         Security::requireCsrfToken('entreprise_create', $_POST['csrf_token'] ?? null);
@@ -205,6 +209,7 @@ class EntrepriseController
      */
     public function editForm(): void
     {
+        Auth::requireLogin();
         Auth::requireRole(['admin','recruteur','gestionnaire']); // Accès restreint aux rôles spécifiés
         $id = (int)($_GET['id'] ?? 0);
 
@@ -233,6 +238,7 @@ class EntrepriseController
      */
     public function update(): void
     {
+        Auth::requireLogin();
         Auth::requireRole(['admin','recruteur','gestionnaire']); // Acces restreint aux rôles spécifiés
         Security::requireCsrfToken('entreprise_edit', $_POST['csrf_token'] ?? null);
 
@@ -275,8 +281,14 @@ class EntrepriseController
      */
     public function delete(): void
     {
-        $service = $this->makeEntrepriseService();
+        Auth::requireLogin();
+        Auth::requireRole(['admin']); // Accès restreint aux admins
+       
+        $csrfkey = $_POST['csrf_key'] ?? '';
+        Security::requireCsrfToken($csrfkey, $_POST['csrf_token'] ?? null);
+
         $id      = (int)($_POST['id'] ?? 0);
+        $service = $this->makeEntrepriseService();
         $result=$service->deleteEntreprise($id);
 
         if (!$result['success']) {
