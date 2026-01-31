@@ -10,8 +10,6 @@ use App\Core\Security;
 
 // Génération d'un token CSRF
 $csrfToken  = Security::generateCsrfToken("entreprise_create");
-// En création, il n'y a pas encore de données d'entreprise
-$entreprise = null;
 
 ?>
 <h1 class="mb-4">Créer une entreprise</h1>

@@ -67,15 +67,11 @@
             <!-- Gestionnaire -->
             <div class="col-md-3">
                 <label class="form-label fw-semibold">Gestionnaire</label>
-                <select name="gestionnaire" class="form-select">
-                    <option value="">Tous</option>
-                    <?php foreach ($gestionnaires as $g): ?>
-                        <option value="<?= $g['id'] ?>"
-                            <?= (($_GET['gestionnaire'] ?? '') == $g['id']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($g['prenom'] . ' ' . $g['nom']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <input type="text"
+                       name="gestionnaire"
+                       class="form-control"
+                       placeholder="Nom du gestionnaire"
+                       value="<?= htmlspecialchars($_GET['gestionnaire'] ?? '') ?>">
             </div>
 
             <!-- Tri -->

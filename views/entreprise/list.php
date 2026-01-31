@@ -48,7 +48,7 @@
                         </td>
 
                         <td class="d-none d-lg-table-cell">
-                            <?= htmlspecialchars(($e['gestionnaire_prenom'] ?? '') . ' ' . ($e['gestionnaire_nom'] ?? '')) ?>
+                            <?= htmlspecialchars(($e['gestionnaire'])) ?>
                         </td>
 
                         <td class="d-none d-xl-table-cell"><?= htmlspecialchars($e['email'] ?? '—') ?></td>
@@ -72,7 +72,7 @@
                                 data-siret="<?= htmlspecialchars($e['siret'] ?? '') ?>"
                                 data-adresse="<?= htmlspecialchars($e['adresse'] ?? '') ?>"
                                 data-cp="<?= htmlspecialchars($e['code_postal'] ?? '') ?>"
-                                data-gestionnaire="<?= htmlspecialchars(($e['gestionnaire_prenom'] ?? '') . ' ' . ($e['gestionnaire_nom'] ?? '')) ?>"
+                                data-gestionnaire="<?= htmlspecialchars($e['gestionnaire'] ?? '') ?>"
                                 data-description="<?= htmlspecialchars($e['description'] ?? '') ?>"
                                 data-site="<?= htmlspecialchars($e['site_web'] ?? '') ?>"
                                 data-bs-toggle="modal"

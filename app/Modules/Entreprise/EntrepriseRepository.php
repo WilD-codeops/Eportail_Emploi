@@ -96,8 +96,7 @@ class EntrepriseRepository
         try {
             $sql = "SELECT SQL_CALC_FOUND_ROWS 
                         e.*, 
-                        u.nom AS gestionnaire_nom, 
-                        u.prenom AS gestionnaire_prenom, 
+                        CONCAT(u.nom, ' ', u.prenom) AS gestionnaire,
                         s.libelle AS secteur
                     FROM entreprises e
                     LEFT JOIN users u ON u.id = e.gestionnaire_id
@@ -128,8 +127,8 @@ class EntrepriseRepository
             }
 
             if (!empty($filters['gestionnaire'])) {
-                $sql .= " AND e.gestionnaire_id = :gestionnaire";
-                $params['gestionnaire'] = $filters['gestionnaire'];
+                $sql .= " AND CONCAT(u.nom, ' ', u.prenom) LIKE :gestionnaire";
+                $params['gestionnaire'] = '%' . $filters['gestionnaire'] . '%';
             }
 
         // --- TRI ---

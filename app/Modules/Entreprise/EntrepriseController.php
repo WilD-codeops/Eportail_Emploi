@@ -133,18 +133,13 @@ class EntrepriseController
         if (!$secteurs['success']) {
             self::VerifyFailSystem($secteurs);
         }
-
-        $gestionnaires = $service->listGestionnaires();
-        if (!$gestionnaires['success']) {
-            self::VerifyFailSystem($gestionnaires);
-        }
+        
          // vue dashboard avec layout dashboard
 
         $this->renderDashboard("list", [
             "title"       => "Gestion des entreprises",
             "entreprises" => $entreprises['data'],
             "secteurs"    => $secteurs['data'],
-            "gestionnaires" => $gestionnaires['data'],
             "page"        => $page,
             "pages"       => $pages
         ]);
