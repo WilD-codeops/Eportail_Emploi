@@ -18,36 +18,80 @@ class AuthRegistrationService
     ============================================================ */
     public function registerCandidat(array $data): array
     {
-        $prenom = Validator::sanitize($data['prenom'] ?? '');
-        $nom = Validator::sanitize($data['nom'] ?? '');
-        $email = Validator::sanitize($data['email'] ?? '');
-        $password = ($data['password'] ?? '');
-        $confirm = $data['password_confirm'] ?? '';
+        $dataCanonique = [
+            'utilisateur' => [
+                'role'           => 'candidat',
+                'prenom'         => Validator::sanitize($data['prenom'] ?? ''),
+                'nom'            => Validator::sanitize($data['nom'] ?? ''),
+                'email'          => Validator::sanitize($data['email'] ?? ''),
+                'telephone'      => Validator::sanitize($data['telephone'] ?? ''), // optionnel
+                'mot_de_passe'   => $data['password'] ?? null,// non sanitizé pour validation   
+                'confirmation_mdp' => $data['password_confirm'] ?? null,// non sanitizé pour validation
+            ],
+            'profil' => [
+                'poste_recherche'  => Validator::sanitize($data['poste_recherche'] ?? ''),
+                'description'      => Validator::sanitize($data['description'] ?? ''),
+                'disponibilite'    => $data['disponibilite'] ?? null,
+                'mobilite'         => Validator::sanitize($data['mobilite'] ?? ''),
+                'annee_experience' => $data['annee_experience'] ?? null,
+                'niveau_etudes'    => Validator::sanitize($data['niveau_etudes'] ?? ''),
+                'statut_actuel'    => Validator::sanitize($data['statut_actuel'] ?? ''),
+            ]
+        ];      
 
         // VALIDATION
-        if (!Validator::validateName($prenom)) {
+        if (!Validator::validateName($dataCanonique['utilisateur']['prenom'])) {
             return $this->fail("Prénom invalide.");
         }
 
-        if (!Validator::validateName($nom)) {
+        if (!Validator::validateName($dataCanonique['utilisateur']['nom'])) {
             return $this->fail("Nom invalide.");
         }
 
-        if (!Validator::validateEmail($email)) {
+        if (!Validator::validateEmail($dataCanonique['utilisateur']['email'])) {
             return $this->fail("Email invalide.");
         }
 
-        if (!Validator::validatePassword($password, $confirm)) {
+        if (!Validator::validatePassword($dataCanonique['utilisateur']['mot_de_passe'], $dataCanonique['utilisateur']['confirmation_mdp'])) {
             return $this->fail("Mot de passe invalide ou non confirmé.");
         }
+        // Vérifier email UNIQUE
+        if ($this->authService->emailExists($dataCanonique['utilisateur']['email'])) {
+            return $this->fail("Cet email est déjà utilisé.");
+        }   
 
-        return $this->authService->registerCandidat($candidatData = [
-            'prenom' => $prenom,
-            'nom' => $nom,
-            'email' => $email,
-            'mot_de_passe' => password_hash($password, PASSWORD_DEFAULT),
-        ]);
+         // Préparer les données pour l'inscription
+        $candidatData = [
+            'role' => $dataCanonique['utilisateur']['role'],
+            'prenom' => $dataCanonique['utilisateur']['prenom'],
+            'nom' => $dataCanonique['utilisateur']['nom'],
+            'telephone' => $dataCanonique['utilisateur']['telephone'],
+            'email' => $dataCanonique['utilisateur']['email'],
+            'entreprise_id' => null,
+            'mot_de_passe' => password_hash($dataCanonique['utilisateur']['mot_de_passe'], PASSWORD_DEFAULT),
+         ];
+
+         $candidatProfilData = [
+            'poste_recherche'  => $dataCanonique['profil']['poste_recherche'],
+            'description'      => $dataCanonique['profil']['description'],
+            'disponibilite'    => $dataCanonique['profil']['disponibilite'],
+            'mobilite'         => $dataCanonique['profil']['mobilite'],
+            'annee_experience' => $dataCanonique['profil']['annee_experience'],
+            'niveau_etudes'    => $dataCanonique['profil']['niveau_etudes'],
+            'statut_actuel'    => $dataCanonique['profil']['statut_actuel'],
+         ];
+
+         $resultat = $this->authService->registerCandidatAvecProfil($candidatData, $candidatProfilData);// SERVICE DE TRANSACTION
+
+            if (!$resultat['success']) {
+                return $resultat; //remontée de l'erreur systeme à gerer au niveau du controller
+            }
+
+        return $this->success("Inscription candidat réussie"); //
+
+
     }
+
 
 
     /* ============================================================
@@ -140,5 +184,21 @@ class AuthRegistrationService
     private function fail(string $msg): array
     {
         return ['success' => false, 'error' => $msg];
+    }
+
+    
+    private function success(string $msg): array
+    {
+        return ['success' => true,'message'=>$msg];
+    }
+    private function systemError($result){
+        if(!$result['success']){
+            return [
+                'success' => false,
+                'systemError'=>true,
+                'error'=>$result['error'] ?? 'Erreur système inconnue',
+                'code'=>$result['code']
+            ];
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Modules\Auth;
 
 use PDO;
 use App\Core\SessionManager;
+use App\Modules\Candidat\ProfilCandidatRepository;
 class AuthService
 {
     public function __construct(
@@ -52,15 +53,57 @@ class AuthService
 
 
     // Inscription candidat simple
-    public function registerCandidat(array $data): array
-    {
-        $data['mot_de_passe'] = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
-        $data['role'] = 'candidat';
-        $data['entreprise_id'] = null;
 
-        $id = $this->repo->createUser($data);
-        return ['success' => true, 'id' => $id];
+    public function registerCandidatAvecProfil(array $candidatData, array $profilData): array
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            // 1) créer l’utilisateur (safe)
+            $created = $this->createUserSafe($candidatData);
+            if (!$created['success']) {
+                $this->pdo->rollBack();
+                return $created; // erreur système normalisée
+            }
+
+            $candidatId = (int)$created['id'];
+
+            // 2) créer le profil
+            $profilRepo = new ProfilCandidatRepository($this->pdo);
+
+            $profilData['candidat_id'] = $candidatId;
+            $createdProfil = $profilRepo->createProfil($profilData);
+
+            if (!$createdProfil['success']) {
+                $this->pdo->rollBack();
+                // on normalise comme entreprise
+                return [
+                    'success' => false,
+                    'systemError' => true,
+                    'error' => $createdProfil['error'] ?? 'Erreur système profil candidat',
+                    'code' => $createdProfil['code'] ?? null
+                ];
+            }
+
+            $this->pdo->commit();
+
+            return [
+                'success' => true,
+                'message' => "Compte candidat et profil créés avec succès.",
+                'id' => $candidatId
+            ];
+
+        } catch (\Throwable $e) {
+            $this->pdo->rollBack();
+            return [
+                'success' => false,
+                'systemError' => true,
+                'error' => "Erreur système lors de l'inscription du candidat.",
+                'code' => $e->getCode()
+            ];
+        }
     }
+
 
     // Création utilisateur (utilisé pour céation gestionnaire pendant création entreprise)
     public function createUser(array $data): int
@@ -68,6 +111,16 @@ class AuthService
         $data['mot_de_passe'] = password_hash($data['mot_de_passe'], PASSWORD_DEFAULT);
         return $this->repo->createUser($data);  
     }
+
+    public function createUserSafe(array $data): array  // renvoie tableau avec success true/false et id ou message d'erreur le temps de traiter les erreurs
+{
+    try {
+        $id = $this->repo->createUser($data); // renvoie int
+        return ['success' => true, 'id' => $id];
+    } catch (\PDOException $e) {
+        return ['success' => false, 'systemError' => true, 'error' => $e->getMessage(), 'code' => $e->getCode()];
+    }
+}
 
     private function fail(string $msg): array
     {

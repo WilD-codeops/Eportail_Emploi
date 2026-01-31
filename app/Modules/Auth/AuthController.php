@@ -23,6 +23,14 @@ use App\Core\Database;
             return new AuthService($repo, $pdo);
         }
 
+        private function makeAuthRegistrationService(): AuthRegistrationService
+        {
+            return new AuthRegistrationService(
+                $this->makeAuthService(),
+                $this->makeEntrepriseService()
+            );
+        }
+
         private function makeEntrepriseService(): EntrepriseService
         {
             $pdo          = Database::getConnection();
@@ -112,18 +120,23 @@ use App\Core\Database;
         {             
             Security::requireCsrfToken('register_candidat', $_POST['csrf_token'] ?? null);
 
-            $service = new AuthRegistrationService(
-                $this->makeAuthService(),
-                $this->makeEntrepriseService()
-            );
+            $service = $this->makeAuthRegistrationService();
         
             $result = $service->registerCandidat($_POST);
-        
+
+            
             if (!$result['success']) {
+                if(!empty($result['systemrror'])) {
+                    self::VerifyFailSystem($result); //verifie si erreur systeme est set +code erreur
+                }
+
+                $candidatToRegister=$_POST;//retour de donnees envoye par l'utilisateur au formulaire
+
                  $this->renderAuth("register_candidat", [
-                    "title"       => "Créer un compte candidat",
+                    "titre"       => "Créer un compte candidat",
                     "authVariant" => "register_candidat",
-                    "error"       => $result['error']
+                    "error"       => $result['error']?? 'erreur',
+                    'candidat'    => $candidatToRegister
                 ]);
                 return;
             }
@@ -157,14 +170,12 @@ use App\Core\Database;
         {
             Security::requireCsrfToken('register_entreprise', $_POST['csrf_token'] ?? null);
             
-            $service = new AuthRegistrationService(
-                $this->makeAuthService(),
-                $this->makeEntrepriseService()
-            );
+            $service = $this->makeAuthRegistrationService();
         
             $result = $service->registerEntreprise($_POST);
         
             if (!$result['success']) {
+                self::VerifyFailSystem($result);
                 $entrepriseToCreate = $_POST;
 
                      $this->renderAuth("register_entreprise", [
@@ -208,6 +219,7 @@ use App\Core\Database;
             exit;
         }
 
+        // HELPERS refactor à venir dans un helper centralisé
         public static function flashSuccess(string $message): void
         {
             $_SESSION['success'] = $message;   
@@ -216,5 +228,20 @@ use App\Core\Database;
         public static function flashError(string $message): void
         {
             $_SESSION['error'] = $message;   
+        }
+
+        public static function flashSystemError(string $message): void
+        {
+            $_SESSION['systemError'] = $message;   
+        }
+
+        public static function VerifyFailSystem($result): void
+        {
+            if (isset($result['systemError']) && $result['code']>=2000) {
+                    self::flashSystemError($result['error']);
+                    header("Location: /500");
+                    exit;
+                }
+            
         }
     }
