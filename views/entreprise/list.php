@@ -117,6 +117,7 @@
     </div>
 </div>
 
+<!-- Modal détails entreprise -->
 <div class="modal fade" id="entrepriseModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
@@ -127,9 +128,21 @@
       </div>
 
       <div class="modal-body">
+
+        <!-- LOGO ENTREPRISE (MVP : image statique) -->
+        <div class="text-center mb-4">
+            <img 
+                src="/assets/img/logoEntreprise.png" 
+                alt="Logo entreprise"
+                class="img-fluid"
+                style="max-width: 140px; border-radius: var(--radius-md);"
+            >
+        </div>
+
         <div id="entrepriseModalContent" class="py-3">
             <p class="text-muted text-center">Chargement...</p>
         </div>
+
       </div>
 
       <div class="modal-footer">
