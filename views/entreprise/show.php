@@ -14,22 +14,10 @@ $e = static fn ($val) => htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8');
 
 // Déterminer le titre du bandeau et le slogan
 $titre   = $entreprise['nom'] ?? 'Entreprise';
-$slogan  = $entreprise['slogan'] ?? '';
 
 ?>
 
-<main role="main" aria-label="Profil entreprise">
-
-  <!-- Bannière -->
-  <section class="py-5 text-center bg-primary-gradient text-white">
-    <div class="container">
-      <h1 class="hero-title mb-2"><?= $e($titre) ?></h1>
-
-      <?php if (!empty($slogan)): ?>
-        <p class="hero-subtitle mb-0"><?= $e($slogan) ?></p>
-      <?php endif; ?>
-    </div>
-  </section>
+<?php require __DIR__ . '/../partials/banniere.php'; ?>
 
   <!-- Contenu principal -->
   <section class="container py-5">
@@ -152,4 +140,3 @@ $slogan  = $entreprise['slogan'] ?? '';
       </div>
     </div>
   </section>
-</main>

@@ -123,7 +123,7 @@ class EntrepriseController
          // vue dashboard avec layout dashboard
 
         $this->renderPublic("public_list", [
-            "title"       => "Nos entreprises partenaires",
+            "titre"       => "Nos entreprises partenaires",
             "entreprises" => $entreprises['data'],
             "secteurs"    => $secteurs['data'],
             "page"        => $page,

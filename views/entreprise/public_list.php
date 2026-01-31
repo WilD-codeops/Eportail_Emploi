@@ -20,12 +20,9 @@ $e = static fn ($val) => htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8');
 
 ?>
 
+<?php require __DIR__ . '/../partials/banniere.php'; ?>
 <section class="py-5 bg-light" aria-labelledby="entreprises-heading">
   <div class="container">
-    <!-- Titre principal -->
-    <h1 id="entreprises-heading" class="h4 mb-4">
-      <?= $e($title ?? 'Nos entreprises partenaires') ?>
-    </h1>
 
     <!-- Formulaire de filtres -->
     <form method="GET" class="mb-4" id="entreprise-filters-form" aria-label="Filtres de recherche">
