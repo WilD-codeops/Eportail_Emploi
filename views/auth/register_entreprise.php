@@ -113,14 +113,19 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 <label class="form-label">Taille de l'entreprise</label>
                 <select id="taille" name="taille" class="form-select">
                     <?php
-                        $tailleOptions = ['1-10', '11-50', '51-250', '250+'];
-                        foreach ($tailleOptions as $opt):
-                            $selected = ($value('taille') === $opt) ? 'selected' : '';
+                    $tailleOptions = ['1-10', '11-50', '51-250', '250+'];
+                    $selectedValue = $_POST['taille'] ?? ''; 
+
+                    foreach ($tailleOptions as $opt):
                     ?>
-                        <option value="<?= $e($opt) ?>" <?= $selected ?>><?= $e($opt) ?> salariés</option>
-                <?php endforeach; ?>
+                        <option value="<?= htmlspecialchars($opt) ?>" 
+                                <?= ($selectedValue === $opt) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($opt) ?> salariés
+                        </option>
+                    <?php endforeach; ?>
                 </select>
             </div>
+
 
             <div class="mb-3">
                 <label class="form-label">Description</label>
