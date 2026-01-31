@@ -208,9 +208,11 @@ class AuthRegistrationService
     
         $token = bin2hex(random_bytes(32));// 64 caractères
         $tokenHash = hash('sha256', $token);
-        $expiresAt = date('Y-m-d H:i:s', time() + 3600); // 1h
+        //$expiresAt = null; // non utilisé car géré en base de données
     
-        $create = $this->authRepo->createPasswordReset((int)$user['id'], $tokenHash, $expiresAt);
+         
+    
+        $create = $this->authRepo->createPasswordReset((int)$user['id'], $tokenHash, );
         if ($err = $this->systemError($create)) return $err;
     
         // renvoie un lien "debug" (en prod -> email) 

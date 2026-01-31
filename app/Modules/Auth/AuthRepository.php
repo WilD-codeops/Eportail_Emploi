@@ -55,23 +55,23 @@ class AuthRepository
         return (int) $this->pdo->lastInsertId();
     }
 
-    public function createPasswordReset(int $userId, string $tokenHash, string $expiresAt): array
+    public function createPasswordReset(int $userId, string $tokenHash): array
     {
         try {
             $stmt = $this->pdo->prepare("
                 INSERT INTO password_resets (user_id, token_hash, expires_at)
-                VALUES (:user_id, :token_hash, :expires_at)
+                VALUES (:user_id, :token_hash, DATE_ADD(NOW(), INTERVAL 1 HOUR))
             ");
             $stmt->execute([
                 ':user_id' => $userId,
-                ':token_hash' => $tokenHash,
-                ':expires_at' => $expiresAt
+                ':token_hash' => $tokenHash
             ]);
             return ['success' => true];
         } catch (\PDOException $e) {
             return ['success' => false, 'error' => $e->getMessage(), 'code' => $e->getCode()];
         }
     }
+
     public function findValidPasswordReset(string $tokenHash): array
     {
         try {
@@ -80,7 +80,7 @@ class AuthRepository
                 FROM password_resets
                 WHERE token_hash = :token_hash
                   AND used_at IS NULL
-                  AND expires_at > NOW()
+                  AND expires_at >= NOW()
                 ORDER BY id DESC
                 LIMIT 1
             ");
