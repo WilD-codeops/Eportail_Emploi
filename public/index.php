@@ -40,6 +40,7 @@ $router->post('/register/entreprise', 'App\\Modules\\Auth\\AuthController@regist
 
 // Entreprises Liste publique
 $router->get('/entreprises', 'App\\Modules\\Entreprise\\EntrepriseController@index');
+$router->get('/entreprises/show', 'App\\Modules\\Entreprise\\EntrepriseController@show');
 
 // Entreprises — CRUD Admin
 $router->get('/admin/entreprises', 'App\\Modules\\Entreprise\\EntrepriseController@adminIndex');

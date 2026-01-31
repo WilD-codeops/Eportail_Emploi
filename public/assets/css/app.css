@@ -949,6 +949,34 @@ section.bg-light {
   --dash-radius: 14px;
 }
 
+/* Logo responsive */
+.entreprise-logo {
+  max-width: 180px;
+  max-height: 180px;
+}
+
+@media (max-width: 576px) {
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .entreprise-logo {
+    max-width: 140px;
+    max-height: 140px;
+  }
+
+  .offer-snippet {
+    min-height: auto;
+  }
+
+  .offer-card-modern {
+    padding: 1rem;
+  }
+}
 /* =========================
    SIDEBAR (Desktop + base)
    ========================= */

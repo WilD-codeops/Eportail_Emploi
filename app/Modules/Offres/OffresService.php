@@ -2,6 +2,9 @@
 
 namespace App\Modules\Offres;
 
+use DateTime;
+use DateTimeZone;
+
 class OffresService
 {
     public function __construct(
@@ -153,7 +156,7 @@ class OffresService
 
         $modFields = [
             'modifie_par'       => $auteurId,
-            'date_modification' => date('Y-m-d H:i:s'),
+            'date_modification' => (new DateTime('now', new DateTimeZone('Europe/Paris')))->format('Y-m-d H:i:s'),
         ];
 
         if ($isAdmin) {

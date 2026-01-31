@@ -63,6 +63,15 @@ class EntrepriseService
         }
         return $resultat;
     }
+
+    public function listOffresByEntreprise(int $entrepriseId): array
+    {
+        $resultat = $this->repo->getOffresByEntreprise($entrepriseId);
+        if ($this->systemError($resultat)) {
+            return $this->systemError($resultat);
+        }
+        return $resultat;
+    }
     
 
     /** SIRET deja enreistré en base*/

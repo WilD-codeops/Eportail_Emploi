@@ -8,6 +8,7 @@ use App\Modules\Auth\AuthRepository;
 use App\Modules\Auth\AuthService;
 use App\Modules\Auth\AuthRegistrationService;
 use App\Core\Security;
+use App\modules\Offres\OffresService;
 
 /**
  * Contrôleur Entreprise (partie administrateur)
@@ -46,6 +47,15 @@ class EntrepriseController
         return new AuthRegistrationService($authService, $entrepriseService);
     }
 
+    private function makeOffresService(): OffresService
+    {
+        $pdo  = Database::getConnection();
+        $repo = new \App\Modules\Offres\OffresRepository($pdo);
+        $validator = new \App\Modules\Offres\OffresValidator();
+
+        return new OffresService($repo, $validator);
+    }
+
     /**
      * MES RENDERERS PERSONNALISÉS
      */
@@ -79,18 +89,45 @@ class EntrepriseController
      */
     public function Index(): void
         { 
-        
+
+        $filters = [ // Récupération des filtres de recherche
+        'nom'          => $_GET['nom'] ?? null,
+        'secteur'      => $_GET['secteur'] ?? null,
+        'ville'        => $_GET['ville'] ?? null,
+        'gestionnaire' => $_GET['gestionnaire'] ?? null,
+        'tri'          => $_GET['tri'] ?? null
+        ];
+
+        $page = max(1, (int)($_GET['page'] ?? 1));//page minimum = 1 
+        $limit = 10; //elements par page
+        $offset = ($page - 1) * $limit;//calcul offset qui correspond au nb d'elements a sauter avant de commencer a recuperer les elements
+
         $service     = $this->makeEntrepriseService();
-        $entreprises = $service->listEntreprises();
+        $entreprises = $service->searchEntreprises($filters, $limit, $offset);//appel service avec filtres et pagination
         
         if (!$entreprises['success']) {
             self::VerifyFailSystem($entreprises);
         }
 
-        // vue publique avec layout main
+        $total= $entreprises['total'];
+        
+        
+        $pages = (int)ceil($total / $limit); //calcul nb total de pages a afficher selon le total d'elements et le nb d'elements par page
+
+        //Données pour les filtres
+        $secteurs = $service->listSecteurs();
+        if (!$secteurs['success']) {
+            self::VerifyFailSystem($secteurs);
+        }
+        
+         // vue dashboard avec layout dashboard
+
         $this->renderPublic("public_list", [
-            "title"       => "Gestion des entreprises",
-            "entreprises" => $entreprises['data']
+            "title"       => "Nos entreprises partenaires",
+            "entreprises" => $entreprises['data'],
+            "secteurs"    => $secteurs['data'],
+            "page"        => $page,
+            "pages"       => $pages
         ]);
     }
     
@@ -105,7 +142,6 @@ class EntrepriseController
         'nom'          => $_GET['nom'] ?? null,
         'secteur'      => $_GET['secteur'] ?? null,
         'ville'        => $_GET['ville'] ?? null,
-        'taille'       => $_GET['taille'] ?? null,
         'gestionnaire' => $_GET['gestionnaire'] ?? null,
         'tri'          => $_GET['tri'] ?? null
         ];
@@ -145,6 +181,37 @@ class EntrepriseController
         ]);
     }
     
+    public function show(): void
+    {
+        
+        $id = (int)($_GET['id'] ?? 0);
+        
+        $service= $this->makeEntrepriseService();
+
+        $entreprise = $service->findEntreprise($id);
+        if (!$entreprise['success']) {
+            self::VerifyFailSystem($entreprise);
+
+        }
+        if (empty($entreprise['data'])) {
+        $this->flashError("Cette entreprise est inexistante.");
+        header("Location: /entreprises");
+        exit;
+        }
+
+    
+        
+        $offres = $service->listOffresByEntreprise($id);
+        if (!$offres['success']) {
+            self::VerifyFailSystem($offres);
+        }
+        
+        $this->renderPublic("show", [
+            "title"       => "Détails de l'entreprise",
+            "entreprise"  => $entreprise['data'],
+            "offres"      => $offres['data']
+        ]);
+    }
 
     /*Formulaire de création d'une nouvelle entreprise*/
     public function createForm(): void

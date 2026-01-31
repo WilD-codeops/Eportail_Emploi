@@ -154,7 +154,7 @@ class OffresRepository
                 LEFT JOIN users um ON um.id = o.modifie_par
 
                 WHERE o.entreprise_id = :eid
-                ORDER BY o.date_debut DESC, o.id DESC";
+                ORDER BY o.date_debut DESC, o.id DESC " ;
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['eid' => $entrepriseId]);

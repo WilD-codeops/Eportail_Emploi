@@ -64,6 +64,39 @@ class EntrepriseRepository
         }
     }
 
+    public function getOffresByEntreprise(int $entrepriseId): array
+    {
+        try{
+            $sql = "SELECT 
+                        o.*, 
+                        e.nom AS entreprise_nom, 
+                        l.ville AS localisation,
+                        t.code AS offre_code,
+                        nq.libelle AS niveau_qualification
+
+                        
+
+                    FROM offres o
+                    JOIN entreprises e ON e.id = o.entreprise_id
+                    LEFT JOIN localisations l ON l.id = o.localisation_id
+                    LEFT JOIN types_offres t ON t.id = o.type_offre_id
+                    LEFT JOIN niveaux_qualification nq ON nq.id = o.niveau_qualification_id
+
+
+                    WHERE o.entreprise_id = :eid AND o.statut = 'active'
+                    ORDER BY o.date_creation DESC, o.id DESC LIMIT 3"; ;
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(['eid' => $entrepriseId]);
+
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC)?:null;
+
+            return ['success' => true, 'data' => $data];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(), 'code'=>$e->getCode()];
+        }
+    }
+
 
     //Trouver entreprise
     public function find(int $id): array
