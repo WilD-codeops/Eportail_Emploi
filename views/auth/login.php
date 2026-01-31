@@ -62,7 +62,7 @@
                     Se souvenir de moi
                 </label>
             </div>
-            <a href="/mot-de-passe-oublie" class="auth-link">
+            <a href="/password/forgot" class="auth-link">
                 Mot de passe oublié ?
             </a>
         </div>

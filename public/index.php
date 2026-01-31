@@ -37,8 +37,13 @@ $router->post('/register/candidat', 'App\\Modules\\Auth\\AuthController@register
 $router->get('/register/entreprise', 'App\\Modules\\Auth\\AuthController@showRegisterEntreprise');
 $router->post('/register/entreprise', 'App\\Modules\\Auth\\AuthController@registerEntreprise');
 
-$router->get('/password/forgot',       'App\\Modules\Auth\\AuthController@showForgotPassword' );    
-$router->post('/password/forgot',       'App\\Modules\Auth\\AuthController@showRegisterForgot' );
+ 
+$router->get('/password/forgot',       'App\\Modules\\Auth\\AuthController@showForgotPassword' );  
+$router->post('/password/forgot',       'App\\Modules\\Auth\\AuthController@ForgotPassword' );
+$router->get('/password/reset',        'App\\Modules\\Auth\\AuthController@showResetPassword'  );
+$router->post('/password/reset',       'App\\Modules\\Auth\\AuthController@resetPassword'      );
+
+
 
 // Entreprises Liste publique
 $router->get('/entreprises', 'App\\Modules\\Entreprise\\EntrepriseController@index');

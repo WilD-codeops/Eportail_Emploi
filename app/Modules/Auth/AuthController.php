@@ -27,8 +27,9 @@ use App\Core\Database;
         {
             return new AuthRegistrationService(
                 $this->makeAuthService(),
-                $this->makeEntrepriseService()
-            );
+                $this->makeEntrepriseService(),
+                $repo=new AuthRepository(Database::getConnection())
+            );  
         }
 
         private function makeEntrepriseService(): EntrepriseService
@@ -202,13 +203,76 @@ use App\Core\Database;
             ]);
         }
 
-        public function showResetPassword(): void
+        public function forgotPassword(): void
         {
-            $this->renderAuth("reset_password", [
-                "title"       => "Réinitialiser le mot de passe",
-                "authVariant" => "reset"
+            Security::requireCsrfToken('forgot_password', $_POST['csrf_token'] ?? null);
+    
+            $service = $this->makeAuthRegistrationService();
+             $result = $service->forgotPassword($_POST);
+            
+            if (!$result['success']) {
+                if (!empty($result['systemError'])) {
+                    self::VerifyFailSystem($result);
+                    return;
+                }
+            
+                $this->renderAuth('forgot_password', [
+                    'title' => 'Mot de passe oublié',
+                    'authVariant' => 'forgot',
+                    'error' => $result['error'] ?? "Erreur",
+                ]);
+                return;
+        }
+            $debugLink = $result['debug_link'] ?? null; 
+    
+            $this->renderAuth('forgot_password', [
+                'title' => 'Mot de passe oublié',
+                'authVariant' => 'forgot',
+                'success' => $result['message'] ?? "Si l’email existe, un lien de réinitialisation a été envoyé.",
+                'debug_link' => $debugLink,
             ]);
         }
+
+        public function showResetPassword(): void
+        {
+            $token = $_GET['token'] ?? '';
+
+            $this->renderAuth("reset_password", [
+                "title"       => "Réinitialiser le mot de passe",
+                "authVariant" => "reset",  
+                "token"       => $token
+            ]);
+        }
+
+        public function resetPassword(): void
+        {
+            Security::requireCsrfToken('reset_password', $_POST['csrf_token'] ?? null);
+    
+            $service = $this->makeAuthRegistrationService();
+            $result  = $service->resetPassword($_POST);
+    
+            if (!$result['success']) {
+                if (!empty($result['systemError'])) {
+                    self::VerifyFailSystem($result);
+                    return;
+                }
+    
+                $token = $_POST['token'] ?? '';
+    
+                $this->renderAuth('reset_password', [
+                    'title' => 'Réinitialiser le mot de passe',
+                    'authVariant' => 'reset',
+                    'token' => $token,
+                    'error' => $result['error'] ?? "Erreur",
+                ]);
+                return;
+            }
+    
+            self::flashSuccess("Mot de passe mis à jour. Vous pouvez maintenant vous connecter.");
+            header("Location: /login");
+            exit;
+        }
+
 
         // --------- LOGOUT ---------
 

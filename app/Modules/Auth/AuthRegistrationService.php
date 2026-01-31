@@ -2,16 +2,21 @@
 
 namespace App\Modules\Auth;
 
+use App\Core\Auth;
 use App\Core\Validator;
 use App\Modules\Entreprise\EntrepriseService;
 use App\Modules\Entreprise\EntrepriseValidator;
+use App\Modules\Auth\AuthRepository ;
+
 
 class AuthRegistrationService
 {
     public function __construct(
         private AuthService $authService,
-        private EntrepriseService $entrepriseService
+        private EntrepriseService $entrepriseService,
+        private AuthRepository $authRepo
     ) {}
+
 
     /* ============================================================
        INSCRIPTION CANDIDAT
@@ -180,6 +185,85 @@ class AuthRegistrationService
             $dataCanonique['gestionnaire']
         );
     }
+
+    public function forgotPassword(array $data): array
+    {
+        $email = Validator::sanitize($data['email'] ?? '');
+    
+        if (!Validator::validateEmail($email)) {
+            return $this->fail("Email invalide.");
+        }
+    
+        $userRes = $this->authRepo->findByEmail($email);
+        if ($err = $this->systemError($userRes)) return $err;
+    
+        $user = $userRes['data'] ?? null;
+    
+        // Important : ne pas révéler si l’email existe (sécurité)
+        $genericMsg = "Si l’email existe, un lien de réinitialisation a été envoyé.";
+    
+        if (!$user) {
+            return $this->success($genericMsg);
+        }
+    
+        $token = bin2hex(random_bytes(32));// 64 caractères
+        $tokenHash = hash('sha256', $token);
+        $expiresAt = date('Y-m-d H:i:s', time() + 3600); // 1h
+    
+        $create = $this->authRepo->createPasswordReset((int)$user['id'], $tokenHash, $expiresAt);
+        if ($err = $this->systemError($create)) return $err;
+    
+        // renvoie un lien "debug" (en prod -> email) 
+        return [
+            'success' => true,
+            'message' => $genericMsg,
+            'debug_link' => "/password/reset?token=" . $token
+        ];
+    }
+    
+
+    public function resetPassword(array $data): array
+    {
+        // Récupérer et valider les données
+        $token = trim((string)($data['token'] ?? ''));// non sanitizé pour validation
+        $password = (string)($data['password'] ?? '');// non sanitizé pour validation
+        $confirm  = (string)($data['password_confirm'] ?? '');// non sanitizé pour validation
+
+        if ($token === '' || strlen($token) < 30) {// token trop court pour être valide
+            return $this->fail("Lien invalide.");
+        }
+
+        if (!Validator::validatePassword($password, $confirm)) {
+            return $this->fail("Mot de passe invalide ou non confirmé.");
+        }
+
+        $tokenHash = hash('sha256', $token);
+
+        $resetRes = $this->authRepo->findValidPasswordReset($tokenHash);
+        if ($err = $this->systemError($resetRes)) return $err;
+
+        $reset = $resetRes['data'] ?? null;
+        if (!$reset) {
+            return $this->fail("Lien expiré ou déjà utilisé.");
+        }
+
+        $userId = (int)$reset['user_id'];
+        $resetId = (int)$reset['id'];
+
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+
+        $up = $this->authRepo->updateUserPassword($userId, $hash);
+        if ($err = $this->systemError($up)) return $err;
+
+        $used = $this->authRepo->markPasswordResetUsed($resetId);
+        if ($err = $this->systemError($used)) return $err;
+
+        return $this->success("Mot de passe mis à jour. Vous pouvez vous connecter.");
+    }
+
+
+
+    //
 
     private function fail(string $msg): array
     {
