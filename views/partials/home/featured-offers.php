@@ -1,19 +1,19 @@
 
 
 <!-- ===================== LAST OFFERS SECTION ===================== -->
-<section class="featured-offers-hero py-5">
-    <div class="container text-center text-white mb-5">
+<section class="featured-offers-hero py-5 " aria-labelledby="featured-offers-title">
+    <div class="container text-center text-secondary mb-5">
         <h2 class="fw-bold mb-2">Offres à la une</h2>
         <p class="opacity-75 small">
-            Les meilleures opportunités sélectionnées pour vous
+            Les opportunités les plus récentes sélectionnées pour vous.
         </p>
     </div>
 
-    <div class="container">
+    <div class="container" >
         <div class="row g-4 justify-content-center">
 
             <!-- CARD 1 -->
-            <div class="col-12 col-md-6 col-lg-4">
+            <div class="col-12 col-md-6 col-lg-4" >
                 <article class="offer-card-modern">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="badge badge-skill"><i class="bi bi-code-slash"></i></span>

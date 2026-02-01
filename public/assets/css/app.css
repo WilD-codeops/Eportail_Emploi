@@ -328,12 +328,13 @@ section.bg-light {
   font-size: 1.4rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  direction: ltr;
 }
 
 .footer-logo span {
+  unicode-bidi: isolate;
   color: var(--color-primary-purple);
 }
-
 .footer-text {
   color: #cccccc;
   font-size: 0.95rem;
