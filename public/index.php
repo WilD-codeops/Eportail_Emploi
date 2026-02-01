@@ -20,7 +20,12 @@ SessionManager::checkSessionExpiration();
 $router = new Router();
 
 // Routes home
-$router->get('/', 'App\\Modules\\Home\\HomeController@index');
+$router->get('/', 'App\\Modules\\Home\\HomeController@index'); // Accueil
+$router->get('/mentions-legales', 'App\\Modules\\Home\\HomeController@mentionsLegales'); // Mentions légales
+$router->get('/contact', 'App\\Modules\\Home\\HomeController@contact'); // Contact
+$router->get('/centre-aide', 'App\\Modules\\Home\\HomeController@centreAide'); // Centre d'aide
+$router->get('/a-propos', 'App\\Modules\\Home\\HomeController@aPropos'); // À propos
+
 
 // Maintenance page
 $router->get('/maintenance', 'App\\Modules\\Home\\HomeController@maintenance');

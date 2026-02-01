@@ -1,18 +1,17 @@
-<footer class="site-footer" role="contentinfo">
-    <div class="container py-5">
-        <div class="row gy-4">
+            <footer class="site-footer" role="contentinfo">
+                <div class="container py-5">
+                    <div class="row gy-4">
 
-            <!-- Colonne logo + texte -->
-            <div class="col-md-4">
+                        <!-- Colonne logo + texte -->
+                        <div class="col-md-4 text-center text-md-start">
                 <div class="footer-brand mb-3">
                     <span class="footer-logo">EPortail<span>Emploi</span></span>
                 </div>
 
-                <p class="footer-text">
-                    La plateforme de référence pour votre carrière professionnelle.
-                </p>
+                <p class="">
+                    La plateforme de référence pour votre carrière professionnelle.</p>
 
-                <div class="footer-social d-flex gap-2">
+                <div class="footer-social d-flex gap-2 justify-content-center justify-content-md-start">
                     <a href="#" aria-label="LinkedIn" class="footer-social-icon">in</a>
                     <a href="#" aria-label="Twitter / X" class="footer-social-icon">X</a>
                     <a href="#" aria-label="Paramètres" class="footer-social-icon">⚙</a>
@@ -70,9 +69,10 @@
             <div class="col-6 col-md-3">
                 <h6 id="footer-support" class="footer-title">Support</h6>
                 <ul class="footer-links list-unstyled" aria-labelledby="footer-support">
-                    <li><a href="/maintenance">Centre d’aide</a></li>
-                    <li><a href="/maintenance">Contact</a></li>
-                    <li><a href="/maintenance">Mentions légales</a></li>
+                    <li><a href="/centre-aide">Centre d’aide</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    <li><a href="/a-propos">À propos</a></li>
+                    <li><a href="/mentions-legales">Mentions légales</a></li>
                 </ul>
             </div>
 
@@ -81,7 +81,7 @@
 
     <div class="footer-bottom py-3">
         <div class="container text-center small">
-            © 2024 EPortailEmploi. Tous droits réservés.
+            © 2026 EPortailEmploi. Tous droits réservés.
         </div>
     </div>
 </footer>
