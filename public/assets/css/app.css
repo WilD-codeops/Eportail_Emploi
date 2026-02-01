@@ -282,7 +282,11 @@ section.bg-light {
   color: #1e1e1e;
   margin-bottom: 1rem;
 }
-
+.text-readable {
+  line-height: 1.7;
+  font-size: 1rem;
+  letter-spacing: 0.2px;
+}
 /*********** CTA ***********/
 .btn-offer {
   display: block;
@@ -296,6 +300,31 @@ section.bg-light {
   font-weight: 600;
 }
 
+.nav-link-strong {
+  font-weight: 600; /* plus épais */
+  font-size: 1rem; /* légèrement plus grand */
+  letter-spacing: 0.2px; /* meilleure lisibilité */
+  color: #333 !important; /* contraste meilleur */
+}
+
+.nav-link-strong:hover,
+.nav-link-strong:focus {
+  color: var(--bs-primary) !important;
+  text-decoration: underline; /* accessibilité ++ */
+}
+.btn-green {
+  background-color: var(--color-secondary-green-dark);
+  border-color: var(--color-secondary-green-dark);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-green:hover,
+.btn-green:focus {
+  background-color: var(--color-secondary-green);
+  border-color: var(--color-secondary-green);
+  color: #fff;
+}
 .btn-offer:hover {
   background: var(--color-primary-black);
   color: white;

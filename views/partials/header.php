@@ -25,12 +25,12 @@ $role = Auth::role();
                 <!-- Liens principaux -->
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
                     <li class="nav-item mx-lg-2">
-                        <a class="nav-link" href="/offres" aria-label="Voir les offres d'emploi">
+                        <a class="nav-link nav-link-strong" href="/offres" aria-label="Voir les offres d'emploi">
                             Offres d'emploi
                         </a>
                     </li>
                     <li class="nav-item mx-lg-2">
-                        <a class="nav-link" href="/entreprises" aria-label="Voir les entreprises">
+                        <a class="nav-link nav-link-strong" href="/entreprises" aria-label="Voir les entreprises">
                             Entreprises
                         </a>
                     </li>
@@ -42,14 +42,18 @@ $role = Auth::role();
                     <?php if (!Auth::isLogged()): ?>
 
                         <!-- ===================== NON CONNECTÉ ===================== -->
-                        <a translate="no" class="btn btn-outline-primary btn-sm" href="/login" aria-label="Se connecter">
+                        <a translate="no"
+                           class="btn btn-green btn-sm"
+                           href="/login"
+                           aria-label="Se connecter">
                             Connexion
                         </a>
-
-                        <a  class="btn btn-primary btn-sm" href="/register/candidat" aria-label="Créer un compte candidat">
+                                            
+                        <a class="btn btn-primary btn-sm"
+                           href="/register/candidat"
+                           aria-label="Créer un compte candidat">
                             S'inscrire
                         </a>
-
                     <?php else: ?>
 
                         <!-- ===================== CONNECTÉ ===================== -->

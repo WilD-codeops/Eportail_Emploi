@@ -22,8 +22,14 @@ class AuthService
         }
 
         $user = $this->repo->findByEmail($email);
+
+        //verif erreur systeme + message clair
+        if($errorSystem= $this->systemError($user,"Erreur système lors de la recherche de l'utilisateur : ")){//verif erreur systeme
+            return $errorSystem;
+        }
+        $user = $user['data']?? null;//null si introuvable
         if (!$user) {
-            return $this->fail("email incorrect");
+            return $this->fail("Email incorrect");
         }
 
         if (!password_verify($password, $user['mot_de_passe'])) {
@@ -61,28 +67,23 @@ class AuthService
 
             // 1) créer l’utilisateur (safe)
             $created = $this->createUserSafe($candidatData);
-            if (!$created['success']) {
+            // verif erreur systeme si echec création rollback
+            if ($errorSystem = $this->systemError($created, "Erreur système lors de la création de l'utilisateur candidat : ")) {
                 $this->pdo->rollBack();
-                return $created; // erreur système normalisée
+                return $errorSystem;
             }
 
-            $candidatId = (int)$created['id'];
+            $candidatId = (int)$created['id']; // id du candidat créé
 
             // 2) créer le profil
-            $profilRepo = new ProfilCandidatRepository($this->pdo);
+            $profilRepo = new ProfilCandidatRepository($this->pdo);//repo profil candidat pour creer profil
 
-            $profilData['candidat_id'] = $candidatId;
+            $profilData['candidat_id'] = $candidatId; // lier profil à l'utilisateur candidat avec son id
             $createdProfil = $profilRepo->createProfil($profilData);
 
-            if (!$createdProfil['success']) {
+            if ($errorSystem = $this->systemError($createdProfil, "Erreur système lors de la création du profil candidat : ")) {
                 $this->pdo->rollBack();
-                // on normalise comme entreprise
-                return [
-                    'success' => false,
-                    'systemError' => true,
-                    'error' => $createdProfil['error'] ?? 'Erreur système profil candidat',
-                    'code' => $createdProfil['code'] ?? null
-                ];
+                return $errorSystem;
             }
 
             $this->pdo->commit();
@@ -118,7 +119,7 @@ class AuthService
         $id = $this->repo->createUser($data); // renvoie int
         return ['success' => true, 'id' => $id];
     } catch (\PDOException $e) {
-        return ['success' => false, 'systemError' => true, 'error' => $e->getMessage(), 'code' => $e->getCode()];
+        return ['success' => false, 'systemError' => true, 'error' =>"Erreur systeme à la création de l'utilisateur : " . $e->getMessage(), 'code' => $e->getCode()];
     }
 }
 
@@ -131,4 +132,16 @@ class AuthService
     {
         return ['success' => true, 'message' => $msg];
     }
+
+    private function systemError($result,$msg){//Traitement de l'erreur systeme 
+        if(!$result['success']){
+            return [
+                'success' => false,
+                'systemError'=>true,
+                'error'=>($msg .$result['error']) ?? 'Erreur système inconnue',
+                'code'=>$result['code']
+            ];
+        }
+    }
+
 }

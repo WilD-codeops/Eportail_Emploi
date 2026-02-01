@@ -219,7 +219,7 @@ $csrfToken = Security::generateCsrfToken('register_candidat');
                     Confirmer et créer le compte
                 </button>
             </div>
-        </div>s
+        </div>
 
     </form>
 </div>

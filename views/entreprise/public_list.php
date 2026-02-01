@@ -118,7 +118,7 @@ $e = static fn ($val) => htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8');
               </div>
 
               <!-- Description courte -->
-              <p class="mb-3 text-muted small">
+              <p class="mb-3 text-muted medium">
                 <?= $e(mb_strimwidth($entreprise['description'] ?? '', 0, 120, '…')) ?>
               </p>
 

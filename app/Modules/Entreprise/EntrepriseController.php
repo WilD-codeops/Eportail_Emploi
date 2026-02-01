@@ -19,7 +19,7 @@ class EntrepriseController
 {
     /**
      * Fabrique les instances des services métier Entreprise, AuthRegistrationService et Auth.
-     * Permet d'éviter la création manuelle des dépendances partout.
+     * Permet d'éviter la création manuelle des dépendances partout dans chacune des fonctions.
      */
 
     private function makeAuthService(): AuthService
@@ -43,8 +43,9 @@ class EntrepriseController
     {
         $authService = $this->makeAuthService();
         $entrepriseService = $this->makeEntrepriseService();
+        $authRepository = new AuthRepository(Database::getConnection());
 
-        return new AuthRegistrationService($authService, $entrepriseService);
+        return new AuthRegistrationService($authService, $entrepriseService, $authRepository);
     }
 
     private function makeOffresService(): OffresService

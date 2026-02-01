@@ -74,8 +74,10 @@ use App\Core\Database;
 
             $service = $this->makeAuthService();
             $result  = $service->login($email, $password);
-
+            
             if (!$result['success']) {
+                self::VerifyFailSystem($result);
+                
                 $this->renderAuth("login", [
                     "title"       => "Connexion — EPortailEmploi",
                     "authVariant" => "login",
@@ -211,10 +213,7 @@ use App\Core\Database;
              $result = $service->forgotPassword($_POST);
             
             if (!$result['success']) {
-                if (!empty($result['systemError'])) {
-                    self::VerifyFailSystem($result);
-                    return;
-                }
+                self::VerifyFailSystem($result);
             
                 $this->renderAuth('forgot_password', [
                     'title' => 'Mot de passe oublié',
@@ -252,10 +251,7 @@ use App\Core\Database;
             $result  = $service->resetPassword($_POST);
     
             if (!$result['success']) {
-                if (!empty($result['systemError'])) {
-                    self::VerifyFailSystem($result);
-                    return;
-                }
+                self::VerifyFailSystem($result);
     
                 $token = $_POST['token'] ?? '';
     
@@ -301,7 +297,7 @@ use App\Core\Database;
 
         public static function VerifyFailSystem($result): void
         {
-            if (isset($result['systemError']) && $result['code']>=2000) {
+            if (($result['systemError']??false) && $result['systemError']) {
                     self::flashSystemError($result['error']);
                     header("Location: /500");
                     exit;
