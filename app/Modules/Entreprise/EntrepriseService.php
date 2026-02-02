@@ -125,9 +125,9 @@ class EntrepriseService
             }
 
             // 3) Lier user → entreprise
-            $this->repo->attachUserToEntreprise($gestionnaireId['id'], $entrepriseId['id']);
+            $attach = $this->repo->attachUserToEntreprise($gestionnaireId['id'], $entrepriseId['id']);
             // verif erreur systeme si echec création rollback
-            if ($errorSystem= $this->systemError($entrepriseId, "Erreur système lors de la liaison gestionnaire → entreprise : ")) {
+            if ($errorSystem= $this->systemError($attach, "Erreur système lors de la liaison gestionnaire → entreprise : ")) {
                 $this->pdo->rollBack();
                 return $errorSystem;
             }
@@ -169,14 +169,15 @@ class EntrepriseService
         if ($errorSystem = $this->systemError($oldEntreprise, "Erreur système lors de la récupération des données actuelles de l'entreprise : ")) {
             return $errorSystem;
         }
+        
         if (empty($oldEntreprise['data'])) {
             return $this->fail("L'entreprise à mettre à jour n'existe pas.");
         }
 
         $oldEntrepriseData = $oldEntreprise['data'];
-        // si données non fournies, garder les anciennes
+        // si données non fournies (null ou string vide), garder les anciennes
         foreach ($dataEntrepriseCanonique as $key => $value) {
-            if ($value === null) {
+            if ($value === null || (is_string($value) && trim($value) === '')) {
                 $dataEntrepriseCanonique[$key] = $oldEntrepriseData[$key] ?? null;
             }
         } // fin

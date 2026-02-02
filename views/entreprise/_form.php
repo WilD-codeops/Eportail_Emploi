@@ -40,7 +40,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 class="form-control"
                 id="nom"
                 name="nom"
-                value="<?= $e($value('nom')) ?>"
+                value="<?= $e($value('nom', '')) ?>"
                 maxlength="150"
                 required
             >
@@ -56,7 +56,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
             >
                 <option value="">— Choisir un secteur —</option>
                 <?php foreach ($secteurs as $s): ?>
-                    <?php $selected = ((int)$value('secteur_id') === (int)$s['id']) ? 'selected' : ''; ?>
+                    <?php $selected = ((int)$value('secteur_id', '') === (int)$s['id']) ? 'selected' : ''; ?>
                     <option value="<?= $e($s['id']) ?>" <?= $selected ?>>
                         <?= $e($s['libelle']) ?>
                     </option>
@@ -71,7 +71,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 class="form-control"
                 id="adresse"
                 name="adresse"
-                value="<?= $e($value('adresse')) ?>"
+                value="<?= $e($value('adresse', '')) ?>"
                 required
             >
         </div>
@@ -84,7 +84,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                     class="form-control"
                     id="code_postal"
                     name="code_postal"
-                    value="<?= $e($value('code_postal')) ?>"
+                    value="<?= $e($value('code_postal', '')) ?>"
                     maxlength="5"
                     required
                 >
@@ -96,7 +96,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                     class="form-control"
                     id="ville"
                     name="ville"
-                    value="<?= $e($value('ville')) ?>"
+                    value="<?= $e($value('ville', '')) ?>"
                     required
                 >
             </div>
@@ -107,7 +107,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                     class="form-control"
                     id="pays"
                     name="pays"
-                    value="<?= $e($value('pays')) ?>"
+                    value="<?= $e($value('pays', '')) ?>"
                     required
                 >
             </div>
@@ -120,7 +120,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 class="form-control"
                 id="telephone"
                 name="telephone"
-                value="<?= $e($value('telephone')) ?>"
+                value="<?= $e($value('telephone', '')) ?>"
             >
         </div>
 
@@ -131,7 +131,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 class="form-control"
                 id="email"
                 name="email"
-                value="<?= $e($value('email')) ?>"
+                value="<?= $e($value('email', '')) ?>"
             >
         </div>
 
@@ -142,7 +142,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 class="form-control"
                 id="siret"
                 name="siret"
-                value="<?= $e($value('siret')) ?>"
+                value="<?= $e($value('siret', '')) ?>"
                 maxlength="14"
                 required
             >
@@ -155,7 +155,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 class="form-control"
                 id="site_web"
                 name="site_web"
-                value="<?= $e($value('site_web')) ?>"
+                value="<?= $e($value('site_web', '')) ?>"
                 placeholder="https://monsite.fr"
             >
         </div>
@@ -171,7 +171,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 <?php
                 $tailleOptions = ['1-10', '11-50', '51-250', '250+'];
                 foreach ($tailleOptions as $opt):
-                    $selected = ($value('taille') === $opt) ? 'selected' : '';
+                    $selected = ($value('taille', '') === $opt) ? 'selected' : '';
                 ?>
                     <option value="<?= $e($opt) ?>" <?= $selected ?>><?= $e($opt) ?> salariés</option>
                 <?php endforeach; ?>
@@ -185,7 +185,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 id="description"
                 name="description"
                 rows="4"
-            ><?= $e($value('description')) ?></textarea>
+            ><?= $e($value('description', '')) ?></textarea>
         </div>
 
         <?php if ($withGestionnaire): ?>
@@ -200,7 +200,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                     class="form-control"
                     id="prenom"
                     name="prenom"
-                    value="<?= $e($value('prenom')) ?>"
+                    value="<?= $e($value('prenom', '')) ?>"
                     required
                 >
             </div>
@@ -212,7 +212,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                     class="form-control"
                     id="nom_gestionnaire"
                     name="nom_gestionnaire"
-                    value="<?= $e($value('nom_gestionnaire')) ?>"
+                    value="<?= $e($value('nom_gestionnaire', '')) ?>"
                     required
                 >
             </div>
@@ -224,7 +224,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                     class="form-control"
                     id="email_gestionnaire"
                     name="email_gestionnaire"
-                    value="<?= $e($value('email_gestionnaire')) ?>"
+                    value="<?= $e($value('email_gestionnaire', '')) ?>"
                     autocomplete="email"
                     required
                 >
@@ -237,7 +237,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                     class="form-control"
                     id="telephone_gestionnaire"
                     name="telephone_gestionnaire"
-                    value="<?= $e($value('telephone_gestionnaire')) ?>"
+                    value="<?= $e($value('telephone_gestionnaire', '')) ?>"
                 >
             </div>
 

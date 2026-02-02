@@ -131,7 +131,7 @@ use App\Core\Database;
 
             
             if (!$result['success']) {
-                if(!empty($result['systemrror'])) {
+                if(!empty($result['systemError'])) {
                     self::VerifyFailSystem($result); //verifie si erreur systeme est set +code erreur
                 }
 

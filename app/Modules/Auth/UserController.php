@@ -222,8 +222,7 @@ class UserController
          $this->renderDashboard("create", [
             "title" => "Créer un utilisateur",
             'entreprises' => $entreprises['data'],
-            "role" => Auth::role(),   
-            ""   
+            "role" => Auth::role()
         ]);
 
     
@@ -236,7 +235,7 @@ class UserController
         Security::requireCsrfToken('user_create', $_POST['csrf_token'] ?? null);
 
         $service = $this->makeUserService();
-        $entreprises = $service->getallEntreprises();
+        $entreprises = $service->getAllEntreprises();
 
         if(!$entreprises['success']){
             self::VerifyFailSystem($entreprises);
@@ -284,7 +283,7 @@ class UserController
         }
 
         //get all entreprises for select options
-        $entreprises= $service->getallEntreprises();
+        $entreprises= $service->getAllEntreprises();
         $entreprisesData=$entreprises['data'] ?? [];
 
         if(!$entreprises['success']){

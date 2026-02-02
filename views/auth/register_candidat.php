@@ -47,26 +47,26 @@ $csrfToken = Security::generateCsrfToken('register_candidat');
                 <div class="col-md-6 mb-3">
                     <label for="prenom" class="form-label">Prénom *</label>
                     <input id="prenom" type="text" name="prenom" class="form-control"
-                           value="<?= $value('prenom') ?>" required autocomplete="given-name">
+                           value="<?= $value('prenom', '') ?>" required autocomplete="given-name">
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="nom" class="form-label">Nom *</label>
                     <input id="nom" type="text" name="nom" class="form-control"
-                           value="<?= $value('nom') ?>" required autocomplete="family-name">
+                           value="<?= $value('nom', '') ?>" required autocomplete="family-name">
                 </div>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Email *</label>
                 <input id="email" type="email" name="email" class="form-control"
-                       value="<?= $value('email') ?>" required autocomplete="email">
+                       value="<?= $value('email', '') ?>" required autocomplete="email">
             </div>
 
             <div class="mb-3">
                 <label for="telephone" class="form-label">Téléphone (optionnel)</label>
                 <input id="telephone" type="tel" name="telephone" class="form-control"
-                       value="<?= $value('telephone') ?>" autocomplete="tel"
+                       value="<?= $value('telephone', '') ?>" autocomplete="tel"
                        aria-describedby="telHelp">
                 <div id="telHelp" class="form-text">
                     Exemple : 06XXXXXXXX ou +33XXXXXXXXX
@@ -136,13 +136,13 @@ $csrfToken = Security::generateCsrfToken('register_candidat');
             <div class="mb-3">
                 <label for="poste_recherche" class="form-label">Poste recherché</label>
                 <input id="poste_recherche" type="text" name="poste_recherche" class="form-control"
-                       value="<?= $value('poste_recherche') ?>" placeholder="Ex : Développeur web junior">
+                       value="<?= $value('poste_recherche', '') ?>" placeholder="Ex : Développeur web junior">
             </div>
 
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
                 <textarea id="description" name="description" class="form-control" rows="3"
-                          placeholder="Quelques mots sur vous..."><?= $value('description') ?></textarea>
+                          placeholder="Quelques mots sur vous..."><?= $value('description', '') ?></textarea>
             </div>
 
             <div class="row">
@@ -150,17 +150,17 @@ $csrfToken = Security::generateCsrfToken('register_candidat');
                     <label for="disponibilite" class="form-label">Disponibilité</label>
                     <select id="disponibilite" name="disponibilite" class="form-select">
                         <option value="">— Choisir —</option>
-                        <option value="immediate" <?= ($value('disponibilite') === 'immediate' ? 'selected' : '') ?>>Immédiate</option>
-                        <option value="1_month"   <?= ($value('disponibilite') === '1_month' ? 'selected' : '') ?>>Sous 1 mois</option>
-                        <option value="2_months"  <?= ($value('disponibilite') === '2_months' ? 'selected' : '') ?>>Sous 2 mois</option>
-                        <option value="later"     <?= ($value('disponibilite') === 'later' ? 'selected' : '') ?>>Plus tard</option>
+                        <option value="immediate" <?= ($value('disponibilite', '') === 'immediate' ? 'selected' : '') ?>>Immédiate</option>
+                        <option value="1_month"   <?= ($value('disponibilite', '') === '1_month' ? 'selected' : '') ?>>Sous 1 mois</option>
+                        <option value="2_months"  <?= ($value('disponibilite', '') === '2_months' ? 'selected' : '') ?>>Sous 2 mois</option>
+                        <option value="later"     <?= ($value('disponibilite', '') === 'later' ? 'selected' : '') ?>>Plus tard</option>
                     </select>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="mobilite" class="form-label">Mobilité</label>
                     <input id="mobilite" type="text" name="mobilite" class="form-control"
-                           value="<?= $value('mobilite') ?>" placeholder="Ex : Paris / Remote / France">
+                           value="<?= $value('mobilite', '') ?>" placeholder="Ex : Paris / Remote / France">
                 </div>
             </div>
 
@@ -169,20 +169,20 @@ $csrfToken = Security::generateCsrfToken('register_candidat');
                     <label for="annee_experience" class="form-label">Années d'expérience</label>
                     <input id="annee_experience" type="number" min="0" max="60"
                            name="annee_experience" class="form-control"
-                           value="<?= $value('annee_experience') ?>" placeholder="Ex : 1">
+                           value="<?= $value('annee_experience', '') ?>" placeholder="Ex : 1">
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="niveau_etudes" class="form-label">Niveau d’études</label>
                     <input id="niveau_etudes" type="text" name="niveau_etudes" class="form-control"
-                           value="<?= $value('niveau_etudes') ?>" placeholder="Ex : Bac+2">
+                           value="<?= $value('niveau_etudes', '') ?>" placeholder="Ex : Bac+2">
                 </div>
             </div>
 
             <div class="mb-3">
                 <label for="statut_actuel" class="form-label">Statut actuel</label>
                 <input id="statut_actuel" type="text" name="statut_actuel" class="form-control"
-                       value="<?= $value('statut_actuel') ?>" placeholder="Ex : En recherche / En poste / Étudiant">
+                       value="<?= $value('statut_actuel', '') ?>" placeholder="Ex : En recherche / En poste / Étudiant">
             </div>
 
             <div class="d-flex justify-content-between mt-4">

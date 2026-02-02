@@ -68,6 +68,20 @@ class UserRepository
             return ['success' => false , 'error' => $e->getMessage(), 'code' => $e->getCode()];
         }
     }
+
+    // Récupérer toutes les entreprises (id + nom)
+    public function getAllEntreprises(): array
+    {
+        try {
+            $sql = "SELECT id, nom FROM entreprises ORDER BY nom ASC";
+            $stmt = $this->pdo->query($sql);
+            $entreprises = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return ['success' => true, 'data' => $entreprises];
+        } catch (\PDOException $e) {
+            return ['success' => false , 'error' => $e->getMessage(), 'code' => $e->getCode()];
+        }
+    }
     
     // Suppression utilisateur
     public function deleteUser(int $userId): array
@@ -305,15 +319,4 @@ class UserRepository
     }
 }
 
-public function getAllEntreprises(): array
-{
-    try {
-        $sql = "SELECT id, nom FROM entreprises ORDER BY nom ASC";
-        $stmt = $this->pdo->query($sql);
-        $entreprises = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        return ['success' => true, 'data' => $entreprises];
-    } catch (\PDOException $e) {
-        return ['success' => false, 'error' => $e->getMessage(), 'code' => $e->getCode()];
-    }
-}
 }

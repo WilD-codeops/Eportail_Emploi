@@ -58,6 +58,10 @@ $router->get('/admin/entreprises', 'App\\Modules\\Entreprise\\EntrepriseControll
 $router->get('/admin/entreprises/create', 'App\\Modules\\Entreprise\\EntrepriseController@createForm');// Formulaire création entreprise
 $router->post('/admin/entreprises/create', 'App\\Modules\\Entreprise\\EntrepriseController@create');// Traitement création entreprise
 
+// Alias (singulier) pour compatibilité d'URL
+$router->get('/admin/entreprise/create', 'App\\Modules\\Entreprise\\EntrepriseController@createForm');
+$router->post('/admin/entreprise/create', 'App\\Modules\\Entreprise\\EntrepriseController@create');
+
 $router->get('/admin/entreprises/edit', 'App\\Modules\\Entreprise\\EntrepriseController@editForm');// Formulaire édition entreprise
 $router->post('/admin/entreprises/edit', 'App\\Modules\\Entreprise\\EntrepriseController@update');// Traitement édition entreprise
 $router->post('/admin/entreprises/delete', 'App\\Modules\\Entreprise\\EntrepriseController@delete');// Suppression entreprise

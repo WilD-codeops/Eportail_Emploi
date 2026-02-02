@@ -80,7 +80,7 @@ $role = Auth::role();
                         switch ($role) {
 
                             case 'candidat':
-                                echo '<a class="btn btn-primary btn-sm" href="/candidat/dashboard" aria-label="Accéder à l’espace candidat">Mon espace</a>';
+                                echo '<a class="btn btn-primary btn-sm" href="/maintenance" aria-label="Accéder à l’espace candidat">Mon espace</a>';
                                 break;
 
                             case 'recruteur':

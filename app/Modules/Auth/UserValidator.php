@@ -63,8 +63,9 @@ class UserValidator
         }
 
         // Entreprise ID
+        
         if (!is_numeric($dataUsertoValidate['entreprise_id']) || (int)$dataUsertoValidate['entreprise_id'] <= 0) {
-            return ['success' => false, 'error' => "L'entreprise sélectionnée est invalide."];
+            return ['success' => false, 'error' => "L\'entreprise sélectionnée est invalide."];
         }
 
         // Tout est OK
