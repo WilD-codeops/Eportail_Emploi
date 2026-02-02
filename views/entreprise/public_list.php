@@ -21,9 +21,26 @@ $e = static fn ($val) => htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8');
 ?>
 
 <?php require __DIR__ . '/../partials/banniere.php'; ?>
+
 <section class="py-5 bg-light" aria-labelledby="entreprises-heading">
   <div class="container">
 
+    <?php
+      $count = count($entreprises);
+    ?>
+
+    <div class="mb-4">
+        <?php if ($count === 0): ?>
+            <p class="text-muted fst-italic">Aucune entreprise trouvée.</p>
+        <?php elseif ($count === 1): ?>
+            <p class="fw-semibold text-secondary">1 entreprise trouvée</p>
+        <?php else: ?>
+            <p class="fw-semibold text-secondary"><?= $count ?> entreprises trouvées</p>
+        <?php endif; ?>
+    </div>
+
+    <!-- Formulaire de filtres -->
+    <form method="GET" class="mb-4" id="entreprise-filters-form" aria-label="Filtres de recherche"></form>
     <!-- Formulaire de filtres -->
     <form method="GET" class="mb-4" id="entreprise-filters-form" aria-label="Filtres de recherche">
       <div class="row g-3">

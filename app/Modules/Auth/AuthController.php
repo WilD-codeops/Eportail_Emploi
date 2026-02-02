@@ -58,6 +58,7 @@ use App\Core\Database;
 
         public function showLogin(): void
         {
+            Auth::requireGuest();// Redirige si déjà connecté
             $this->renderAuth("login", [
                 "title"       => "Connexion — EPortailEmploi",
                 "authVariant" => "login",
@@ -92,13 +93,13 @@ use App\Core\Database;
 
             switch ($role) {
                 case 'admin':
-                    header("Location: admin/entreprises?reason=loggedin");
+                    header("Location: /admin/users?reason=loggedin");
                     break;
                 case 'gestionnaire':
-                    header("Location: /gestionnaire/dashboard/offres?reason=loggedin");
+                    header("Location: /dashboard/equipe?reason=loggedin");
                     break;
                 case 'recruteur':
-                    header("Location: /recruteur/dashboard/offres?reason=loggedin");
+                    header("Location: /dashboard/profil?reason=loggedin");
                     break;
                 case 'candidat':
                     header("Location: /?reason=loggedin");

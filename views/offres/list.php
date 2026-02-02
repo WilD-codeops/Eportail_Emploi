@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 // Variables injectées par le controller
 $mode       = $mode ?? 'entreprise'; // 'admin' | 'entreprise'
-$title      = $title ?? ($mode === 'admin' ? 'Gestion des offres' : 'Mes offres');
+$title      = $title ?? ($mode === 'admin' ? 'Gestion des offres' : "Les offres de votreentreprise");
 $items      = $items ?? [];
 $filters    = $filters ?? [];
 $pagination = $pagination ?? [];
@@ -28,7 +28,7 @@ $basePath = ($mode === 'admin') ? '/admin/offres' : '/dashboard/offres';
 <!-- Header page -->
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
-        <h1 class="h4 mb-1"><?= htmlspecialchars($title) ?></h1>
+        <h2 class="h4 mb-1 text-primary"><?= htmlspecialchars($title) ?></h2>
         <div class="text-muted small">
             <?= $mode === 'admin'
                 ? "Administration • gestion globale des offres"

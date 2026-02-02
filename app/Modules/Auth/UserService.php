@@ -376,5 +376,13 @@ class UserService
     }
 
 
+ public function getAllEntreprises(): array
+{
+    $result = $this->repo->getAllEntreprises();
+    if ($errorSystem = $this->systemError($result, "Erreur système lors de la récupération des entreprises : ")) {
+        return $errorSystem;
+    }
+    return $result;
+}
 
 }

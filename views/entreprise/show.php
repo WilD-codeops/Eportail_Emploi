@@ -156,7 +156,7 @@ $titre = $entreprise['nom'] ?? 'Entreprise';
                                         </div>
 
                                         <!-- Bouton -->
-                                        <a href="/offres/<?= $offre['id'] ?>"
+                                        <a href="/offres/show?id=<?= $offre['id'] ?>"
                                            class="btn btn-primary btn-sm mt-auto"
                                            aria-label="Voir l’offre <?= $e($offre['titre']) ?>">
                                             Voir l’offre

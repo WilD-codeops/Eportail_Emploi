@@ -67,11 +67,13 @@
                         aria-controls="sidebarOffcanvas">
                         <i class="bi bi-list"></i>
                     </button>
-
+                    
+                    
+                    
 
 
                     <div>
-                      <h1 class="h5 mb-0"><?= htmlspecialchars($title ?? 'Tableau de bord') ?></h1>
+                      <h1 class="h5 mb-0"><?= htmlspecialchars($rubrique ?? 'Tableau de bord') ?></h1>
                       <div class="text-muted small">Administration EPortailEmploi</div>
                     </div>
                   </div>
@@ -79,10 +81,12 @@
                   <!-- bloc user : ne shrink jamais -->
                   <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
                     <div class="text-end d-none d-sm-block">
-                      <div class="fw-semibold"><?= htmlspecialchars($_SESSION['user_prenom'] ?? 'Compte') ?></div>
+                      <div class="fw-semibold "><?= htmlspecialchars($_SESSION['user_prenom'] ?? 'Compte') ?></div>
                       <div class="text-muted small"><?= htmlspecialchars($_SESSION['user_role'] ?? '') ?></div>
                     </div>
-                    <div class="rounded-circle bg-secondary" style="width:38px;height:38px;"></div>
+                    <div class="rounded-circle bg-secondary" style="width:38px;height:38px;">
+                      <i class="bi bi-person-fill text-white fs-4 d-block text-center pt-"></i>
+                    </div>
                   </div>
 
                 </div>

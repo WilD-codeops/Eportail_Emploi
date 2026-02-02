@@ -28,7 +28,7 @@ class AuthRegistrationService
                 'role'           => 'candidat',
                 'prenom'         => Validator::sanitize($data['prenom'] ?? ''),
                 'nom'            => Validator::sanitize($data['nom'] ?? ''),
-                'email'          => Validator::sanitize($data['email'] ?? ''),
+                'email'          => strtolower(Validator::sanitize($data['email'] ?? '')),
                 'telephone'      => Validator::sanitize($data['telephone'] ?? ''), // optionnel
                 'mot_de_passe'   => $data['password'] ?? null,// non sanitizé pour validation   
                 'confirmation_mdp' => $data['password_confirm'] ?? null,// non sanitizé pour validation
@@ -114,7 +114,7 @@ class AuthRegistrationService
                 'ville'       => $data['ville'] ?? null,
                 'pays'        => $data['pays'] ?? null,
                 'telephone'   => $data['telephone'] ?? $data['telephone_entreprise'] ?? null,
-                'email'       => $data['email_entreprise'] ?? $data['email'] ?? null,
+                'email'       => strtolower(Validator::sanitize($data['email_entreprise'] ?? $data['email'] ?? null)),
                 'siret'       => $data['siret'] ?? null,
                 'site_web'    => $data['site_web'] ?? null,
                 'taille'      => $data['taille'] ?? $data['taille_entreprise'] ?? null,
@@ -125,7 +125,7 @@ class AuthRegistrationService
             'gestionnaire' => [
                 'prenom'   => $data['prenom'] ?? null,
                 'nom'      => $data['nom'] ?? $data['nom_gestionnaire'] ?? null,
-                'email'    => $data['email_gestionnaire'] ?? $data['email'] ?? null,
+                'email'    => strtolower(Validator::sanitize($data['email_gestionnaire'] ?? $data['email'] ?? null))    ,
                 'telephone'=> $data['telephone_gestionnaire'] ?? $data['telephone'] ?? null,
                 'mot_de_passe' => $data['mot_de_passe'] ?? $data['password'] ?? null,
                 'confirmation_mdp'  => $data['confirmation_mdp'] ?? $data['password_confirm'] ?? null,

@@ -165,6 +165,24 @@ class EntrepriseService
             'logo'       => $data['logo'] ?? null,
         ];
 
+        $oldEntreprise = $this->repo->find($id);
+        if ($errorSystem = $this->systemError($oldEntreprise, "Erreur système lors de la récupération des données actuelles de l'entreprise : ")) {
+            return $errorSystem;
+        }
+        if (empty($oldEntreprise['data'])) {
+            return $this->fail("L'entreprise à mettre à jour n'existe pas.");
+        }
+
+        $oldEntrepriseData = $oldEntreprise['data'];
+        // si données non fournies, garder les anciennes
+        foreach ($dataEntrepriseCanonique as $key => $value) {
+            if ($value === null) {
+                $dataEntrepriseCanonique[$key] = $oldEntrepriseData[$key] ?? null;
+            }
+        } // fin
+        
+        // Validation données
+
         $valid = EntrepriseValidator::validateEntreprise($dataEntrepriseCanonique);
         if (!$valid['success']) return $valid;
 
@@ -178,6 +196,8 @@ class EntrepriseService
             // le SIRET est déjà utilisé par une autre entreprise
             return $this->fail("Ce SIRET est déjà enregistré.");
         }
+
+
 
         $ok = $this->repo->updateEntreprise($id, $dataEntrepriseCanonique);
         // verif erreur systeme

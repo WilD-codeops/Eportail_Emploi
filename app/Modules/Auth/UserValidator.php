@@ -39,6 +39,14 @@ class UserValidator
             return ['success' => false, 'error' => "L'email est invalide."];
         }
 
+        //teléphone
+        if(!Validator::validateNotEmpty($dataUsertoValidate['telephone'])){
+            return ['success' => false, 'error' => "Le téléphone est obligatoire."];
+        }
+        if(!Validator::validatePhone($dataUsertoValidate['telephone'])){
+            return ['success' => false, 'error' => "Le téléphone est invalide."];
+        }
+
         // Mot de passe
         if (!Validator::validatePasswordNotEmpty($dataUsertoValidate['mot_de_passe'])) {
             return ['success' => false, 'error' => "Le mot de passe est obligatoire."];

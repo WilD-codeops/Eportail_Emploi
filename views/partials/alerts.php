@@ -43,7 +43,7 @@
         // CONNEXION / DÉCONNEXION
         'logout': {icon: 'success', title: 'Déconnecté !', text: 'À bientôt sur EPortailEmploi !', timer: 2500},
         'loggedin': {icon: 'success', title: 'Connexion réussie !', text: 'Bienvenue <?= htmlspecialchars($_SESSION['user_prenom'] ?? '') ?> connexion réussie.', timer: 2000},
-        
+        'already_logged_in': {icon: 'info', title: 'Vous êtes déjà connecté', text: 'Redirection vers la page d\'accueil.', timer: 3000},
 
         // AVERTISSEMENTS
         'unauthenticated': {icon: 'warning', title: 'Connexion requise', text: 'Veuillez vous connecter.', timer: 4000},

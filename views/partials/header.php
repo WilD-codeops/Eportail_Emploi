@@ -48,7 +48,7 @@ $role = Auth::role();
                            aria-label="Se connecter">
                             Connexion
                         </a>
-                                            
+
                         <a class="btn btn-primary btn-sm"
                            href="/register/candidat"
                            aria-label="Créer un compte candidat">
@@ -84,19 +84,19 @@ $role = Auth::role();
                                 break;
 
                             case 'recruteur':
-                                echo '<a class="btn btn-primary btn-sm" href="/recruteur/dashboard" aria-label="Accéder à l’espace recruteur">Mon espace</a>';
+                                echo '<a class="btn btn-primary btn-sm" href="/dashboard/offres" aria-label="Accéder à l’espace recruteur">Mon espace</a>';
                                 break;
 
                             case 'gestionnaire':
-                                echo '<a class="btn btn-primary btn-sm" href="/gestionnaire/dashboard" aria-label="Accéder à l’espace gestionnaire">Mon espace</a>';
+                                echo '<a class="btn btn-primary btn-sm" href="/dashboard/equipe" aria-label="Accéder à l’espace gestionnaire">Mon espace</a>';
                                 break;
 
                             case 'admin':
-                                echo '<a class="btn btn-primary btn-sm" href="/admin/dashboard" aria-label="Accéder à l’espace administrateur">Mon espace</a>';
+                                echo '<a class="btn btn-primary btn-sm" href="/admin/users" aria-label="Accéder à l’espace administrateur">Mon espace</a>';
                                 break;
 
                             default:
-                                echo '<a class="btn btn-primary btn-sm" href="/dashboard" aria-label="Accéder à l’espace utilisateur">Mon espace</a>';
+                                echo '<a class="btn btn-primary btn-sm" href="/" aria-label="Accéder à l’espace utilisateur">Mon espace</a>';
                                 break;
                         }
                         ?>

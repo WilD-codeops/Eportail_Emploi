@@ -39,8 +39,8 @@ $token = $token ?? '';
     </div>
 
     <div class="form-check mb-3">
-      <input type="checkbox" class="form-check-input" id="cgu" name="cgu" required>
       <label for="cgu" class="form-check-label">Je confirme vouloir modifier mon mot de passe</label>
+      <input type="checkbox" class="form-check-input" id="cgu" name="cgu" required>
     </div>
 
     <div class="d-flex justify-content-between mt-4">

@@ -1,4 +1,5 @@
 <?php
+use App\Core\Auth;
 // Partial formulaire entreprise (create/edit).
 
 // Les variables attendues sont :
@@ -293,7 +294,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
         <!-- Boutons de validation / annulation -->
         <div class="d-flex gap-2 mt-4">
             <button type="submit" class="btn btn-primary">Enregistrer</button>
-            <a href="/admin/entreprises" class="btn btn-secondary">Annuler</a>
+            <a href=<?= Auth::role()=='admin' ? "/admin/entreprises" : "/dashboard/equipe" ?> class="btn btn-secondary">Annuler</a>
         </div>
     </div>
 </div>

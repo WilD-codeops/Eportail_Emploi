@@ -273,8 +273,8 @@ class EntrepriseController
     public function editForm(): void
     {
         Auth::requireLogin();
-        Auth::requireRole(['admin','recruteur','gestionnaire']); // Accès restreint aux rôles spécifiés
-        $id = (int)($_GET['id'] ?? 0);
+        Auth::requireRole(['admin','gestionnaire']); // Accès restreint aux rôles spécifiés
+        $id = (int)($_GET['id'] ?? Auth::entrepriseId());
 
         $service    = $this->makeEntrepriseService();
         $entreprise = $service->findEntreprise($id);
@@ -290,7 +290,8 @@ class EntrepriseController
         
 
         $this->renderDashboard("edit", [
-            "title"      => "Modifier une entreprise",
+            "rubrique"    => "Gestion entreprise",
+            "title"      => Auth::role()=='admin' ? "Modifier une entreprise" : "Modifier mon entreprise",
             "entreprise" => $entreprise['data'],
             "secteurs"   => $secteurs['data'],
         ]);
@@ -302,7 +303,7 @@ class EntrepriseController
     public function update(): void
     {
         Auth::requireLogin();
-        Auth::requireRole(['admin','recruteur','gestionnaire']); // Acces restreint aux rôles spécifiés
+        Auth::requireRole(['admin','gestionnaire']); // Acces restreint aux rôles spécifiés
         Security::requireCsrfToken('entreprise_edit', $_POST['csrf_token'] ?? null);
 
         $service = $this->makeEntrepriseService();
@@ -334,9 +335,17 @@ class EntrepriseController
             return;
         }
         self::flashSuccess($result['message']);
-        header("Location: /admin/entreprises");
-        exit;
-    }
+
+        switch (Auth::role()) {
+            case 'admin':
+                $redirectUrl = "/admin/entreprises";
+                break;
+            case 'gestionnaire':
+                $redirectUrl = "/dashboard/equipe";
+                break;
+        }
+        header("Location: " . $redirectUrl);
+    }   
 
 
     /**

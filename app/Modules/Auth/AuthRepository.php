@@ -4,6 +4,7 @@ namespace App\Modules\Auth;
 
 use PDO;
 
+
 class AuthRepository
 {
     public function __construct(private PDO $pdo) {}

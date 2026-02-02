@@ -11,7 +11,7 @@ $action  = $isAdmin
     : "/dashboard/offres/edit?id=" . urlencode((string)($offre['id'] ?? ''));
 ?>
 
-<h1 class="h4 mb-3"><?= htmlspecialchars($title ?? "Modifier une offre") ?></h1>
+<h2 class="h4 mb-3 text-primary"><?= htmlspecialchars($title ?? "Modifier une offre") ?></h2>
 
 <form method="POST" action="<?= htmlspecialchars($action) ?>">
     <?php require __DIR__ . "/_form.php"; ?>

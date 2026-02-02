@@ -136,76 +136,79 @@ class OffresService
 
     /** Mise a jour d'offre */
     public function updateOffre(int $id, array $data, int $auteurId, bool $isAdmin, int $entrepriseIdContext): array
-    {
-        $existing = $this->repo->find($id);
-        if (!$existing) {
-            return ['success' => false, 'error' => 'Offre introuvable'];
-        }
-
-        $v = $this->validator->validate($data, $isAdmin);
-        if (!$v['isValid']) {
-            return [
-                'success' => false,
-                'error'   => 'Validation',
-                'errors'  => $v['errors'],
-                'data'    => ['input' => $v['clean']]
-            ];
-        }
-
-        $clean = $v['clean'];
-
-        $modFields = [
-            'modifie_par'       => $auteurId,
-            'date_modification' => (new DateTime('now', new DateTimeZone('Europe/Paris')))->format('Y-m-d H:i:s'),
-        ];
-
-        if ($isAdmin) {
-            $entrepriseId = isset($data['entreprise_id']) ? (int)$data['entreprise_id'] : 0;
-            if ($entrepriseId <= 0) {
-                return ['success' => false, 'error' => "Entreprise requise."];
-            }
-
-            $payload = [
-                'entreprise_id'           => $entrepriseId,
-                'type_offre_id'           => $clean['type_offre_id'],
-                'niveau_qualification_id' => $clean['niveau_qualification_id'],
-                'domaine_emploi_id'       => $clean['domaine_emploi_id'],
-                'localisation_id'         => $clean['localisation_id'],
-                'titre'                   => $clean['titre'],
-                'description'             => $clean['description'],
-                'date_debut'              => $clean['date_debut'],
-                'date_fin'                => $clean['date_fin'],
-                'duree_contrat'           => $clean['duree_contrat'],
-                'salaire'                 => $clean['salaire'],
-                'statut'                  => $clean['statut'],
-            ] + $modFields;
-
-            $ok = $this->repo->update($id, $payload);
-        } else {
-            $payload = [
-                'type_offre_id'           => $clean['type_offre_id'],
-                'niveau_qualification_id' => $clean['niveau_qualification_id'],
-                'domaine_emploi_id'       => $clean['domaine_emploi_id'],
-                'localisation_id'         => $clean['localisation_id'],
-                'titre'                   => $clean['titre'],
-                'description'             => $clean['description'],
-                'date_debut'              => $clean['date_debut'],
-                'date_fin'                => $clean['date_fin'],
-                'duree_contrat'           => $clean['duree_contrat'],
-                'salaire'                 => $clean['salaire'],
-                'statut'                  => $clean['statut'],
-            ] + $modFields;
-
-            // Restriction par entreprise / controle de rattachement
-            $ok = $this->repo->updateOwned($id, $entrepriseIdContext, $payload);
-
-            if (!$ok) {
-                return ['success' => false, 'error' => 'Mise à jour impossible ou non autorisée'];
-            }
-        }
-
-        return $ok ? ['success' => true] : ['success' => false, 'error' => 'Échec mise à jour'];
+{
+    $existing = $this->repo->find($id);
+    if (!$existing) {
+        return ['success' => false, 'error' => 'Offre introuvable'];
     }
+
+    $v = $this->validator->validate($data, $isAdmin);
+    if (!$v['isValid']) {
+        return [
+            'success' => false,
+            'error'   => 'Validation',
+            'errors'  => $v['errors'],
+            'data'    => ['input' => $v['clean']]
+        ];
+    }
+
+    $clean = $v['clean'];
+    
+    // 🔥 FUSION ANCIENNES DONNÉES + NOUVELLES
+    $basePayload = array_replace($existing, $clean);
+    
+    $modFields = [
+        'modifie_par'        => $auteurId,
+        'date_modification'  => (new DateTime('now', new DateTimeZone('Europe/Paris')))->format('Y-m-d H:i:s'),
+    ];
+
+    if ($isAdmin) {
+        $entrepriseId = isset($data['entreprise_id']) ? (int)$data['entreprise_id'] : 0;
+        if ($entrepriseId <= 0) {
+            return ['success' => false, 'error' => "Entreprise requise."];
+        }
+
+        $payload = [
+            'entreprise_id'            => $entrepriseId,
+            'type_offre_id'            => $basePayload['type_offre_id'] ?? $existing['type_offre_id'],
+            'niveau_qualification_id'  => $basePayload['niveau_qualification_id'] ?? $existing['niveau_qualification_id'],
+            'domaine_emploi_id'        => $basePayload['domaine_emploi_id'] ?? $existing['domaine_emploi_id'],
+            'localisation_id'          => $basePayload['localisation_id'] ?? $existing['localisation_id'],
+            'titre'                    => $basePayload['titre'] ?? $existing['titre'],
+            'description'              => $basePayload['description'] ?? $existing['description'],
+            'date_debut'               => $basePayload['date_debut'] ?? $existing['date_debut'],
+            'date_fin'                 => $basePayload['date_fin'] ?? $existing['date_fin'],
+            'duree_contrat'            => $basePayload['duree_contrat'] ?? $existing['duree_contrat'],
+            'salaire'                  => $basePayload['salaire'] ?? $existing['salaire'],
+            'statut'                   => $basePayload['statut'] ?? $existing['statut'],
+        ] + $modFields;
+
+        $ok = $this->repo->update($id, $payload);
+    } else {
+        $payload = [
+            'type_offre_id'            => $basePayload['type_offre_id'] ?? $existing['type_offre_id'],
+            'niveau_qualification_id'  => $basePayload['niveau_qualification_id'] ?? $existing['niveau_qualification_id'],
+            'domaine_emploi_id'        => $basePayload['domaine_emploi_id'] ?? $existing['domaine_emploi_id'],
+            'localisation_id'          => $basePayload['localisation_id'] ?? $existing['localisation_id'],
+            'titre'                    => $basePayload['titre'] ?? $existing['titre'],
+            'description'              => $basePayload['description'] ?? $existing['description'],
+            'date_debut'               => $basePayload['date_debut'] ?? $existing['date_debut'],
+            'date_fin'                 => $basePayload['date_fin'] ?? $existing['date_fin'],
+            'duree_contrat'            => $basePayload['duree_contrat'] ?? $existing['duree_contrat'],
+            'salaire'                  => $basePayload['salaire'] ?? $existing['salaire'],
+            'statut'                   => $basePayload['statut'] ?? $existing['statut'],
+        ] + $modFields;
+
+        $ok = $this->repo->updateOwned($id, $entrepriseIdContext, $payload);
+
+        if (!$ok) {
+            return ['success' => false, 'error' => 'Mise à jour impossible ou non autorisée'];
+        }
+    }
+
+    return $ok ? ['success' => true] : ['success' => false, 'error' => 'Échec mise à jour'];
+}
+
 
 
     /** Suppression d'offre */

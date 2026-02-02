@@ -120,6 +120,7 @@ class UserRepository
             $stmt->bindParam(':nom', $data['nom']);
             $stmt->bindParam(':email', $data['email']);
             $stmt->bindParam(':mot_de_passe', $data['mot_de_passe']);
+            $stmt->bindParam(':telephone', $data['telephone']);
             $stmt->bindParam(':role', $data['role']);
             $stmt->bindParam(':entreprise_id', $data['entreprise_id']);
 
@@ -139,7 +140,7 @@ class UserRepository
             $stmt = $this->pdo->query($sql);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            return ['success' => true, 'count' => (int)$result['total']];
+            return ['success' => true, 'total' => (int)$result['total']];
         } catch (\PDOException $e) {
             return ['success' => false , 'error' => $e->getMessage(), 'code' => $e->getCode()];
         }
@@ -303,5 +304,16 @@ class UserRepository
         ];
     }
 }
-    
+
+public function getAllEntreprises(): array
+{
+    try {
+        $sql = "SELECT id, nom FROM entreprises ORDER BY nom ASC";
+        $stmt = $this->pdo->query($sql);
+        $entreprises = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return ['success' => true, 'data' => $entreprises];
+    } catch (\PDOException $e) {
+        return ['success' => false, 'error' => $e->getMessage(), 'code' => $e->getCode()];
+    }
+}
 }

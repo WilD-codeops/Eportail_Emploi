@@ -111,6 +111,6 @@ class Validator
     public static function validateDescription(?string $desc): bool
     {
         if (!$desc) return true;
-        return strlen($desc) <= 800;
+        return strlen($desc) <= 1000;
     }
 }

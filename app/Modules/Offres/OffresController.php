@@ -129,7 +129,8 @@ class OffresController
         $refs    = $service->getReferenceData(true)['data'] ?? [];
 
         $this->renderDashboard("list", [
-            "title" => "Gestion des offres",
+            "rubrique" => "Gestion des offres",
+            "title" => "Liste des offres",
             "mode"  => "admin",
             "items" => $result['data']['items'] ?? [],
             "pagination" => $result['data']['pagination'] ?? [],
@@ -163,7 +164,8 @@ class OffresController
         $refs    = $service->getReferenceData(false)['data'] ?? [];
 
         $this->renderDashboard("list", [
-            "title" => "Mes offres",
+            'rubrique' => 'Gestion des offres',
+            "title" => "Les offres de votre entreprise",
             "mode"  => "entreprise",
             "items" => $result['data']['items'] ?? [],
             "pagination" => $result['data']['pagination'] ?? [],
@@ -324,6 +326,7 @@ class OffresController
         $csrf    = Security::generateCsrfToken('offres_update');
 
         $this->renderDashboard("edit", [
+            "rubrique" => "Gestion des offres",
             "title" => "Modifier une offre",
             "refs"  => $refs,
             "offre" => $offre,
@@ -369,6 +372,7 @@ class OffresController
             $csrf = Security::generateCsrfToken('offres_update');
 
             $this->renderDashboard("edit", [
+                "rubrique" => "Gestion des offres",
                 "title"  => "Modifier une offre",
                 "refs"   => $refs,
                 "offre"  => $offre,
