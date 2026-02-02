@@ -67,11 +67,20 @@ class Auth
     {
         SessionManager::sessionDestroy();
         }
-    
+
     public static function entrepriseId(): ?int
     {
         $eid = $_SESSION['entreprise_id'] ?? null;
         return $eid ? (int)$eid : null;
     } 
+
+    // Accès uniquement aux invités (non connectés)
+    public static function requireGuest(): void
+    {
+        if (self::isLogged()) {
+            header("Location: /?reason=already_logged_in");
+            exit;
+        }
+    }
 
 }

@@ -3,8 +3,8 @@
 namespace App\Core;
 
 /**
- * Règles de validation réutilisables.
- * Permet un code propre, centralisé et cohérent.
+ * Règles de validation réutilisables dans l'application.
+ * Permet un code propre, centralisé et de les grouper dans les modules qui en ont besoin.
  */
 class Validator
 {
@@ -71,6 +71,28 @@ class Validator
         return true;
     }
 
+    // Mot de passe complexe seul pour usage backoffice
+    public static function validatePasswordComplex(string $pass): bool
+    {
+        // Mot de passe non vide
+        if (!self::validateNotEmpty($pass)) {
+            return false;
+        }
+
+        // Longueur minimale
+        if (strlen($pass) < 8) {
+            return false;
+        }
+
+        // Complexité : minuscule, majuscule, chiffre, caractère spécial
+        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/', $pass)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    // Mot de passe non vide (pour reset simple)
     public static function validatePasswordNotEmpty(string $pass): bool
     {
         if (!self::validateNotEmpty($pass)) {

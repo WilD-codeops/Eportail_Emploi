@@ -18,7 +18,7 @@ class EntrepriseService
     public function listEntreprises(): array
     {
         $resultat = $this->repo->getAll();
-        if ($errorSystem = $this->systemError($resultat)) {//verif erreur systeme  
+        if ($errorSystem = $this->systemError($resultat, "Erreur système lors de la récupération des entreprises : ")) {//verif erreur systeme  
             return $errorSystem;
         }
         return $resultat;
@@ -28,7 +28,7 @@ class EntrepriseService
     public function listGestionnaires(): array
     {
         $resultat = $this->repo->getGestionnaires();
-        if ($errorSystem = $this->systemError($resultat)) {
+        if ($errorSystem = $this->systemError($resultat, "Erreur système lors de la récupération des gestionnaires : ")) {
             return $errorSystem;
         }
         return $resultat;
@@ -38,7 +38,7 @@ class EntrepriseService
     public function searchEntreprises(array $filters, int $limit, int $offset): array
     {
         $result = $this->repo->search($filters, $limit, $offset);
-        if ($errorSystem = $this->systemError($result)) {
+        if ($errorSystem = $this->systemError($result, "Erreur système lors de la recherche des entreprises : ")) {
             return $errorSystem;
         }
         return $result;
@@ -48,7 +48,7 @@ class EntrepriseService
     public function listSecteurs(): array
     {
         $resultat = $this->repo->getSecteurs();
-        if ($errorSystem = $this->systemError($resultat)) {
+        if ($errorSystem = $this->systemError($resultat, "Erreur système lors de la récupération des secteurs : ")) {
             return $errorSystem;
         }
         return $resultat;
@@ -58,7 +58,7 @@ class EntrepriseService
     public function findEntreprise(int $id): ?array
     {
         $resultat = $this->repo->find($id);
-        if ($errorSystem = $this->systemError($resultat)) {
+        if ($errorSystem = $this->systemError($resultat, "Erreur système lors de la récupération de l'entreprise : ")) {
             return $errorSystem;
         }
         return $resultat;
@@ -67,7 +67,7 @@ class EntrepriseService
     public function listOffresByEntreprise(int $entrepriseId): array
     {
         $resultat = $this->repo->getOffresByEntreprise($entrepriseId);
-        if ($errorSystem = $this->systemError($resultat)) {
+        if ($errorSystem = $this->systemError($resultat, "Erreur système lors de la récupération des offres : ")) {
             return $errorSystem;
         }
         return $resultat;
@@ -79,8 +79,8 @@ class EntrepriseService
     {
         $resultat = $this->repo->siretExists($siret);
         //verif erreur systeme
-        if($systemError=$this->systemError($resultat)){
-            return $systemError;
+        if($errorSystem=$this->systemError($resultat,"Erreur système lors de la vérification du SIRET : ")){
+            return $errorSystem;
         }
         return $resultat;
     }
@@ -89,8 +89,8 @@ class EntrepriseService
     public function siretExistsForOtherEntreprise(int $entrepriseId, string $siret): array 
     {
         $resultat = $this->repo->siretExistsExceptId($entrepriseId, $siret);
-        if ($this->systemError($resultat)) {
-            return $this->systemError($resultat);
+        if ($errorSystem=$this->systemError($resultat,"Erreur système lors de la vérification du SIRET : ")) {
+            return $errorSystem;
         }
         return $resultat;
     }
@@ -105,17 +105,18 @@ class EntrepriseService
             $this->pdo->beginTransaction();
 
             // 1) Création user gestionnaire
-            $gestionnaireId = $this->authService->createUser([
+            $gestionnaireId = $this->authService->createUserSafe([
                                                             'prenom'       => $gestionnaireData['prenom'],
                                                             'nom'          => $gestionnaireData['nom'],
                                                             'email'        => $gestionnaireData['email'],
                                                             'mot_de_passe' => $gestionnaireData['mot_de_passe'],
+                                                            'telephone'    => $gestionnaireData['telephone'],
                                                             'role'         => 'gestionnaire',
                                                             'entreprise_id'=> null
             ]);
 
             // 2) Création entreprise
-            $entrepriseData['gestionnaire_id'] = $gestionnaireId;
+            $entrepriseData['gestionnaire_id'] = $gestionnaireId['id'];
             $entrepriseId = $this->repo->createEntreprise($entrepriseData);
             // verif erreur systeme si echec création rollback
             if ($errorSystem= $this->systemError($entrepriseId, "Erreur système lors de la création de l'entreprise : ")) {
@@ -124,7 +125,7 @@ class EntrepriseService
             }
 
             // 3) Lier user → entreprise
-            $this->repo->attachUserToEntreprise($gestionnaireId, $entrepriseId['id']);
+            $this->repo->attachUserToEntreprise($gestionnaireId['id'], $entrepriseId['id']);
             // verif erreur systeme si echec création rollback
             if ($errorSystem= $this->systemError($entrepriseId, "Erreur système lors de la liaison gestionnaire → entreprise : ")) {
                 $this->pdo->rollBack();
@@ -180,7 +181,7 @@ class EntrepriseService
 
         $ok = $this->repo->updateEntreprise($id, $dataEntrepriseCanonique);
         // verif erreur systeme
-        if ($errorsystem=$this->systemError($ok)) {
+        if ($errorsystem=$this->systemError($ok,"Erreur système lors de la mise à jour de l'entreprise : ")) {
             return $errorsystem;
         }
 
@@ -193,29 +194,32 @@ class EntrepriseService
     public function deleteEntreprise(int $id): array
     {
         $result = $this->repo->deleteEntreprise($id);
-        if($errorSystem=$this->systemError($result)){
+        if($errorSystem=$this->systemError($result,"Erreur système lors de la suppression de l'entreprise : ")){
             return $errorSystem;
         }
         return  $this->success("Entreprise supprimée avec succès.");
     }
     
-    
-    private function fail(string $msg): array
+
+    /**
+     * FONCTION UTILITAIRES POUR GERER LES ERREURS 
+     */
+    private function fail(string $msg): array // Retour d'erreur métier
     {
         return ['success' => false, 'error' => $msg];
     }
 
-    private function success(string $msg): array
+    private function success(string $msg): array // Retour succès métier
     {
         return ['success' => true,'message'=>$msg];
     }
 
-    private function systemError($result){
+    private function systemError($result,$msg){ // Vérification erreur système dans les retours des repository
         if(!$result['success']){
             return [
                 'success' => false,
                 'systemError'=>true,
-                'error'=>$result['error'] ?? 'Erreur système inconnue',
+                'error'=>($msg.$result['error'] )?? 'Erreur système inconnue',
                 'code'=>$result['code']
             ];
         }

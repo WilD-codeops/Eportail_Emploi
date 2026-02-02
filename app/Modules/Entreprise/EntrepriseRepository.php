@@ -357,4 +357,34 @@ class EntrepriseRepository
             return ['success' => false, 'error' => $e->getMessage(),'code'=>$e->getCode()];
         }    
     }
+
+    // Compter les utilisateurs liés à une entreprise
+    public function countUsersbyEntreprise(int $entrepriseId): array
+    {
+        try {
+            $sql = "SELECT COUNT(*) AS total FROM users WHERE entreprise_id = :entreprise_id";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->bindParam(':entreprise_id', $entrepriseId, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return ['success' => true, 'count' => (int)$result['total']];
+        } catch (\PDOException $e) {
+            return ['success' => false , 'error' => $e->getMessage(), 'code' => $e->getCode()];
+        }
+    }
+
+    // Compter le nombre total d'entreprises
+    public function countEntreprises(): array
+    {
+        try {
+            $sql = "SELECT COUNT(*) AS total FROM entreprises";
+            $stmt = $this->pdo->query($sql);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return ['success' => true, 'count' => (int)$result['total']];
+        } catch (\PDOException $e) {
+            return ['success' => false , 'error' => $e->getMessage(), 'code' => $e->getCode()];
+        }
+    }
 }

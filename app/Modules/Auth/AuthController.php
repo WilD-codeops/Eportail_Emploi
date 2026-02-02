@@ -67,6 +67,7 @@ use App\Core\Database;
 
         public function login(): void
         {
+            Auth::requireGuest();// Redirige si déjà connecté
             Security::requireCsrfToken('login', $_POST['csrf_token'] ?? null);
 
             $email    = trim($_POST['email'] ?? '');
@@ -153,6 +154,7 @@ use App\Core\Database;
 
         public function showRegisterEntreprise(): void
         {
+            auth::requireGuest();// Redirige si déjà connecté
             $this->renderAuth("register_entreprise", [
                 "title"       => "Créer un espace entreprise",
                 "authVariant" => "register_entreprise"
@@ -199,6 +201,7 @@ use App\Core\Database;
 
         public function showForgotPassword(): void
         {
+            auth::requireGuest();// Redirige si déjà connecté
             $this->renderAuth("forgot_password", [
                 "title"       => "Mot de passe oublié",
                 "authVariant" => "forgot"
@@ -207,6 +210,7 @@ use App\Core\Database;
 
         public function forgotPassword(): void
         {
+            Auth::requireGuest();// Redirige si déjà connecté
             Security::requireCsrfToken('forgot_password', $_POST['csrf_token'] ?? null);
     
             $service = $this->makeAuthRegistrationService();
@@ -234,6 +238,7 @@ use App\Core\Database;
 
         public function showResetPassword(): void
         {
+            Auth::requireGuest();// Redirige si déjà connecté
             $token = $_GET['token'] ?? '';
 
             $this->renderAuth("reset_password", [
@@ -245,6 +250,7 @@ use App\Core\Database;
 
         public function resetPassword(): void
         {
+            Auth::requireGuest();// Redirige si déjà connecté
             Security::requireCsrfToken('reset_password', $_POST['csrf_token'] ?? null);
     
             $service = $this->makeAuthRegistrationService();

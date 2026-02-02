@@ -38,8 +38,8 @@ class AuthRepository
     public function createUser(array $data): int
     {
         $sql = "INSERT INTO users 
-               (prenom, nom, email, mot_de_passe, role, entreprise_id)
-               VALUES (:prenom, :nom, :email, :mot_de_passe, :role, :entreprise_id)";
+               (prenom, nom, email, mot_de_passe,telephone, role, entreprise_id)
+               VALUES (:prenom, :nom, :email, :mot_de_passe, :telephone, :role, :entreprise_id)";
 
         $stmt = $this->pdo->prepare($sql);
 
@@ -47,6 +47,7 @@ class AuthRepository
         $stmt->bindParam(':nom', $data['nom']);
         $stmt->bindParam(':email', $data['email']);
         $stmt->bindParam(':mot_de_passe', $data['mot_de_passe']);
+        $stmt->bindParam(':telephone', $data['telephone']);
         $stmt->bindParam(':role', $data['role']);
         $stmt->bindParam(':entreprise_id', $data['entreprise_id']);
 
