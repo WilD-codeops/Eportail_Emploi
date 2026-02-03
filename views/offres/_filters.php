@@ -36,12 +36,16 @@ if ($mode === 'admin') $statusOptions['archive'] = 'Archivée';
     <div class="row g-2 align-items-end">
 
       <div class="col-12 col-md-5">
-        <label class="form-label small mb-1">Recherche</label>
+        <label class="form-label small mb-1">
+          <i class="bi bi-search me-1" aria-hidden="true"></i>Recherche
+        </label>
         <input class="form-control" name="keyword" value="<?= htmlspecialchars($keyword) ?>" placeholder="Titre, description...">
       </div>
 
       <div class="col-6 col-md-3">
-        <label class="form-label small mb-1">Statut</label>
+        <label class="form-label small mb-1">
+          <i class="bi bi-check-circle me-1" aria-hidden="true"></i>Statut
+        </label>
         <select class="form-select" name="statut">
           <?php foreach ($statusOptions as $k => $label): ?>
             <option value="<?= htmlspecialchars($k) ?>" <?= $statut===$k?'selected':'' ?>>
@@ -52,7 +56,9 @@ if ($mode === 'admin') $statusOptions['archive'] = 'Archivée';
       </div>
 
       <div class="col-6 col-md-3">
-        <label class="form-label small mb-1">Type</label>
+        <label class="form-label small mb-1">
+          <i class="bi bi-box me-1" aria-hidden="true"></i>Type
+        </label>
         <select class="form-select" name="type_offre_id">
           <option value="0">Tous</option>
           <?php foreach (($refs['typesOffres'] ?? []) as $t): ?>
@@ -65,7 +71,9 @@ if ($mode === 'admin') $statusOptions['archive'] = 'Archivée';
       </div>
 
       <div class="col-12 col-md-1">
-        <label class="form-label small mb-1">Par page</label>
+        <label class="form-label small mb-1">
+          <i class="bi bi-list-ul me-1" aria-hidden="true"></i>Par page
+        </label>
         <select class="form-select" name="perPage">
           <?php foreach ($perPageOptions as $n): ?>
             <option value="<?= $n ?>" <?= $perPage===$n?'selected':'' ?>><?= $n ?></option>
@@ -77,13 +85,12 @@ if ($mode === 'admin') $statusOptions['archive'] = 'Archivée';
       <input type="hidden" name="page" value="1">
 
       <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-        <button class="btn btn-outline-primary" type="submit">
-          <i class="bi bi-funnel me-1"></i> Filtrer
-        </button>
-
-        <a class="btn btn-outline-secondary" href="<?= htmlspecialchars($action) ?>">
-          Réinitialiser
+        <a class="btn btn-outline-secondary btn-sm btn-ghost" href="<?= htmlspecialchars($action) ?>">
+          <i class="bi bi-arrow-clockwise me-1" aria-hidden="true"></i>Réinitialiser
         </a>
+        <button class="btn btn-primary btn-sm btn-lift" type="submit">
+          <i class="bi bi-funnel me-1" aria-hidden="true"></i> Filtrer
+        </button>
       </div>
 
     </div>

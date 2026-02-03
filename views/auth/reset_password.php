@@ -52,6 +52,7 @@ $token = $token ?? '';
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+  // Toggle password visibility
   document.querySelectorAll(".toggle-password").forEach((btn) => {
     btn.addEventListener("click", () => {
       const id = btn.dataset.target;
@@ -63,5 +64,51 @@ document.addEventListener("DOMContentLoaded", () => {
       if (icon) icon.className = hidden ? "bi bi-eye-slash" : "bi bi-eye";
     });
   });
+
+  // Form validation before submit
+  const form = document.querySelector(".auth-form");
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      const password = document.getElementById("password").value.trim();
+      const passwordConfirm = document.getElementById("password_confirm").value.trim();
+      const checkbox = document.getElementById("cgu");
+
+      // Check if checkbox is not checked
+      if (!checkbox.checked) {
+        e.preventDefault();
+        Swal.fire({
+          icon: "warning",
+          title: "Confirmation requise",
+          text: "Vous devez confirmer vouloir modifier votre mot de passe.",
+          confirmButtonText: "OK"
+        });
+        return false;
+      }
+
+      // Check if passwords are not empty
+      if (!password || !passwordConfirm) {
+        e.preventDefault();
+        Swal.fire({
+          icon: "error",
+          title: "Erreur",
+          text: "Veuillez remplir tous les champs.",
+          confirmButtonText: "OK"
+        });
+        return false;
+      }
+
+      // Check if passwords match
+      if (password !== passwordConfirm) {
+        e.preventDefault();
+        Swal.fire({
+          icon: "error",
+          title: "Erreur",
+          text: "Les mots de passe ne correspondent pas.",
+          confirmButtonText: "OK"
+        });
+        return false;
+      }
+    });
+  }
 });
 </script>

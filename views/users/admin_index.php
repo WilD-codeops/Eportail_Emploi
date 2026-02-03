@@ -20,6 +20,17 @@ $filters = $filters + [
 
 $action = "/admin/users";
 
+$buildQuery = function(int $targetPage) use ($filters, $perPage): string {
+    $qs = $filters + [
+        'perPage' => $perPage,
+        'page' => $targetPage,
+    ];
+
+    $qs = array_filter($qs, fn($v) => !($v === null || $v === '' || $v === 0));
+
+    return http_build_query($qs);
+};
+
 ?>
 
 <!-- ===========================
@@ -128,7 +139,7 @@ $action = "/admin/users";
                         <?php foreach ($entreprises as $e): ?>
                             <option 
                                 value="<?= (int)$e['id'] ?>"
-                                <?= (isset($old['entreprise_id']) && (string)$old['entreprise_id'] === (string)$e['id']) ? 'selected' : '' ?>
+                                <?= ((string)($filters['entreprise_id'] ?? '') === (string)$e['id']) ? 'selected' : '' ?>
                             >
                                 <?= htmlspecialchars($e['nom'], ENT_QUOTES, 'UTF-8') ?>
                             </option>
@@ -279,8 +290,9 @@ $action = "/admin/users";
         <nav aria-label="Pagination utilisateurs">
             <ul class="pagination justify-content-center mb-0">
                 <?php for ($i = 1; $i <= $pages; $i++): ?>
+                    <?php $qs = $buildQuery($i); ?>
                     <li class="page-item <?= $i === $page ? 'active' : '' ?>">
-                        <a class="page-link" href="?page=<?= $i ?>&perPage=<?= $perPage ?>">
+                        <a class="page-link bg-secondary text-white" href="?<?= htmlspecialchars($qs) ?>">
                             <?= $i ?>
                         </a>
                     </li>

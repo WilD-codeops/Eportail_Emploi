@@ -68,6 +68,9 @@ class OffresController
             'keyword'         => isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : null,
             'localisation_id' => isset($_GET['localisation_id']) ? (int)$_GET['localisation_id'] : null,
             'type_offre_id'   => isset($_GET['type_offre_id']) ? (int)$_GET['type_offre_id'] : null,
+            'entreprise_id'   => isset($_GET['entreprise_id']) ? (int)$_GET['entreprise_id'] : null,
+            'domaine_emploi_id' => isset($_GET['domaine_emploi_id']) ? (int)$_GET['domaine_emploi_id'] : null,
+            'tri'             => isset($_GET['tri']) ? trim((string)$_GET['tri']) : null,
         ];
 
         $page    = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -81,6 +84,35 @@ class OffresController
             "title" => "Offres d'emploi",
             "data"  => $result['data'] ?? [],
             "refs"  => $refs,
+            "filters" => $filters,
+        ]);
+    }
+
+    /**
+     * AJAX (PUBLIC) : renvoie uniquement la liste + pagination (HTML)
+     * URL: GET /offres/partial?... (keyword/localisation/type/domaine/tri/page)
+     */
+    public function publicPartial(): void
+    {
+        $filters = [
+            'keyword'           => isset($_GET['keyword']) ? trim((string)$_GET['keyword']) : null,
+            'localisation_id'   => isset($_GET['localisation_id']) ? (int)$_GET['localisation_id'] : null,
+            'type_offre_id'     => isset($_GET['type_offre_id']) ? (int)$_GET['type_offre_id'] : null,
+            'entreprise_id'     => isset($_GET['entreprise_id']) ? (int)$_GET['entreprise_id'] : null,
+            'domaine_emploi_id' => isset($_GET['domaine_emploi_id']) ? (int)$_GET['domaine_emploi_id'] : null,
+            'tri'               => isset($_GET['tri']) ? trim((string)$_GET['tri']) : null,
+        ];
+
+        $page    = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        $perPage = isset($_GET['perPage']) ? min(50, max(1, (int)$_GET['perPage'])) : 10;
+
+        $service = $this->makeService();
+        $result  = $service->listPublic($filters, $page, $perPage);
+
+        $this->renderPartial("_public_results", [
+            "items"      => $result['data']['items'] ?? [],
+            "pagination" => $result['data']['pagination'] ?? [],
+            "filters"    => $filters,
         ]);
     }
 
@@ -253,6 +285,7 @@ class OffresController
         $csrf = Security::generateCsrfToken('offres_create');
 
         $this->renderDashboard("create", [
+            "rubrique" => "Gestion des offres",
             "title" => "Créer une offre",
             "refs"  => $refs,
             "csrf"  => $csrf,
@@ -276,11 +309,14 @@ class OffresController
         $entrepriseIdCtx    = $isAdmin ? 0 : (Auth::entrepriseId() ?? 0);
         $result             = $service->createOffre($_POST, $auteurId, $isAdmin, $entrepriseIdCtx);
 
+        // Gestion des erreurs
         if (!$result['success']) {
+            self::VerifyFailSystem($result);
             $refs = $service->getReferenceData($isAdmin)['data'] ?? [];
             $csrf = Security::generateCsrfToken('offres_create');
 
             $this->renderDashboard("create", [
+                "rubrique" => "Gestion des offres",
                 "title"  => "Créer une offre",
                 "refs"   => $refs,
                 "errors" => $result['errors'] ?? [],
@@ -291,6 +327,7 @@ class OffresController
             return;
         }
 
+        self::flashSuccess("Offre créée avec succès.");
         $redirect = $isAdmin ? "/admin/offres?success=1" : "/dashboard/offres?success=1";
         header("Location: {$redirect}");
         exit;
@@ -429,6 +466,32 @@ class OffresController
         header("Location: {$redirect}");
         exit;
     }
+
+
+    public static function flashSuccess(string $message): void
+    {
+        $_SESSION['success'] = $message;   
+    }
+
+    public static function flashError(string $message): void
+    {
+        $_SESSION['error'] = $message;   
+    }
+
+    public static function flashSystemError(string $message): void
+    {
+        $_SESSION['systemError'] = $message;   
+    }
+
+    public static function VerifyFailSystem($result): void
+        {
+            if (($result['systemError']??false) && $result['systemError']) {
+                    self::flashSystemError($result['error']);
+                    header("Location: /500");
+                    exit;
+                }
+            
+        }
 }
 
 // Routes :

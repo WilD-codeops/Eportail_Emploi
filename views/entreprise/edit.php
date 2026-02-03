@@ -20,7 +20,7 @@ if (empty($entreprise) || empty($entreprise['id'])) {
 $csrfToken = Security::generateCsrfToken('entreprise_edit');
 ?>
 
-<h1 class="mb-4">Modifier une entreprise</h1>
+<h2 class=" text-primary mb-4">Modifier une entreprise</h2>
 
 <form method="post" action="/admin/entreprises/edit">
     <?php

@@ -22,8 +22,9 @@ class OffresRepository
         $params = [];
 
         if (!empty($filters['keyword'])) {
-            $sql .= " AND (o.titre LIKE :kw OR o.description LIKE :kw)";
-            $params[':kw'] = '%' . $filters['keyword'] . '%';
+            $sql .= " AND (o.titre LIKE :kw1 OR o.description LIKE :kw2)";
+            $params[':kw1'] = '%' . $filters['keyword'] . '%';
+            $params[':kw2'] = '%' . $filters['keyword'] . '%';
         }
 
         if (!empty($filters['localisation_id'])) {
@@ -36,21 +37,37 @@ class OffresRepository
             $params[':type'] = (int)$filters['type_offre_id'];
         }
 
-        $sql .= " ORDER BY o.date_debut DESC, o.id DESC
-                  LIMIT :limit OFFSET :offset";
+        if (!empty($filters['entreprise_id'])) {
+            $sql .= " AND o.entreprise_id = :eid";
+            $params[':eid'] = (int)$filters['entreprise_id'];
+        }
+
+        if (!empty($filters['domaine_emploi_id'])) {
+            $sql .= " AND o.domaine_emploi_id = :dom";
+            $params[':dom'] = (int)$filters['domaine_emploi_id'];
+        }
+
+        // MySQL n'aime pas toujours les placeholders nommés pour LIMIT/OFFSET avec emulate_prepares désactivé.
+        // On insère des entiers castés pour éviter HY093.
+        $orderBy = "o.date_debut DESC, o.id DESC";
+        if (($filters['tri'] ?? '') === 'oldest') {
+            $orderBy = "o.date_debut ASC, o.id ASC";
+        } elseif (($filters['tri'] ?? '') === 'newest') {
+            $orderBy = "o.date_debut DESC, o.id DESC";
+        }
+
+        $sql .= " ORDER BY {$orderBy}
+                  LIMIT " . (int)$limit . " OFFSET " . (int)$offset;
 
         $stmt = $this->pdo->prepare($sql);
 
         foreach ($params as $key => $value) {
-            if (in_array($key, [':loc', ':type'], true)) {
+            if (in_array($key, [':loc', ':type', ':eid', ':dom'], true)) {
                 $stmt->bindValue($key, $value, PDO::PARAM_INT);
             } else {
                 $stmt->bindValue($key, $value, PDO::PARAM_STR);
             }
         }
-
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 
         $stmt->execute();
 
@@ -68,8 +85,9 @@ class OffresRepository
         $params = [];
 
         if (!empty($filters['keyword'])) {
-            $sql .= " AND (o.titre LIKE :kw OR o.description LIKE :kw)";
-            $params[':kw'] = '%' . $filters['keyword'] . '%';
+            $sql .= " AND (o.titre LIKE :kw1 OR o.description LIKE :kw2)";
+            $params[':kw1'] = '%' . $filters['keyword'] . '%';
+            $params[':kw2'] = '%' . $filters['keyword'] . '%';
         }
 
         if (!empty($filters['localisation_id'])) {
@@ -82,10 +100,20 @@ class OffresRepository
             $params[':type'] = (int)$filters['type_offre_id'];
         }
 
+        if (!empty($filters['entreprise_id'])) {
+            $sql .= " AND o.entreprise_id = :eid";
+            $params[':eid'] = (int)$filters['entreprise_id'];
+        }
+
+        if (!empty($filters['domaine_emploi_id'])) {
+            $sql .= " AND o.domaine_emploi_id = :dom";
+            $params[':dom'] = (int)$filters['domaine_emploi_id'];
+        }
+
         $stmt = $this->pdo->prepare($sql);
 
         foreach ($params as $key => $value) {
-            if (in_array($key, [':loc', ':type'], true)) {
+            if (in_array($key, [':loc', ':type', ':eid', ':dom'], true)) {
                 $stmt->bindValue($key, $value, PDO::PARAM_INT);
             } else {
                 $stmt->bindValue($key, $value, PDO::PARAM_STR);

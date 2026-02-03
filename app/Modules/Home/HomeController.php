@@ -4,8 +4,21 @@ declare(strict_types=1);
 
 namespace App\Modules\Home;
 
+use App\Core\Database;
+use App\Modules\Offres\OffresRepository;
+use App\Modules\Offres\OffresService;
+use App\Modules\Offres\OffresValidator;
+
 class HomeController
 {
+    private function makeOffresService(): OffresService
+    {
+        $pdo       = Database::getConnection();
+        $repo      = new OffresRepository($pdo);
+        $validator = new OffresValidator();
+
+        return new OffresService($repo, $validator);
+    }
     private function renderStaticPublic(string $view, array $params = []): void
     {
         extract($params);
@@ -52,6 +65,11 @@ class HomeController
     public function index(): void
     {
         $title = "Accueil – EPortailEmploi";
+
+        $service = $this->makeOffresService();
+        $latest  = $service->listPublic([], 1, 3);
+        $latestOffers = $latest['data']['items'] ?? [];
+        $refs = $service->getReferenceData(false)['data'] ?? [];
 
         ob_start();
         require __DIR__ . '/../../../views/home/index.php';

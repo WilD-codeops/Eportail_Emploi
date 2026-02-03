@@ -116,6 +116,17 @@ class AuthRepository
         }
     }
 
+    public function updateLastLogin(int $userId): array
+    {
+        try {
+            $stmt = $this->pdo->prepare("UPDATE users SET dernier_acces = NOW() WHERE id = :id");
+            $stmt->execute([':id' => $userId]);
+            return ['success' => true];
+        } catch (\PDOException $e) {
+            return ['success' => false, 'error' => $e->getMessage(), 'code' => $e->getCode()];
+        }
+    }
+
 
 
 }

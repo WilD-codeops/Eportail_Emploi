@@ -88,7 +88,7 @@ use App\Core\Auth;
             <div class="card-body text-center py-3">
                 <div class="small text-muted mb-1">Total membres</div>
                 <div class="fs-3 fw-bold" style="color: var(--color-primary-purple-dark);">
-                    <?= (int)$kpi['total'] ?>
+                    <?= (int)$kpi['total'] ?><span class="fs-6 fw-normal text-muted ms-1">/<?= (int)($maxUsersPerEntreprise ?? 4) ?></span>
                 </div>
             </div>
         </div>

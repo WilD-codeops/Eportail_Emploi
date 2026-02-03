@@ -28,8 +28,11 @@ $basePath = ($mode === 'admin') ? '/admin/offres' : '/dashboard/offres';
 <!-- Header page -->
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
     <div>
-        <h2 class="h4 mb-1 text-primary"><?= htmlspecialchars($title) ?></h2>
+        <h2 class="h4 mb-1 text-primary">
+            <i class="bi bi-briefcase-fill me-2" aria-hidden="true"></i><?= htmlspecialchars($title) ?>
+        </h2>
         <div class="text-muted small">
+            <i class="bi bi-<?= $mode === 'admin' ? 'shield-check' : 'briefcase' ?> me-1" aria-hidden="true"></i>
             <?= $mode === 'admin'
                 ? "Administration • gestion globale des offres"
                 : "Espace entreprise • offres rattachées à votre entreprise"
@@ -39,7 +42,7 @@ $basePath = ($mode === 'admin') ? '/admin/offres' : '/dashboard/offres';
     </div>
 
     <div class="d-flex gap-2">
-        <a class="btn btn-primary" href="<?= htmlspecialchars($mode === 'admin' ? '/admin/offres/create' : '/dashboard/offres/create') ?>">
+        <a class="btn btn-primary btn-sm btn-lift" href="<?= htmlspecialchars($mode === 'admin' ? '/admin/offres/create' : '/dashboard/offres/create') ?>">
             <i class="bi bi-plus-lg me-1"></i> Créer une offre
         </a>
     </div>
@@ -80,6 +83,8 @@ function bindDeleteConfirmations(root = document) {
         showCancelButton: true,
         confirmButtonText: 'Oui, supprimer',
         cancelButtonText: 'Annuler',
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d'
       }).then((result) => {
         if (result.isConfirmed) form.submit();
       });

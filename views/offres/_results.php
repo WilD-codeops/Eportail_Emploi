@@ -68,6 +68,7 @@ $buildQuery = function(int $targetPage) use ($keyword, $statut, $typeId, $perPag
 
 <?php if (empty($items)): ?>
   <div class="alert alert-info mb-0">
+    <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
     Aucune offre ne correspond aux filtres.
   </div>
 <?php else: ?>

@@ -149,6 +149,11 @@ class AuthRegistrationService
             }
         }
 
+        // Fallback : si email gestionnaire vide, utiliser email entreprise
+        if (empty($dataCanonique['gestionnaire']['email'])) {
+            $dataCanonique['gestionnaire']['email'] = $dataCanonique['entreprise']['email'] ?? '';
+        }
+
 
         // VALIDATION DONNEES ENTREPRISE
         $validEntreprise = EntrepriseValidator::validateEntreprise($dataCanonique['entreprise']);

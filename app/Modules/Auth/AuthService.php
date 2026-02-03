@@ -36,6 +36,9 @@ class AuthService
             return $this->fail("Mot de passe incorrect");
         }
 
+        // Mettre à jour le dernier accès
+        $this->repo->updateLastLogin($user['id']);
+
         // demarrage session sécurisée
         SessionManager::startSession();
         SessionManager::regenerateSessionId();

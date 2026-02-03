@@ -87,7 +87,7 @@ $titre = $entreprise['nom'] ?? 'Entreprise';
             </div>
 
             <?php if (!empty($offres)): ?>
-                <a href="#offers" class="btn btn-primary w-100">Voir les offres (<?= count($offres) ?>)</a>
+                <a href="/offres?entreprise_id=<?= (int)($entreprise['id'] ?? 0) ?>" class="btn btn-primary w-100">Voir les offres (<?= count($offres) ?>)</a>
             <?php endif; ?>
 
         </aside>

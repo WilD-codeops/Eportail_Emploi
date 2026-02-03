@@ -79,9 +79,8 @@ class OffresService
             'localisations'         => $this->repo->getLocalisations(),
         ];
 
-        if ($isAdmin) {
-            $data['entreprises'] = $this->repo->getEntreprises();
-        }
+        // Toujours fournir les entreprises (utile pour filtre public + admin)
+        $data['entreprises'] = $this->repo->getEntreprises();
 
         return ['success' => true, 'data' => $data];
     }

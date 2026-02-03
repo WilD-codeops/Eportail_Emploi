@@ -90,6 +90,8 @@ $router->post('/dashboard/profil', 'App\\Modules\\Auth\\UserController@updatePro
 // Offres route publique
 $router->get('/offres', 'App\\Modules\\Offres\\OffresController@index');// Liste offres
 $router->get('/offres/show', 'App\\Modules\\Offres\\OffresController@show');// Détail offre
+// Offres — PARTIAL PUBLIC (AJAX HTML)
+$router->get('/offres/partial', 'App\\Modules\\Offres\\OffresController@publicPartial');// Partial Ajax liste offres
 
 // Offres — CRUD Admin
 $router->get('/admin/offres', 'App\\Modules\\Offres\\OffresController@adminIndex');// Liste admin offres

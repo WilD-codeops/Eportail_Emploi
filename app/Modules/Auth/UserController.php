@@ -107,8 +107,13 @@ class UserController
             'dernier_acces' => $_GET['dernier_acces'] ?? null,
         ];
 
-        $page   = max(1, (int)($_GET['page'] ?? 1));
-        $limit  = 20;
+        $page    = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = (int)($_GET['perPage'] ?? 20);
+        $allowedPerPage = [10, 20, 50, 100];
+        if (!in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 20;
+        }
+        $limit  = $perPage;
         $offset = ($page - 1) * $limit;
 
         $service = $this->makeUserService();
@@ -137,6 +142,7 @@ class UserController
             "filters" => $filters,
             "page" => $page,
             "pages" => $pages,
+            "perPage" => $perPage,
             "entreprises" => $entreprises,
             "kpi" => [
                 "total" => $kpiTotalUsers['total'] ?? 0,
@@ -160,6 +166,10 @@ class UserController
         $userService = $this->makeUserService();
         $entrepriseService = $this->makeEntrepriseService();
     
+        // Charger les limites métier
+        $businessRules = require __DIR__ . '/../../../config/business.php';
+        $maxUsersPerEntreprise = $businessRules['max_users_per_entreprise'];
+    
         // Récupérer infos entreprise
         $entreprise = $entrepriseService->findEntreprise(Auth::entrepriseId());
         if (!$entreprise['success']) {
@@ -175,7 +185,12 @@ class UserController
         ];
     
         $page   = max(1, (int)($_GET['page'] ?? 1));
-        $limit  = 20;
+        $perPage = (int)($_GET['perPage'] ?? 20);
+        $allowedPerPage = [10, 20, 50, 100];
+        if (!in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 20;
+        }
+        $limit  = $perPage;
         $offset = ($page - 1) * $limit;
     
         $result = $userService->search($filters, $limit, $offset);
@@ -195,6 +210,8 @@ class UserController
             "filters" => $filters,
             "page" => $page,
             "pages" => (int)ceil($result['total'] / $limit),
+            "perPage" => $perPage,
+            "maxUsersPerEntreprise" => $maxUsersPerEntreprise,
             "kpi" => [
                 "total" => $kpiTotal['total'] ?? 0,
                 "gestionnaires" => $kpiGest['total'] ?? 0,
@@ -256,7 +273,13 @@ class UserController
         }
 
         self::flashSuccess("Utilisateur créé avec succès.");
-        header("Location: /admin/users");
+        
+        // Rediriger selon le rôle
+        if (Auth::role() === 'admin') {
+            header("Location: /admin/users");
+        } else {
+            header("Location: /dashboard/equipe");
+        }
         exit;
     }
 
@@ -288,7 +311,6 @@ class UserController
 
         if(!$entreprises['success']){
             self::VerifyFailSystem($entreprises);
-
         }
         
         $this->renderDashboard("edit", [

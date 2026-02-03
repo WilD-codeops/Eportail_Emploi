@@ -99,12 +99,17 @@ class EntrepriseController
         'tri'          => $_GET['tri'] ?? null
         ];
 
-        $page = max(1, (int)($_GET['page'] ?? 1));//page minimum = 1 
-        $limit = 10; //elements par page
-        $offset = ($page - 1) * $limit;//calcul offset qui correspond au nb d'elements a sauter avant de commencer a recuperer les elements
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = (int)($_GET['perPage'] ?? 10);
+        $allowedPerPage = [10, 20, 50, 100];
+        if (!in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 10;
+        }
+        $limit = $perPage;
+        $offset = ($page - 1) * $limit;
 
         $service     = $this->makeEntrepriseService();
-        $entreprises = $service->searchEntreprises($filters, $limit, $offset);//appel service avec filtres et pagination
+        $entreprises = $service->searchEntreprises($filters, $limit, $offset);
         
         if (!$entreprises['success']) {
             self::VerifyFailSystem($entreprises);
@@ -113,7 +118,7 @@ class EntrepriseController
         $total= $entreprises['total'];
         
         
-        $pages = (int)ceil($total / $limit); //calcul nb total de pages a afficher selon le total d'elements et le nb d'elements par page
+        $pages = (int)ceil($total / $limit);
 
         //Données pour les filtres
         $secteurs = $service->listSecteurs();
@@ -128,7 +133,8 @@ class EntrepriseController
             "entreprises" => $entreprises['data'],
             "secteurs"    => $secteurs['data'],
             "page"        => $page,
-            "pages"       => $pages
+            "pages"       => $pages,
+            "perPage"     => $perPage
         ]);
     }
     
@@ -148,9 +154,14 @@ class EntrepriseController
         ];
 
         // Pagination
-        $page = max(1, (int)($_GET['page'] ?? 1));//page minimum = 1 
-        $limit = 10; //elements par page
-        $offset = ($page - 1) * $limit;//calcul offset qui correspond au nb d'elements a sauter avant de commencer a recuperer les elements
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = (int)($_GET['perPage'] ?? 10);
+        $allowedPerPage = [10, 20, 50, 100];
+        if (!in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 10;
+        }
+        $limit = $perPage;
+        $offset = ($page - 1) * $limit;
 
         $service     = $this->makeEntrepriseService();
         $entreprises = $service->searchEntreprises($filters, $limit, $offset);
@@ -163,7 +174,7 @@ class EntrepriseController
         $total= $entreprises['total'];
         
         
-        $pages = (int)ceil($total / $limit); //calcul nb total de pages a afficher selon le total d'elements et le nb d'elements par page
+        $pages = (int)ceil($total / $limit);
 
         //Données pour les filtres
         $secteurs = $service->listSecteurs();
@@ -174,11 +185,17 @@ class EntrepriseController
          // vue dashboard avec layout dashboard
 
         $this->renderDashboard("list", [
-            "title"       => "Gestion des entreprises",
+            "rubrique"    => "Gestion entreprise",
+            "title"       => "Liste des entreprises",
             "entreprises" => $entreprises['data'],
             "secteurs"    => $secteurs['data'],
             "page"        => $page,
-            "pages"       => $pages
+            "pages"       => $pages,
+            "perPage"     => $perPage,
+            "kpi"         => [
+                "total" => $total,
+                "sectorsCount" => count($secteurs['data'] ?? [])
+            ]
         ]);
     }
     
@@ -227,6 +244,7 @@ class EntrepriseController
         }
 
         $this->renderDashboard("create", [
+            "rubrique" => "Gestion entreprise",
             "title"    => "Créer une entreprise",
             "secteurs" => $secteurs['data']
         ]);
@@ -244,15 +262,19 @@ class EntrepriseController
         $registration = $this->makeAuthRegistrationService();
         $result  = $registration->registerEntreprise($_POST);
 
-        if (!$result['success']) {
+        // Si erreur metier => on ré-affiche le formulaire avec les données saisies sinon systemError -> page 500
 
+        if (!$result['success']) {
+            self::VerifyFailSystem($result);
             $secteurs = $service->listSecteurs();
             if (!$secteurs['success']) {
                 self::VerifyFailSystem($secteurs);
             }
-
+            
+            // IMPORTANT : on renvoie au form les valeurs saisies (POST) pour éviter de tout retaper
             $entrepriseToCreate = $_POST;
             $this->renderDashboard("create", [
+                "rubrique"   => "Gestion entreprise",
                 "title"       => "Créer une entreprise",
                 "entreprise" => $entrepriseToCreate,
                 "error"      => $result['error'],
@@ -327,6 +349,7 @@ class EntrepriseController
             }
 
             $this->renderDashboard("edit", [
+                "rubrique"   => "Gestion entreprise",
                 "title"      => "Modifier une entreprise",
                 "entreprise" => $entreprise,
                 "secteurs"   => $secteurs['data'],

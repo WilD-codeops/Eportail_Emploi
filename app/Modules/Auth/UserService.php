@@ -80,6 +80,12 @@ class UserService
     /**
      * REGLES: QUI PEUT CREER QUOI  ET POUR QUI ? 
      */
+
+        // Si gestionnaire : forcer son entreprise (sécurité)
+        if (Auth::role() === 'gestionnaire') {
+            $data['entreprise_id'] = Auth::entrepriseId();
+        }
+
         //Seul unadmin peut créer des admins
         if (Auth::role() !=='admin' && $data['role'] ==='admin') {
             return $this->fail("Seul un administrateur peut créer un autre administrateur.");
@@ -90,18 +96,14 @@ class UserService
             return $this->fail("Un gestionnaire ne peut créer que des recruteurs.");
         }
 
-        //Regle metier : un gestionnaire ne peut pas créer d'utilisateur hors de son entreprise
-        if (Auth::role() === 'gestionnaire' && $data['entreprise_id'] !== Auth::entrepriseId()) {
-            return $this->fail("Un gestionnaire ne peut créer des utilisateurs que pour son entreprise.");
-        }
-
     /**
      * REGLES/ COMBIEN D'UTILISATEURS PEUT ON CREER ?
      */
 
-        //Règle métier : Limite du nombre de personnel par entreprise
-        $totalMaxMembers = 4; // Limite de 4 utilisateurs par entreprise
-        $totalMaxGestionnaires = 2; // Limite de 2 gestionnaires par entreprise
+        // Charger les limites depuis la config
+        $businessRules = require __DIR__ . '/../../../config/business.php';
+        $totalMaxMembers = $businessRules['max_users_per_entreprise'];
+        $totalMaxGestionnaires = $businessRules['max_gestionnaires_per_entreprise'];
         
         // Vérifier le nombre d'utilisateurs déjà existants pour l'entreprise
         $countMembers = $this->repo->countUsersByEntreprise($data['entreprise_id']);
@@ -223,13 +225,13 @@ class UserService
             return $this->fail("Vous ne pouvez modifier le mot de passe que pour votre propre compte.");
         }
 
-        // Conserver les anciennes valeurs si un champ est vide
-        $data['prenom'] = $data['prenom'] ?? $old['prenom'];
-        $data['nom'] = $data['nom'] ?? $old['nom'];
-        $data['email'] = $data['email'] ?? $old['email'];
-        $data['telephone'] = $data['telephone'] ?? $old['telephone'];
-        $data['role'] = $data['role'] ?? $old['role'];
-        $data['entreprise_id'] = $data['entreprise_id'] ?? $old['entreprise_id'];
+        // Conserver les anciennes valeurs si un champ est vide ou null
+        $data['prenom'] = (is_string($data['prenom']) && trim($data['prenom']) === '') ? $old['prenom'] : $data['prenom'];
+        $data['nom'] = (is_string($data['nom']) && trim($data['nom']) === '') ? $old['nom'] : $data['nom'];
+        $data['email'] = (is_string($data['email']) && trim($data['email']) === '') ? $old['email'] : $data['email'];
+        $data['telephone'] = (is_string($data['telephone']) && trim($data['telephone']) === '') ? $old['telephone'] : $data['telephone'];
+        $data['role'] = (is_string($data['role']) && trim($data['role']) === '') ? $old['role'] : $data['role'];
+        $data['entreprise_id'] = (is_string($data['entreprise_id']) && trim($data['entreprise_id']) === '') ? $old['entreprise_id'] : $data['entreprise_id'];
         $data['mot_de_passe'] = $data['mot_de_passe'] ? password_hash($data['mot_de_passe'], PASSWORD_DEFAULT) : $old['mot_de_passe'];// Hash du mot de passe si modifié, sinon conserver l'ancien
 
 

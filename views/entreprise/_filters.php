@@ -11,7 +11,7 @@
 <div class="card shadow-sm mb-4">
     <form method="GET" class="card-body">
 
-        <div class="row g-3">
+        <div class="row g-2">
 
             <!-- Recherche par nom -->
             <div class="col-md-3">

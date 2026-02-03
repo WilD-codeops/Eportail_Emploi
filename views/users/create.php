@@ -14,7 +14,7 @@
             $csrfToken = Security::generateCsrfToken($csrfKey);
         ?>
 
-        <form method="POST" action="/admin/users/create" class="row g-3">
+        <form method="POST" action="<?= Auth::role() === 'admin' ? '/admin/users/create' : '/dashboard/equipe/create' ?>" class="row g-3">
 
             <input type="hidden" name="csrf_key" value="<?= $csrfKey ?>">
             <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
@@ -26,6 +26,7 @@
                        id="prenom"
                        name="prenom"
                        class="form-control"
+                       value="<?= htmlspecialchars($old['prenom'] ?? '') ?>"
                        required>
             </div>
 
@@ -36,6 +37,7 @@
                        id="nom"
                        name="nom"
                        class="form-control"
+                       value="<?= htmlspecialchars($old['nom'] ?? '') ?>"
                        required>
             </div>
 
@@ -45,6 +47,7 @@
                 <input type="email"
                        id="email"
                        name="email"
+                       value="<?= htmlspecialchars($old['email'] ?? '') ?>"
                        class="form-control"
                        required>
             </div>
@@ -55,6 +58,7 @@
                 <input type="text"
                        id="telephone"
                        name="telephone"
+                       value="<?= htmlspecialchars($old['telephone'] ?? '') ?>"
                        class="form-control"
                        required>
             </div>
@@ -74,14 +78,12 @@
                 <label for="role" class="form-label">Rôle</label>
                 <select id="role" name="role" class="form-select" required>
                     <option value="">Sélectionner</option>
-
                     <?php if (Auth::role() === 'admin'): ?>
-                        <option value="admin">Admin</option>
-                        <option value="gestionnaire">Gestionnaire</option>
-                        <option value="recruteur">Recruteur</option>
-
+                        <option value="admin" <?= ($old['role'] ?? '') === 'admin' ? 'selected' : '' ?>>Admin</option>
+                        <option value="gestionnaire" <?= ($old['role'] ?? '') === 'gestionnaire' ? 'selected' : '' ?>>Gestionnaire</option>
+                        <option value="recruteur" <?= ($old['role'] ?? '') === 'recruteur' ? 'selected' : '' ?>>Recruteur</option>
                     <?php elseif (Auth::role() === 'gestionnaire'): ?>
-                        <option value="recruteur">Recruteur</option>
+                        <option value="recruteur" <?= ($old['role'] ?? '') === 'recruteur' ? 'selected' : '' ?>>Recruteur</option>
                     <?php endif; ?>
                 </select>
             </div>
@@ -92,13 +94,13 @@
 
                 <?php if (Auth::role() === 'admin'): ?>
                 <select id="entreprise_id" name="entreprise_id" class="form-select" required>
-                <option value="">Sélectionner</option>
-                <option value="null">Aucune</option>
-                <?php foreach ($entreprises as $e): ?>
-                    <option value="<?= (int)$e['id'] ?>" <?= (isset($old['id']) && $old['id']==$e['id']) ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($e['nom']) ?>
-                    </option>
-                <?php endforeach; ?>
+                    <option value="">Sélectionner</option>
+                    <option value="null" <?= ($old['entreprise_id'] ?? '') === null ? 'selected' : '' ?>>Aucune</option>
+                    <?php foreach ($entreprises as $e): ?>
+                        <option value="<?= (int)$e['id'] ?>" <?= (isset($old['entreprise_id']) && $old['entreprise_id']==(int)$e['id']) ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($e['nom']) ?>
+                        </option>
+                    <?php endforeach; ?>
                 </select>
 
                 <?php else: ?>

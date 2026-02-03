@@ -67,9 +67,13 @@
                         aria-controls="sidebarOffcanvas">
                         <i class="bi bi-list"></i>
                     </button>
-                    
-                    
-                    
+
+                    <a href="/" class="btn btn-light btn-sm d-flex align-items-center gap-2 px-3 shadow-sm" style="border-radius: 999px;" aria-label="Retour à l'accueil">
+                      <span class="d-inline-flex align-items-center justify-content-center bg-white border" style="width:28px;height:28px;border-radius:50%;">
+                        <i class="bi bi-house text-primary"></i>
+                      </span>
+                      <span class="d-none d-md-inline fw-semibold text-primary">Accueil</span>
+                    </a>
 
 
                     <div>

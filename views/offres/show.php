@@ -14,10 +14,15 @@ $logo  = $offre['logo'] ?? '/assets/img/company_logo_generique.png';
 
             <!-- Logo entreprise -->
             <div class="text-center mb-4">
-                <img src="<?= $e($logo) ?>"
-                     alt="Logo entreprise"
-                     class="img-fluid rounded-circle shadow-sm"
-                     style="width: 140px; height: 140px; object-fit: cover;">
+                <a href="/entreprises/show?id=<?= (int)($offre['entreprise_id'] ?? 0) ?>" style="text-decoration: none;">
+                    <img src="<?= $e($logo) ?>"
+                         alt="Logo entreprise"
+                         class="img-fluid rounded-circle shadow-sm"
+                         style="width: 140px; height: 140px; object-fit: cover; cursor: pointer; transition: transform 0.2s;"
+                         onmouseover="this.style.transform='scale(1.05)'"
+                         onmouseout="this.style.transform='scale(1)'"
+                         title="Voir le profil de l'entreprise">
+                </a>
             </div>
 
             <!-- Carte entreprise -->
@@ -150,10 +155,26 @@ $logo  = $offre['logo'] ?? '/assets/img/company_logo_generique.png';
             </section>
 
             <!-- Bouton retour -->
-            <a href="/" class="btn btn-primary px-4 py-2" style="border-radius: var(--radius-md);">
-                <i class="bi bi-arrow-left-circle me-2"></i>
-                Retour à l’accueil
-            </a>
+            <div class="d-flex gap-2 flex-wrap">
+                <a 
+                    href="/" 
+                    class="btn btn-primary px-4 py-2" 
+                    aria-label="Retour à l'accueil"
+                    style="border-radius: var(--radius-md);"
+                >
+                    <i class="bi bi-arrow-left-circle me-2"></i>
+                    Retour à l'accueil
+                </a>
+                <a 
+                    href="/offres" 
+                    class="btn btn-primary px-4 py-2" 
+                    aria-label="Retour à la liste des offres"
+                    style="border-radius: var(--radius-md);"
+                >
+                    <i class="bi bi-list-ul me-2"></i>
+                    Offres
+                </a>
+            </div>
 
         </div>
 

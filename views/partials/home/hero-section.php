@@ -6,8 +6,8 @@
 
             <?php $role = Auth::role(); ?>
 
-            <!-- ===================== COLONNE TEXTE ===================== -->
-            <div class="col-lg-6 mb-4">
+            <!-- ===================== COLONNE TEXTE (PLEINE LARGEUR) ===================== -->
+            <div class="col-lg-12">
 
                 <!-- ===================== TITRE DYNAMIQUE ===================== -->
                 <h1 class="fw-bold display-5 mb-3">
@@ -137,16 +137,6 @@
                             break;
                     }
                     ?>
-                </div>
-            </div>
-
-            <!-- ===================== COLONNE ILLUSTRATION ===================== -->
-            <div class="col-lg-6 text-center">
-                <div class="hero-illustration rounded-4 shadow-lg mx-auto p-4 p-lg-3">
-                    <span class="fw-semibold d-block mb-2">EPortailEmploi</span>
-                    <p class="mb-0 small opacity-75">
-                        Interface inspirée de la maquette Figma : tableau de bord, cartes d’offres, statistiques…
-                    </p>
                 </div>
             </div>
 

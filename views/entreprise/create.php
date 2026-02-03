@@ -12,7 +12,7 @@ use App\Core\Security;
 $csrfToken  = Security::generateCsrfToken("entreprise_create");
 
 ?>
-<h1 class="mb-4">Créer une entreprise</h1>
+<h2 class=" text-primary mb-4">Créer une entreprise</h2>
 
 <form id="entrepriseForm" method="post" action="/admin/entreprises/create">
     <?php

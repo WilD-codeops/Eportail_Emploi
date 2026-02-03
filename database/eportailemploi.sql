@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1:3306
--- Généré le : mar. 27 jan. 2026 à 13:19
+-- Généré le : mar. 03 fév. 2026 à 12:25
 -- Version du serveur : 8.4.7
 -- Version de PHP : 8.3.28
 
@@ -223,15 +223,16 @@ CREATE TABLE IF NOT EXISTS `entreprises` (
   UNIQUE KEY `siret` (`siret`),
   UNIQUE KEY `fk_entreprises_gestionnaire` (`gestionnaire_id`) USING BTREE,
   KEY `secteur_id` (`secteur_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `entreprises`
 --
 
 INSERT INTO `entreprises` (`id`, `date_inscription`, `gestionnaire_id`, `nom`, `secteur_id`, `adresse`, `code_postal`, `ville`, `pays`, `telephone`, `email`, `siret`, `site_web`, `taille`, `description`, `logo`) VALUES
-(1, '2025-12-10 17:50:28', 5, 'TechCorp', 1, '10 rue Tech', '75012', 'Paris', 'France', '0145789632', 'contact@techcorp.fr', '12345678901234', 'https://techcorp.fr', '', NULL, NULL),
-(2, '2025-12-10 17:50:28', 3, 'Clinique SantéPlus', 2, '5 avenue Santé, Lyon', '74100', 'molret', 'france', '0475841236', 'info@santeplus.fr', '98765432109876', 'https://santeplus.fr', '15', 'InfosantePlus est une PME spécialisée dans les solutions numériques pour le secteur de la santé. Leader régional en e-santé, l\'entreprise développe des plateformes SaaS pour la gestion des dossiers médicaux, la téléconsultation et la coordination des soins', NULL);
+(1, '2025-12-10 17:50:28', 5, 'TechCorp', 1, '10 rue Tech', '75012', 'Paris', 'France', '0475841236', 'techcorp@tech.fr', '12345678901234', '', '', 'TechCorp est une entreprise innovante spécialisée dans le développement de solutions numériques sur mesure. Depuis sa création, elle accompagne les organisations dans leur transformation digitale grâce à une expertise solide en ingénierie logicielle, cybersécurité et infrastructures cloud.\r\nL’entreprise se distingue par une culture centrée sur la qualité, l’agilité et l’innovation continue. Ses équipes pluridisciplinaires conçoivent des applications performantes, sécurisées et évolutives, adaptées aux besoins spécifiques de chaque client.\r\nTechCorp intervient auprès de PME, grands comptes et institutions publiques, en proposant des services allant du conseil technologique à la mise en production de plateformes complexes. Son engagement : offrir des solutions fiables, durables et orientées utilisateur, tout en maintenant un haut niveau d’exigence technique.', NULL),
+(3, '2026-01-29 12:57:21', 6, 'Commercia Market', 3, '48 avenue des tilleuls', '91000', 'Evry-Courcouronnes', 'France', '0169874522', 'contact@commercia-market.fr', '90234567800021', 'https://commercia-market.fr', '11-50', 'Commercia Market est une entreprise fictive spécialisée dans la vente de produits alimentaires de proximité. Elle propose une large gamme de produits frais, locaux et artisanaux, tout en développant progressivement une activité de vente en ligne pour faciliter l’accès aux produits du quotidien.', NULL),
+(5, '2026-02-03 08:40:24', 14, 'Santé Plus', 2, '45 rue des ormeaux', '91000', 'Evry-Courcouronnes', 'France', '0145789632', 'info@santeplus.fr', '98765432109876', 'https://santeplus.fr', '51-250', 'Santé Plus est un acteur régional reconnu dans le domaine des services médicaux et paramédicaux. \r\nDepuis plus de 15 ans, l’entreprise accompagne les patients, les établissements de soins et les \r\nprofessionnels de santé grâce à une approche centrée sur l’humain, l’innovation et la qualité de service.\r\n\r\nNous proposons des solutions adaptées aux besoins de chacun : assistance médicale à domicile, \r\ncoordination de parcours de santé, accompagnement des personnes âgées ou en situation de handicap, \r\net mise à disposition de matériel médical certifié.\r\n\r\nEngagée dans une démarche d’amélioration continue, Santé Plus investit dans la formation de ses équipes \r\net la modernisation de ses outils pour garantir un suivi fiable, sécurisé et personnalisé.', NULL);
 
 -- --------------------------------------------------------
 
@@ -527,7 +528,7 @@ INSERT INTO `notifications_processus` (`id`, `candidature_id`, `notification_id`
 DROP TABLE IF EXISTS `offres`;
 CREATE TABLE IF NOT EXISTS `offres` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `auteur_id` int NOT NULL,
+  `auteur_id` int DEFAULT NULL,
   `date_creation` datetime NOT NULL,
   `modifie_par` int DEFAULT NULL,
   `date_modification` datetime DEFAULT NULL,
@@ -551,7 +552,7 @@ CREATE TABLE IF NOT EXISTS `offres` (
   KEY `user_id` (`auteur_id`) USING BTREE,
   KEY `offres_ibfk_2` (`entreprise_id`),
   KEY `fk_offres_modifie_par` (`modifie_par`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `offres`
@@ -559,9 +560,43 @@ CREATE TABLE IF NOT EXISTS `offres` (
 
 INSERT INTO `offres` (`id`, `auteur_id`, `date_creation`, `modifie_par`, `date_modification`, `entreprise_id`, `type_offre_id`, `niveau_qualification_id`, `domaine_emploi_id`, `localisation_id`, `titre`, `description`, `date_debut`, `date_fin`, `duree_contrat`, `salaire`, `statut`) VALUES
 (1, 2, '0000-00-00 00:00:00', 4, '2026-01-03 19:41:09', 1, 1, 4, 1, 1, 'Développeur PHP', 'Développement d\'applications web...', '2025-06-01', '2025-12-30', 6, 37000.00, 'active'),
-(2, 2, '2026-01-04 00:24:41', NULL, NULL, 1, 2, 2, 1, 2, 'Développeur Web Junior PHP / MySQL', 'Nous recherchons un développeur web junior motivé pour rejoindre notre équipe et participer au développement de nouvelles fonctionnalités sur nos applications internes. Vous travaillerez en collaboration avec un développeur senior et un chef de projet.\r\nLes missions incluent :\r\n\r\ndéveloppement PHP natif et MVC\r\n\r\nintégration HTML/CSS\r\n\r\nparticipation aux réunions techniques\r\n\r\nmaintenance corrective et évolutive', '2026-02-02', '2026-09-01', 7, 1800.00, 'active'),
-(4, 4, '2026-01-04 10:02:35', NULL, NULL, 1, 1, 3, 1, 1, 'Développeur Web Full‑Stack (H/F)', 'recherche un Développeur Web Full‑Stack pour renforcer son équipe technique.\r\nVous participerez au développement de solutions logicielles sur mesure pour nos clients, en collaboration avec les chefs de projet et les designers.\r\n✔️ Missions\r\nDévelopper des fonctionnalités front-end et back-end\r\n\r\nParticiper à la conception technique des projets\r\n\r\nMaintenir et améliorer les applications existantes\r\n\r\nCollaborer avec l’équipe produit et UX\r\n\r\nRédiger une documentation technique claire\r\n\r\n✔️ Profil recherché\r\nMaîtrise de PHP, JavaScript, HTML/CSS\r\n\r\nConnaissance d’un framework (Laravel, Symfony, Vue.js, React…)\r\n\r\nBonne compréhension des bases de données SQL\r\n\r\nCapacité à travailler en équipe\r\n\r\nCuriosité, autonomie et sens du détail', NULL, NULL, NULL, 45000.00, 'active'),
-(5, 3, '2026-01-27 12:37:25', 3, '2026-01-27 11:38:22', 2, 2, 3, 2, 2, 'Infirmier(ère) Coordinateur(trice)', 'SantéPlus recherche un(e) Infirmier(ère) Coordinateur(trice) pour accompagner les patients dans leur parcours de soins, assurer la coordination avec les professionnels de santé partenaires et garantir une prise en charge optimale.\r\nLe poste implique un suivi régulier des dossiers, la planification des interventions et la participation à l’amélioration continue des protocoles internes.', '2026-03-16', '2027-03-16', 12, 2450.00, 'active');
+(2, 2, '2026-01-04 00:24:41', 5, '2026-02-02 17:15:29', 1, 2, 2, 1, 2, 'Développeur Web Junior PHP / MySQL', 'Nous recherchons un développeur web junior motivé pour rejoindre notre équipe et participer au développement de nouvelles fonctionnalités sur nos applications internes. Vous travaillerez en collaboration avec un développeur senior et un chef de projet.\r\nLes missions incluent :\r\n\r\ndéveloppement PHP natif et MVC\r\n\r\nintégration HTML/CSS\r\n\r\nparticipation aux réunions techniques\r\n\r\nmaintenance corrective et évolutive', '2026-02-02', '2026-09-01', 7, 1400.00, 'active'),
+(9, 4, '2026-02-03 09:48:34', NULL, NULL, 5, 1, 3, 2, 1, 'Infirmier(ère) à domicile', 'Vous intervenez au domicile des patients pour assurer les soins courants, \r\nle suivi médical et la coordination avec les équipes soignantes.', '2026-02-20', NULL, NULL, 2300.00, 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `password_resets`
+--
+
+DROP TABLE IF EXISTS `password_resets`;
+CREATE TABLE IF NOT EXISTS `password_resets` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `token_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `used_at` datetime DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_password_resets_user` (`user_id`),
+  KEY `idx_password_resets_token` (`token_hash`(250)),
+  KEY `idx_password_resets_expires` (`expires_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Déchargement des données de la table `password_resets`
+--
+
+INSERT INTO `password_resets` (`id`, `user_id`, `token_hash`, `expires_at`, `used_at`, `created_at`) VALUES
+(1, 6, 'ea2e750fed1fd503e4d05e4f166f434ebcfe08d6bbd0d203a27816be24036ca4', '2026-01-31 22:40:57', NULL, '2026-01-31 22:40:57'),
+(2, 6, 'e292bec3918ad609035d47a2edb2c5ae691dd73386056b04668be66254efa16f', '2026-01-31 23:04:27', NULL, '2026-01-31 23:04:27'),
+(3, 6, '4d6e9a11c018aab050d88bff779e725f91abd99ba114a200c67adeb996807837', '2026-01-31 23:27:41', NULL, '2026-01-31 23:27:41'),
+(4, 6, '5f8286630c91523a44771fc9a9a8fa1fcc237431c1b7280d21b6d1e763d5a78d', '2026-02-01 00:41:55', '2026-01-31 23:42:14', '2026-01-31 23:41:55'),
+(5, 5, '962700899cf1a62f75f9ae51a78183a60609ff7dd7ad72bda343c94ff611e8d2', '2026-02-01 12:16:12', NULL, '2026-02-01 11:16:12'),
+(6, 6, 'd7e6296087b55f56b39255263dd990709e87d8d611841f5f017cca40c805138b', '2026-02-01 20:28:51', '2026-02-01 19:30:23', '2026-02-01 19:28:51'),
+(7, 6, 'cf3873eb09581fa0e8dddc3adcc00fbb1ecf752b7fa152dfaa99fcc76260fce9', '2026-02-02 12:51:17', '2026-02-02 11:51:51', '2026-02-02 11:51:17'),
+(8, 5, '2d088731fb01e38900519313d8ae0a1a5b77e64ad78195528f5924e9b364b5fa', '2026-02-02 14:23:18', '2026-02-02 13:27:00', '2026-02-02 13:23:18'),
+(9, 10, '17baf8ddf720412acec5b842be96042b6e6037994acb8028d1b858de9dc22ac0', '2026-02-03 14:09:42', NULL, '2026-02-03 13:09:42');
 
 -- --------------------------------------------------------
 
@@ -582,14 +617,17 @@ CREATE TABLE IF NOT EXISTS `profils_candidats` (
   `statut_actuel` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `candidat_id` (`candidat_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `profils_candidats`
 --
 
 INSERT INTO `profils_candidats` (`id`, `candidat_id`, `poste_recherche`, `description`, `disponibilite`, `mobilite`, `annee_experience`, `niveau_etudes`, `statut_actuel`) VALUES
-(1, 1, 'Développeur logiciel', '5 ans en Java et PHP', '2025-07-15', 'France & Europe', 5, 'Bac+5', 'En poste');
+(1, 1, 'Développeur logiciel', '5 ans en Java et PHP', '2025-07-15', 'France & Europe', 5, 'Bac+5', 'En poste'),
+(2, 8, 'Developpeur web junnior', 'ACCROCHE PROFESSIONNELLE\r\nDéveloppeur Web Bac+2 RNCP 37273 \"Concepteur Développeur d\'Applications\" \r\nen fin de formation. 1 an d\'expérience en stage backend PHP MVC \r\nsur projet EPortailEmploi (portail emploi modulaire). Maîtrise PHP8, \r\nMySQL 3NF, JavaScript/Ajax, Bootstrap5. Recherche alternance Bac+3/4 \r\npour contribuer à des projets fullstack avec focus backend.', '0000-00-00', 'Paris', 1, 'Bac+2', 'En recherche'),
+(3, 9, 'Testeur professionnel', '', '0000-00-00', '', 0, '', ''),
+(4, 12, '', '', '0000-00-00', '', 0, '', '');
 
 -- --------------------------------------------------------
 
@@ -762,18 +800,25 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   KEY `fk_users_entreprise` (`entreprise_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Déchargement des données de la table `users`
 --
 
 INSERT INTO `users` (`id`, `prenom`, `nom`, `email`, `mot_de_passe`, `telephone`, `role`, `entreprise_id`, `date_creation`, `dernier_acces`) VALUES
-(1, 'jean', 'dupont', 'jean.dupont@exemple.com', '$2y$10$X5YYOYMCaWeMDZjWCQra2.BbCuCdEvjoCBEoo7FuIJJRvf4Cv6Qxu', NULL, 'candidat', NULL, '2025-10-22 14:33:16', NULL),
+(1, 'jean', 'dupont', 'jean.dupont@exemple.com', '$2y$10$X5YYOYMCaWeMDZjWCQra2.BbCuCdEvjoCBEoo7FuIJJRvf4Cv6Qxu', NULL, 'candidat', NULL, '2025-10-22 14:33:16', '2026-02-03 12:52:33'),
 (2, 'marie', 'durand', 'marie.durand@techcorp.fr', '$2y$10$SKpo7alI7JTrVKhvgVnh9O4BBJELNr.F4mQIlJ5bKhtI0dqbbKVXe', NULL, 'recruteur', 1, '2025-10-22 14:33:16', NULL),
-(3, 'paul', 'martin', 'paul.martin@santeplus.fr', '$2y$10$5RznGtpMk9tMyWAMeFVAIuBLW7Hi8us.hWNJq/JI8.YHoOKQ3hT1O', NULL, 'gestionnaire', 2, '2025-10-22 14:33:16', NULL),
-(4, 'wildane', 'madi', 'admin@site.fr', '$2y$10$Oq1N.0rEQPn6iPOPmqhageEapMTcBBWnXr/uYEChbo1uYsHmnM7Wm', NULL, 'admin', NULL, '2025-10-22 14:33:16', NULL),
-(5, 'Lucas', 'Morel', 'lucas.morel@techcorp.fr', '$2y$10$7Z4FwalqGqFeHGkFXW4sa.p0KB7ttmfSxXdHniuQJpWiWi37d8V6S', '0612458793', 'gestionnaire', 1, '2026-01-04 09:37:08', NULL);
+(4, 'wildane', 'madi', 'admin@site.fr', '$2y$10$Oq1N.0rEQPn6iPOPmqhageEapMTcBBWnXr/uYEChbo1uYsHmnM7Wm', NULL, 'admin', NULL, '2025-10-22 14:33:16', '2026-02-03 11:37:49'),
+(5, 'Lucas', 'Morel', 'lucas.morel@techcorp.fr', '$2y$10$HwA/qkMSD/O/rPKfQEX4jOlYJRAPqE.7J6X3EFl/HBhnBQ1Pr4rO6', '0612458793', 'gestionnaire', 1, '2026-01-04 09:37:08', '2026-02-03 13:07:32'),
+(6, 'Sarah', 'Lefevre', 'sarah.lefevre@commercia-market.fr', '$2y$10$sScLW.rkPXG31xIlmTlYLed7a82ijRY8ML9N98SmF21PBWp7YeTye', NULL, 'gestionnaire', 3, '2026-01-29 13:57:21', NULL),
+(8, 'Laurent', 'zerno', 'laurent.zerno@gmail.com', '$2y$10$CSCQ0BsdPLTcYl63B6aPRuDDFu8wakudLzTp6HukcShlnTvi8pR1S', NULL, 'candidat', NULL, '2026-01-31 19:31:55', NULL),
+(9, 'Candidat', 'Test', 'candidat@test.fr', '$2y$10$Z4vpZW038F1WJfCz8lJhAu.aKW8e.G23Lovjjjtp4LatfxKe.hmNK', NULL, 'candidat', NULL, '2026-02-01 15:18:40', NULL),
+(10, 'BigFlo', 'Oli', 'bigflo@oli.fr', '$2y$10$bIkAhc67RAf4vtPwYooaDuyePQftpFU.I6EI5h.Mj2Bm/aBGFh0eK', '0475841236', 'recruteur', 3, '2026-02-02 10:27:54', NULL),
+(11, 'admin', 'test', 'admin@test.com', '$2y$10$NmCkRpPUTzJMFYs9ZtlKcOQ7MmbkTuA2ocBuu4U58S4gr595n8q6W', '0698745212', 'admin', 3, '2026-02-02 19:46:10', NULL),
+(12, 'julien', 'serbat', 'julien@serbat.fr', '$2y$10$I.4jiMrTesFWgWxNHQanMOSgtIByCDoiKmHSl3uJ73caFNK4ExfNe', '0612457896', 'candidat', NULL, '2026-02-02 20:19:08', NULL),
+(13, 'Jean', 'Paul', 'jean@paul.fr', '$2y$10$v9nUNSy8k0MxFBU2OAdDxe9BteJMpvtsLbYIkV1ZRJNo5iI51ghoe', '0632145897', 'recruteur', 1, '2026-02-02 22:44:04', NULL),
+(14, 'Claire', 'Santé Plus', 'gestion.santeplus@test.com', '$2y$10$gFQ44F3ayW9zr/XJb6w2vuRHkIRdRyEt6ryiMyf5ZR0uzPJ1/T59a', '0652414512', 'gestionnaire', 5, '2026-02-03 09:40:24', NULL);
 
 --
 -- Contraintes pour les tables déchargées
@@ -879,13 +924,13 @@ ALTER TABLE `notifications_processus`
 -- Contraintes pour la table `offres`
 --
 ALTER TABLE `offres`
-  ADD CONSTRAINT `fk_offres_modifie_par` FOREIGN KEY (`modifie_par`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `offres_ibfk_2` FOREIGN KEY (`entreprise_id`) REFERENCES `entreprises` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
-  ADD CONSTRAINT `offres_ibfk_3` FOREIGN KEY (`type_offre_id`) REFERENCES `types_offres` (`id`),
-  ADD CONSTRAINT `offres_ibfk_4` FOREIGN KEY (`niveau_qualification_id`) REFERENCES `niveaux_qualification` (`id`),
-  ADD CONSTRAINT `offres_ibfk_5` FOREIGN KEY (`domaine_emploi_id`) REFERENCES `domaines_emploi` (`id`),
-  ADD CONSTRAINT `offres_ibfk_6` FOREIGN KEY (`localisation_id`) REFERENCES `localisations` (`id`),
-  ADD CONSTRAINT `offres_ibfk_7` FOREIGN KEY (`auteur_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `fk_offres_modifie_par` FOREIGN KEY (`modifie_par`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  ADD CONSTRAINT `offres_ibfk_2` FOREIGN KEY (`entreprise_id`) REFERENCES `entreprises` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `offres_ibfk_3` FOREIGN KEY (`type_offre_id`) REFERENCES `types_offres` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `offres_ibfk_4` FOREIGN KEY (`niveau_qualification_id`) REFERENCES `niveaux_qualification` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `offres_ibfk_5` FOREIGN KEY (`domaine_emploi_id`) REFERENCES `domaines_emploi` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `offres_ibfk_6` FOREIGN KEY (`localisation_id`) REFERENCES `localisations` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `offres_ibfk_7` FOREIGN KEY (`auteur_id`) REFERENCES `users` (`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `profils_candidats`

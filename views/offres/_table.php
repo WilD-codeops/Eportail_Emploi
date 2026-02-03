@@ -12,79 +12,102 @@ use App\Core\Security;
  */
 ?>
 
-<table class="table table-hover align-middle mb-0">
-  <thead class="table-light">
+<table class="table table-hover align-middle mb-0 admin-offres-table">
+  <thead class="table-light admin-offres-head">
     <tr>
-      <th style="width:80px;">#</th>
-      <th>Titre</th>
-      <?php if ($isAdmin): ?><th>Entreprise</th><?php endif; ?>
-      <th style="width:120px;">Type</th>
-      <th style="width:160px;">Localisation</th>
-      <th style="width:110px;">Statut</th>
-      <th style="width:170px;">Créée</th>
-      <th style="width:170px;">Modifiée</th>
-      <th>Modifié par</th>
-      <th class="text-end" style="width:170px;">Actions</th>
+      <th scope="col">Titre</th>
+      <th scope="col" class="d-none d-md-table-cell">Type</th>
+      <th scope="col" class="d-none d-lg-table-cell">Localisation</th>
+      <th scope="col">Statut</th>
+      <th scope="col" class="d-none d-xl-table-cell">Créée</th>
+      <th scope="col" class="text-end">Actions</th>
     </tr>
   </thead>
 
   <tbody>
-  <?php foreach ($items as $offre): ?>
-    <?php
-      $id = (int)($offre['id'] ?? 0);
-      $b  = $badge((string)($offre['statut'] ?? ''));
-
-      // CSRF unique par offre
-      $csrfKey = "offres_delete_" . $id;
-      $csrfDel = Security::generateCsrfToken($csrfKey);
-
-      $editUrl = $editBase . "?id=" . urlencode((string)$id);
-      $delUrl  = $delBase  . "?id=" . urlencode((string)$id);
-
-      $modNom  = $offre['modifie_nom'] ?? null;
-      $modRole = $offre['modifie_role'] ?? null;
-      $modifiePar = $modNom ? trim((string)$modNom . ($modRole ? " • " . ucfirst((string)$modRole) : "")) : '-';
-    ?>
+  <?php if (empty($items)): ?>
     <tr>
-      <td class="text-muted"><?= $id ?></td>
-
-      <td>
-        <div class="fw-semibold"><?= htmlspecialchars($offre['titre'] ?? '') ?></div>
-        <div class="text-muted small"><?= htmlspecialchars($offre['domaine_emploi'] ?? '') ?></div>
-      </td>
-
-      <?php if ($isAdmin): ?>
-        <td><?= htmlspecialchars($offre['entreprise_nom'] ?? '') ?></td>
-      <?php endif; ?>
-
-      <td><?= htmlspecialchars($offre['type_offre_code'] ?? '—') ?></td>
-      <td><?= htmlspecialchars($offre['localisation'] ?? '—') ?></td>
-
-      <td>
-        <span class="badge <?= htmlspecialchars($b['class']) ?>">
-          <?= htmlspecialchars($b['label']) ?>
-        </span>
-      </td>
-
-      <td><?= htmlspecialchars($fmtDate($offre['date_creation'] ?? null)) ?></td>
-      <td><?= htmlspecialchars($fmtDate($offre['date_modification'] ?? null)) ?></td>
-
-      <td><?= htmlspecialchars($modifiePar) ?></td>
-
-      <td class="text-end">
-        <a class="btn btn-sm btn-outline-primary" href="<?= htmlspecialchars($editUrl) ?>" title="Modifier">
-          <i class="bi bi-pencil-square"></i>
-        </a>
-
-        <form method="POST" action="<?= htmlspecialchars($delUrl) ?>" class="d-inline js-delete-form">
-          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfDel) ?>">
-          <input type="hidden" name="csrf_key" value="<?= htmlspecialchars($csrfKey) ?>">
-          <button type="submit" class="btn btn-sm btn-outline-danger" title="Supprimer">
-            <i class="bi bi-trash"></i>
-          </button>
-        </form>
+      <td colspan="6" class="text-center text-muted py-4">
+        <i class="bi bi-inbox display-6 mb-2" aria-hidden="true"></i>
+        <p class="mb-0">Aucune offre ne correspond aux filtres.</p>
       </td>
     </tr>
-  <?php endforeach; ?>
+  <?php else: ?>
+    <?php foreach ($items as $offre): ?>
+      <?php
+        $id = (int)($offre['id'] ?? 0);
+        $b  = $badge((string)($offre['statut'] ?? ''));
+
+        // CSRF unique par offre
+        $csrfKey = "offres_delete_" . $id;
+        $csrfDel = Security::generateCsrfToken($csrfKey);
+
+        $editUrl = $editBase . "?id=" . urlencode((string)$id);
+        $delUrl  = $delBase  . "?id=" . urlencode((string)$id);
+        
+        $titre = htmlspecialchars($offre['titre'] ?? '');
+        $domaine = htmlspecialchars($offre['domaine_emploi'] ?? '');
+      ?>
+      <tr class="admin-offre-row">
+        <td>
+          <div class="fw-semibold">
+            <i class="bi bi-briefcase text-primary me-2" aria-hidden="true"></i><?= $titre ?>
+          </div>
+          <div class="text-muted small">
+            <i class="bi bi-tag me-1" aria-hidden="true"></i><?= $domaine ?>
+          </div>
+        </td>
+
+        <td class="d-none d-md-table-cell">
+          <span class="badge bg-info-light text-info">
+            <i class="bi bi-box me-1" aria-hidden="true"></i><?= htmlspecialchars($offre['type_offre_code'] ?? '—') ?>
+          </span>
+        </td>
+
+        <td class="d-none d-lg-table-cell">
+          <i class="bi bi-geo-alt text-info me-1" aria-hidden="true"></i><?= htmlspecialchars($offre['localisation'] ?? '—') ?>
+        </td>
+
+        <td>
+          <span class="badge <?= htmlspecialchars($b['class']) ?>">
+            <i class="bi bi-check-circle me-1" aria-hidden="true"></i><?= htmlspecialchars($b['label']) ?>
+          </span>
+        </td>
+
+        <td class="d-none d-xl-table-cell text-muted small">
+          <i class="bi bi-calendar-event me-1" aria-hidden="true"></i><?= htmlspecialchars($fmtDate($offre['date_creation'] ?? null)) ?>
+        </td>
+
+        <td class="text-end">
+          <div class="btn-group btn-group-sm" role="group" aria-label="Actions sur l'offre <?= $titre ?>">
+            <!-- Modifier -->
+            <a href="<?= htmlspecialchars($editUrl) ?>"
+               class="btn btn-primary btn-sm btn-icon btn-soft-primary"
+               aria-label="Modifier offre <?= $titre ?>"
+               title="Modifier">
+              <i class="bi bi-pencil-square" aria-hidden="true"></i>
+              <span class="visually-hidden">Modifier</span>
+            </a>
+
+            <!-- Supprimer -->
+            <form method="POST"
+                  action="<?= htmlspecialchars($delUrl) ?>"
+                  class="d-inline js-delete-form">
+              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfDel) ?>">
+              <input type="hidden" name="csrf_key" value="<?= htmlspecialchars($csrfKey) ?>">
+
+              <button type="submit"
+                      class="btn btn-danger btn-sm btn-icon btn-soft-danger"
+                      aria-label="Supprimer offre <?= $titre ?>"
+                      title="Supprimer">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+                <span class="visually-hidden">Supprimer</span>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+    <?php endforeach; ?>
+  <?php endif; ?>
   </tbody>
 </table>
