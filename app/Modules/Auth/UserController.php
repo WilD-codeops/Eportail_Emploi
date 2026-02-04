@@ -326,7 +326,7 @@ class UserController
             header("Location: /dashboard/equipe");
             exit;
         }
-        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/equipe')) {
+        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/')) {
             AuthController::flashError("Veuillez utiliser la section admin.");
             header("Location: /admin/users");
             exit;
