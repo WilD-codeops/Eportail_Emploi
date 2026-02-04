@@ -278,6 +278,20 @@ class OffresController
         if (!$isAdmin) {
             Auth::requireRole(['gestionnaire', 'recruteur']);
         }
+        
+        //Formulaire partagé admin/entreprise : vérifie le rôle en fonction de la route
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        if ((Auth::role() === 'gestionnaire' || Auth::role() === 'recruteur') && str_starts_with($currentPath, '/admin/')) {
+            self::flashError("Accès refusé : vous n'avez pas les permissions pour cette section.");
+            header("Location: /dashboard/offres");
+            exit;
+        }
+
+        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/')) {
+            self::flashError("Veuillez utiliser la section admin.");
+            header("Location: /admin/offres");
+            exit;
+        }
 
         $service = $this->makeService();
         $refs    = $service->getReferenceData($isAdmin)['data'] ?? [];
@@ -300,6 +314,20 @@ class OffresController
         $isAdmin = Auth::role() === 'admin';
         if (!$isAdmin) {
             Auth::requireRole(['gestionnaire', 'recruteur']);
+        }
+
+        //Formulaire partagé admin/entreprise : vérifie le rôle en fonction de la route
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        if ((Auth::role() === 'gestionnaire' || Auth::role() === 'recruteur') && str_starts_with($currentPath, '/admin/')) {
+            self::flashError("Accès refusé : vous n'avez pas les permissions pour cette section.");
+            header("Location: /dashboard/offres");
+            exit;
+        }
+
+        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/')) {
+            self::flashError("Veuillez utiliser la section admin.");
+            header("Location: /admin/offres");
+            exit;
         }
 
         Security::requireCsrfToken('offres_create', $_POST['csrf_token'] ?? null);

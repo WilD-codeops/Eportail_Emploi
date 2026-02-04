@@ -27,12 +27,12 @@ $role = Auth::role();
             <div class="col-6 col-md-2">
                 <h6 id="footer-candidats" class="footer-title">Candidats</h6>
                 <ul class="footer-links list-unstyled" aria-labelledby="footer-candidats">
-                    <li><a href="/offres/public_list">Rechercher un emploi</a></li>
+                    <li><a href="/offres">Rechercher un emploi</a></li>
 
                     <?php
                     switch ($role) {
                         case null:
-                            echo '<li><a href="/candidat/register_candidat">Créer un profil</a></li>';
+                            echo '<li><a href="/register_candidat">Créer un profil</a></li>';
                             break;
 
                         case 'candidat':
@@ -56,7 +56,7 @@ $role = Auth::role();
                             <li><a href="/dashboard/offres">Gérer mes offres</a></li>
 
                             <?php if ($role === 'gestionnaire'): ?>
-                                <li><a href="/maintenance">Gérer mon equipe</a></li>
+                                <li><a href="/dashboard/equipe">Gérer mon equipe</a></li>
                                 <li><a href="/maintenance">Voir les candidatures</a></li>
                             <?php endif; ?>
                         </ul>
@@ -74,7 +74,7 @@ $role = Auth::role();
                     <div class="col-6 col-md-3">
                         <h6 id="footer-admin" class="footer-title">Administration</h6>
                         <ul class="footer-links list-unstyled" aria-labelledby="footer-admin">
-                            <li><a href="/admin/utilisateurs">Gérer les utilisateurs</a></li>
+                            <li><a href="/admin/users">Gérer les utilisateurs</a></li>
                             <li><a href="/admin/offres">Gérer les offres</a></li>
                             <li><a href="/admin/entreprises">Gérer les entreprises</a></li>
                             <li><a href="/maintenance">Logs & sécurité</a></li>

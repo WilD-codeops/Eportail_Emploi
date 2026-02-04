@@ -156,9 +156,16 @@ use App\Core\Database;
         public function showRegisterEntreprise(): void
         {
             auth::requireGuest();// Redirige si déjà connecté
+            
+            // Charger les secteurs via le service
+            $entrepriseService = $this->makeEntrepriseService();
+            $secteursResult = $entrepriseService->listSecteurs();
+            $secteurs = $secteursResult['data'] ?? [];
+            
             $this->renderAuth("register_entreprise", [
                 "title"       => "Créer un espace entreprise",
-                "authVariant" => "register_entreprise"
+                "authVariant" => "register_entreprise",
+                "secteurs"    => $secteurs
             ]);
         }
 

@@ -12,7 +12,7 @@ return [
         ['icon'=>'bi-file-earmark-text','label'=>'Candidatures','url'=>'/maintenance'],
 
         ['section' => 'Référentiels'],
-        ['icon'=>'bi-tags','label'=>'Types d’offre','url'=>'/admin/ref/maintenance'],
+        ['icon'=>'bi-tags','label'=>'Types d’offre','url'=>'/maintenance'],
         ['icon'=>'bi-mortarboard','label'=>'Niveaux de qualification','url'=>'/maintenance'],
         ['icon'=>'bi-diagram-3','label'=>'Domaines d’emploi','url'=>'/maintenance'],
         ['icon'=>'bi-geo-alt','label'=>'Localisations','url'=>'/maintenance'],

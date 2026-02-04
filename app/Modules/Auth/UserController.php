@@ -228,6 +228,19 @@ class UserController
         Auth::requireLogin();
         Auth::requireRole(['admin', 'gestionnaire']);
 
+        // SÉCURITÉ : Vérifier que le rôle correspond à la route
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        if (Auth::role() === 'gestionnaire' && str_starts_with($currentPath, '/admin/')) {
+            AuthController::flashError("Accès refusé : vous n'avez pas les permissions pour cette section.");
+            header("Location: /dashboard/equipe");
+            exit;
+        }
+        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/equipe')) {
+            AuthController::flashError("Veuillez utiliser la section admin.");
+            header("Location: /admin/users");
+            exit;
+        }
+
         $userService = $this->makeUserService();
         $entreprises = $userService->getAllEntreprises();
         
@@ -250,6 +263,19 @@ class UserController
         Auth::requireLogin();
         Auth::requireRole(['admin', 'gestionnaire']);
         Security::requireCsrfToken('user_create', $_POST['csrf_token'] ?? null);
+
+        // SÉCURITÉ : Vérifier que le rôle correspond à la route
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        if (Auth::role() === 'gestionnaire' && str_starts_with($currentPath, '/admin/')) {
+            AuthController::flashError("Accès refusé : vous n'avez pas les permissions pour cette action.");
+            header("Location: /dashboard/equipe");
+            exit;
+        }
+        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/equipe')) {
+            AuthController::flashError("Veuillez utiliser la section admin.");
+            header("Location: /admin/users");
+            exit;
+        }
 
         $service = $this->makeUserService();
         $entreprises = $service->getAllEntreprises();
@@ -291,6 +317,21 @@ class UserController
         Auth::requireLogin();
         Auth::requireRole(['admin', 'gestionnaire']);
 
+        //Partage la meme route pour admin et gestionnaire
+        //  on verifie que le role correspond a la route
+        // SÉCURITÉ : Vérifier que le rôle correspond à la route
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        if (Auth::role() === 'gestionnaire' && str_starts_with($currentPath, '/admin/')) {
+            AuthController::flashError("Accès refusé : vous n'avez pas les permissions pour cette section.");
+            header("Location: /dashboard/equipe");
+            exit;
+        }
+        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/equipe')) {
+            AuthController::flashError("Veuillez utiliser la section admin.");
+            header("Location: /admin/users");
+            exit;
+        }
+
         $id = (int)($_GET['id'] ?? 0);
 
         $service = $this->makeUserService();
@@ -303,6 +344,15 @@ class UserController
             "title" => "Modifier un utilisateur",
             "error"  => $user['error'],
         ]);
+        }
+
+        // SÉCURITÉ : Un gestionnaire ne peut éditer que les utilisateurs de son entreprise
+        if (Auth::role() === 'gestionnaire') {
+            if ((int)($user['data']['entreprise_id'] ?? 0) !== Auth::entrepriseId()) {
+                AuthController::flashError("Accès refusé : cet utilisateur n'appartient pas à votre entreprise.");
+                header("Location: /dashboard/equipe");
+                exit;
+            }
         }
 
         //get all entreprises for select options
@@ -328,8 +378,35 @@ class UserController
         Auth::requireRole(['admin', 'gestionnaire']);
         Security::requireCsrfToken('user_edit', $_POST['csrf_token'] ?? null);
 
+        // SÉCURITÉ : Vérifier que le rôle correspond à la route
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        if (Auth::role() === 'gestionnaire' && str_starts_with($currentPath, '/admin/')) {
+            AuthController::flashError("Accès refusé : vous n'avez pas les permissions pour cette action.");
+            header("Location: /dashboard/equipe");
+            exit;
+        }
+        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/equipe')) {
+            AuthController::flashError("Veuillez utiliser la section admin.");
+            header("Location: /admin/users");
+            exit;
+        }
+
         $id      = (int)($_POST['id'] ?? 0);
         $service = $this->makeUserService();
+        
+        // SÉCURITÉ : Vérifier que le gestionnaire modifie un utilisateur de son entreprise
+        if (Auth::role() === 'gestionnaire') {
+            $userToEdit = $service->getUser($id);
+            if (!$userToEdit['success']) {
+                self::VerifyFailSystem($userToEdit);
+            }
+            if ((int)($userToEdit['data']['entreprise_id'] ?? 0) !== Auth::entrepriseId()) {
+                AuthController::flashError("Accès refusé : vous ne pouvez pas modifier cet utilisateur.");
+                header("Location: /dashboard/equipe");
+                exit;
+            }
+        }
+        
         $result  = $service->updateUser($id, $_POST);
 
         if (!$result['success']) {
@@ -357,8 +434,30 @@ class UserController
         Auth::requireRole(['admin', 'gestionnaire']);
         Security::requireCsrfToken('user_delete', $_POST['csrf_token'] ?? null);
 
+        // SÉCURITÉ : Vérifier que le rôle correspond à la route
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        if (Auth::role() === 'gestionnaire' && str_starts_with($currentPath, '/admin/')) {
+            AuthController::flashError("Accès refusé : vous n'avez pas les permissions pour cette action.");
+            header("Location: /dashboard/equipe");
+            exit;
+        }
+
         $id      = (int)($_POST['id'] ?? 0);
         $service = $this->makeUserService();
+        
+        // SÉCURITÉ : Vérifier que le gestionnaire supprime un utilisateur de son entreprise
+        if (Auth::role() === 'gestionnaire') {
+            $userToDelete = $service->getUser($id);
+            if (!$userToDelete['success']) {
+                self::VerifyFailSystem($userToDelete);
+            }
+            if ((int)($userToDelete['data']['entreprise_id'] ?? 0) !== Auth::entrepriseId()) {
+                AuthController::flashError("Accès refusé : vous ne pouvez pas supprimer cet utilisateur.");
+                header("Location: /dashboard/equipe");
+                exit;
+            }
+        }
+        
         $result  = $service->deleteUser($id);
 
         if (!$result['success']) {

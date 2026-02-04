@@ -298,6 +298,29 @@ class EntrepriseController
         Auth::requireRole(['admin','gestionnaire']); // Accès restreint aux rôles spécifiés
         $id = (int)($_GET['id'] ?? Auth::entrepriseId());
 
+        //La meme methode est partage pour admin et gestionnaire
+        // SÉCURITÉ : Vérifier que le rôle correspond à la route
+        //exclu gestionnaire sur routes /admin et admin sur routes /dashboard
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        if (Auth::role() === 'gestionnaire' && str_starts_with($currentPath, '/admin/')) {
+            self::flashError("Accès refusé : vous n'avez pas les permissions pour cette section.");
+            header("Location: /dashboard/equipe");
+            exit;
+        }
+
+        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/')) {
+            self::flashError("Veuillez utiliser la section admin.");
+            header("Location: /admin/entreprises");
+            exit;
+        }
+
+        // SÉCURITÉ : un gestionnaire ne peut éditer que son entreprise
+        if (Auth::role() === 'gestionnaire' && $id !== Auth::entrepriseId()) {
+            self::flashError("Accès refusé : vous ne pouvez modifier que votre entreprise.");
+            header("Location: /dashboard/equipe");
+            exit;
+        }
+
         $service    = $this->makeEntrepriseService();
         $entreprise = $service->findEntreprise($id);
 
@@ -328,8 +351,32 @@ class EntrepriseController
         Auth::requireRole(['admin','gestionnaire']); // Acces restreint aux rôles spécifiés
         Security::requireCsrfToken('entreprise_edit', $_POST['csrf_token'] ?? null);
 
+        //partage la meme route pour admin et gestionnaire
+        //  on verifie que le role correspond a la route
+        $currentPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
+        if (Auth::role() === 'gestionnaire' && str_starts_with($currentPath, '/admin/')) {
+            self::flashError("Accès refusé : vous n'avez pas les permissions pour cette section.");
+            header("Location: /dashboard/equipe");
+            exit;
+        }
+
+        if (Auth::role() === 'admin' && str_starts_with($currentPath, '/dashboard/')) {
+            self::flashError("Veuillez utiliser la section admin.");
+            header("Location: /admin/entreprises");
+            exit;
+        }
+
+        
+        
         $service = $this->makeEntrepriseService();
         $id      = (int)($_POST['id'] ?? 0);
+
+        // SÉCURITÉ : un gestionnaire ne peut modifier que son entreprise
+        if (Auth::role() === 'gestionnaire' && $id !== Auth::entrepriseId()) {
+            self::flashError("Accès refusé : vous ne pouvez modifier que votre entreprise.");
+            header("Location: /dashboard/equipe");
+            exit;
+        }
 
         // Appel service
         $result = $service->updateEntreprise($id, $_POST);
