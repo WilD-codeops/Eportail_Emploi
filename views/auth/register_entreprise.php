@@ -52,7 +52,7 @@ $value = static function (string $key, $default = '') use ($entreprise) {
                 <select id="secteur_id" name="secteur_id" class="form-select" required>
                     <?php foreach ($secteurs as $s): ?>
                         <?php $selected = ((int)$value('secteur_id', '') === (int)$s['id']) ? 'selected' : ''; ?>
-                        <option value="<?= $echappe($s['id']) ?>" <?= $selected ?>><?= $echappe($s['nom']) ?></option>
+                        <option value="<?= $echappe($s['id']) ?>" <?= $selected ?>><?= $echappe($s['libelle']) ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
